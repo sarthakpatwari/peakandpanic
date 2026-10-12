@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indian Markets | Peak and Panic</title>
+  <link rel="icon" type="image/png" href="images/peak-and-panic_app-icon_white-on-purple.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /*
+      Source of truth: Figma file MzPw3573fM7JjBv5UX4DbR, frame "India Beyond the index" (node 39:28), 1440px wide.
+      Every size is the Figma value x --u (1u = 1px at 1440px wide, scales with the page).
+      Elements are placed with --x / --y (Figma offsets inside their section).
+    */
+    :root {
+      --u: 0.0694444cqw;
+      --page-bg: #000000;
+      --nav-bg: #000000;
+      --white: #ffffff;
+      --muted: #9d97b5;
+      --purple: #5519c9;
+      --glow: #4f1aaf;
+      --btn-hover-text: #09070f;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: var(--page-bg);
+      color: var(--white);
+      line-height: 1.2102;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page { container-type: inline-size; width: 100%; overflow: hidden; }
+    img, svg { display: block; max-width: none; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--white); outline-offset: 4px; }
+
+    /* helpers: absolute placement + sizes in Figma units */
+    .abs { position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); }
+    .w { width: calc(var(--w) * var(--u)); }
+    .h { height: calc(var(--h) * var(--u)); }
+    .roboto { font-family: 'Roboto', system-ui, sans-serif; }
+
+    /* ───────────── Navigation ───────────── */
+    .nav { height: calc(164 * var(--u)); background: var(--nav-bg); display: flex; align-items: center; justify-content: space-between; padding-right: calc(47 * var(--u)); }
+    .nav__logo img { width: calc(486 * var(--u)); height: calc(162 * var(--u)); object-fit: cover; }
+    .nav__links { display: flex; align-items: center; gap: calc(100 * var(--u)); }
+    .nav__link { font-size: calc(18 * var(--u)); font-weight: 700; letter-spacing: calc(-0.36 * var(--u)); white-space: nowrap; }
+    .btn-signin { width: calc(150 * var(--u)); padding: calc(5 * var(--u)) calc(20 * var(--u)); background: var(--purple); border-radius: calc(15 * var(--u)); font-size: calc(24 * var(--u)); font-weight: 700; letter-spacing: calc(-0.48 * var(--u)); text-align: center; white-space: nowrap; }
+
+    /* ───────────── Page title (Figma y 241) ───────────── */
+    .title { position: relative; height: calc(236 * var(--u)); }
+    .title h1 { font-size: calc(64 * var(--u)); font-weight: 700; letter-spacing: calc(-1.28 * var(--u)); }
+    .title p { font-size: calc(24 * var(--u)); line-height: 1.5; color: var(--muted); }
+
+    /* ───────────── Market Snapshot (section starts at Figma y 400) ───────────── */
+    .snapshot { position: relative; height: calc(1460 * var(--u)); }
+
+    .glowbar {
+      width: max(calc(0.2 * var(--u)), 1px);
+      height: calc(177 * var(--u));
+      background: #48248d;
+      border-radius: calc(20 * var(--u));
+      box-shadow: 0 0 calc(25 * var(--u)) calc(15 * var(--u)) var(--purple);
+    }
+
+    .h-section { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: calc(57 * var(--u)); line-height: calc(64 * var(--u)); letter-spacing: calc(-0.25 * var(--u)); white-space: nowrap; }
+    .h-sub { font-family: 'Roboto', sans-serif; font-weight: 400; font-size: calc(36 * var(--u)); line-height: calc(44 * var(--u)); white-space: pre; }
+
+    /* Live / Closed market indicator (Component 1 variants) */
+    .status { height: calc(44 * var(--u)); width: calc(235 * var(--u)); }
+    .status__dot { position: absolute; left: 0; top: calc(14 * var(--u)); width: calc(20 * var(--u)); height: calc(20 * var(--u)); border-radius: 50%; background: #ff4747; box-shadow: 0 0 calc(25 * var(--u)) calc(5 * var(--u)) #ff4747; }
+    .status__text { position: absolute; left: calc(49 * var(--u)); top: 0; font-family: 'Roboto', sans-serif; font-size: calc(36 * var(--u)); line-height: calc(44 * var(--u)); white-space: nowrap; }
+    .status[data-state="closed"] .status__dot { background: #ffffff; box-shadow: 0 0 calc(25 * var(--u)) calc(5 * var(--u)) #f2f2f2; }
+    .status--updated .status__dot { background: #8d8d8d; box-shadow: 0 0 calc(25 * var(--u)) calc(5 * var(--u)) rgba(255,255,255,0.35); }
+
+    /* Index tiles */
+    .tile {
+      position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u));
+      width: calc(500 * var(--u)); height: calc(454 * var(--u));
+      border: calc(1 * var(--u)) solid var(--purple);
+      border-radius: calc(10 * var(--u));
+      box-shadow: calc(1 * var(--u)) calc(1 * var(--u)) calc(50 * var(--u)) calc(15 * var(--u)) var(--glow);
+    }
+    .tile > * { position: absolute; }
+        /* Smooth enlarge on hover (not in Figma, so adjust to taste) */
+    .tile {
+      transform-origin: center;
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+      cursor: pointer;
+    }
+    .tile:hover {
+      transform: scale(1.06);
+      z-index: 5;
+      box-shadow: calc(1 * var(--u)) calc(1 * var(--u)) calc(60 * var(--u)) calc(20 * var(--u)) var(--glow);
+    }
+    .tile__name  { left: calc(var(--x) * var(--u)); top: calc(46 * var(--u)); font-size: calc(55 * var(--u)); font-weight: 700; letter-spacing: calc(-1.1 * var(--u)); white-space: nowrap; }
+    .tile__value { left: calc(var(--x) * var(--u)); top: calc(113 * var(--u)); font-size: calc(55 * var(--u)); font-weight: 700; letter-spacing: calc(-1.1 * var(--u)); white-space: nowrap; }
+    .tile__chg   { left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); font-family: 'Roboto', sans-serif; font-size: calc(24 * var(--u)); line-height: calc(44 * var(--u)); color: var(--muted); white-space: nowrap; }
+    .tile__spark { left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); width: calc(var(--w) * var(--u)); height: calc(var(--h) * var(--u)); }
+    .tile__spark svg { width: 100%; height: 100%; }
+
+    .pill {
+      left: calc(var(--x) * var(--u)); top: calc(193 * var(--u));
+      width: calc(141 * var(--u)); height: calc(44 * var(--u));
+      border-radius: calc(30 * var(--u));
+      display: flex; align-items: center; justify-content: center;
+      font-size: calc(21 * var(--u)); font-weight: 700; letter-spacing: calc(-0.42 * var(--u)); white-space: nowrap;
+    }
+    .pill--neg { background: linear-gradient(to right, #9747ff, #09070f); color: #fff; }
+    .pill--pos { background: linear-gradient(to right, #d7d6d7, #542ec3); color: #121212; }
+
+    /* ───────────── Macro-Market Intelligence (section starts at Figma y 1860) ───────────── */
+    .intel { position: relative; height: calc(804 * var(--u)); }
+
+    /* Cards = Component 2/3/4. Hover = "Variant2": everything grows 1.125x (400x363 → 450x408.8),
+       Smart Animate, ease-in-back, 0.3s. */
+    .card {
+      position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u));
+      width: calc(400 * var(--u)); height: calc(363 * var(--u));
+            transform-origin: center;
+      transition: transform 0.3s ease-out;
+      cursor: pointer;
+      display: block; color: inherit;
+    }
+        .card:hover, .card:focus-visible { transform: scale(1.06); z-index: 5; }
+    .card__frame { transition: box-shadow 0.3s ease-out; }
+    .card:hover .card__frame, .card:focus-visible .card__frame {
+            box-shadow: calc(1 * var(--u)) calc(1 * var(--u)) calc(15 * var(--u)) calc(2 * var(--u)) var(--glow);}
+    .card > * { position: absolute; }
+    .card__frame {
+      inset: 0;
+      border: calc(1 * var(--u)) solid #7040cf;
+      border-radius: calc(10 * var(--u));
+      box-shadow: calc(1 * var(--u)) calc(1 * var(--u)) calc(15 * var(--u)) calc(2 * var(--u)) var(--glow),
+                  inset 0 calc(4 * var(--u)) calc(5 * var(--u)) calc(5 * var(--u)) var(--glow);
+    }
+    .card__dot { left: calc(25 * var(--u)); top: calc(33 * var(--u)); width: calc(10 * var(--u)); height: calc(10 * var(--u)); border-radius: 50%; background: #0ba737; box-shadow: 0 0 calc(25 * var(--u)) calc(5 * var(--u)) #0ba737; }
+    .card__title { left: calc(60 * var(--u)); top: calc(20 * var(--u)); font-size: calc(30 * var(--u)); font-weight: 700; letter-spacing: calc(-0.6 * var(--u)); white-space: nowrap; }
+    .card__sub { left: calc(25 * var(--u)); top: calc(65 * var(--u)); font-size: calc(18 * var(--u)); letter-spacing: calc(-0.36 * var(--u)); color: var(--muted); white-space: nowrap; }
+    .card__visual { left: calc(20 * var(--u)); top: calc(var(--vy) * var(--u)); width: calc(360 * var(--u)); height: calc(176 * var(--u)); }
+    .card__visual svg { width: 100%; height: 100%; }
+    .card__covers { left: calc(29 * var(--u)); top: calc(294 * var(--u)); width: calc(var(--cw) * var(--u)); font-size: calc(18 * var(--u)); letter-spacing: calc(-0.36 * var(--u)); color: var(--muted); }
+    .card__covers b { font-weight: 700; }
+
+    /* ───────────── Research banner ───────────── */
+    .research { position: relative; height: calc(504 * var(--u)); }
+    .research__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .research > *:not(.research__bg) { position: absolute; }
+    .research h2 { left: calc(113 * var(--u)); top: calc(72 * var(--u)); font-size: calc(48 * var(--u)); font-weight: 600; letter-spacing: calc(-0.96 * var(--u)); }
+    .research p { left: calc(113 * var(--u)); top: calc(195 * var(--u)); width: calc(464 * var(--u)); font-size: calc(18 * var(--u)); font-weight: 600; letter-spacing: calc(-0.36 * var(--u)); }
+    .btn-explore {
+      left: calc(113 * var(--u)); top: calc(395 * var(--u)); width: calc(208 * var(--u)); height: calc(42 * var(--u));
+      display: flex; align-items: center; justify-content: center;
+      border: calc(2 * var(--u)) solid var(--white); border-radius: calc(15 * var(--u));
+      background: transparent; color: var(--white); font-family: inherit; font-size: calc(24 * var(--u)); font-weight: 700; white-space: nowrap; cursor: pointer;
+      transition: background-color 0.3s ease-out, color 0.3s ease-out;
+    }
+    .btn-explore:hover, .btn-explore:focus-visible { background: var(--white); color: var(--btn-hover-text); }
+
+    /* ───────────── Footer ───────────── */
+    .footer { position: relative; height: calc(439 * var(--u)); }
+    .footer > * { position: absolute; left: calc(70 * var(--u)); width: calc(150 * var(--u)); font-weight: 700; letter-spacing: calc(-0.36 * var(--u)); font-size: calc(18 * var(--u)); }
+    .footer .f1 { top: calc(50 * var(--u)); }
+    .footer .f2 { top: calc(102 * var(--u)); }
+    .footer .f3 { top: calc(154 * var(--u)); }
+    .footer .f4 { top: calc(197 * var(--u)); text-decoration: underline; text-underline-position: from-font; }
+    .footer .copy { top: calc(373 * var(--u)); width: auto; white-space: nowrap; font-size: calc(24 * var(--u)); letter-spacing: calc(-0.48 * var(--u)); }
+
+    /* ───────────── Mobile fallback (Figma only has desktop) ───────────── */
+    @media (max-width: 900px) {
+      .nav { height: auto; padding: 12px 20px; flex-wrap: wrap; gap: 8px; }
+      .nav__logo img { width: 180px; height: 60px; }
+      .nav__links { gap: 16px; }
+      .nav__link { font-size: 14px; letter-spacing: 0; }
+      .btn-signin { width: auto; font-size: 14px; letter-spacing: 0; padding: 6px 16px; border-radius: 12px; }
+
+      .title { height: auto; padding: 32px 20px 8px; }
+      .title .abs { position: static; }
+      .title h1 { font-size: 36px; letter-spacing: -0.5px; }
+      .title p { font-size: 16px; }
+
+      .snapshot, .intel { height: auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; }
+      .snapshot > .abs, .intel > .abs { position: static; }
+      .glowbar { display: none; }
+      .h-section { font-size: 30px; line-height: 1.15; white-space: normal; }
+      .h-sub { font-size: 20px; line-height: 1.3; }
+      .status { --u: 0.0694444cqw; width: auto; }
+      .status { font-size: 0; }
+      .status__dot { width: 14px; height: 14px; top: 8px; }
+      .status__text { font-size: 18px; line-height: 30px; left: 28px; }
+      .status { height: 30px; }
+
+      .tile, .card { position: relative; left: auto; top: auto; margin: 20px auto 0; }
+      .tile { --u: 0.176cqw; }           /* 500u = 88cqw */
+      .card { --u: 0.22cqw; }            /* 400u = 88cqw */
+      .card:hover, .card:focus-visible { transform: none; }
+
+      .research { height: auto; padding: 40px 20px; display: flex; flex-direction: column; gap: 16px; }
+      .research > *:not(.research__bg) { position: static; }
+      .research h2 { font-size: 32px; }
+      .research p { width: auto; font-size: 16px; }
+      .btn-explore { width: 208px; height: 44px; font-size: 18px; border-width: 2px; border-radius: 14px; }
+
+      .footer { height: auto; padding: 40px 20px; display: flex; flex-direction: column; gap: 14px; }
+      .footer > * { position: static; width: auto; font-size: 16px; letter-spacing: 0; }
+      .footer .copy { margin-top: 32px; font-size: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+            .tile { transition: none; }
+                  .card__frame { transition: none; }
+      .card, .btn-explore { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- Navigation (click logo → landing page, per Figma) -->
+  <header class="nav">
+    <a class="nav__logo" href="index.html" aria-label="Peak and Panic home">
+      <img src="images/peak-and-panic_horizontal_purple.png" alt="Peak and Panic" />
+    </a>
+    <nav class="nav__links">
+      <a class="nav__link" href="index.html#offerings">Our Offerings</a>
+      <a class="nav__link" href="index.html#about">About Us</a>
+      <a class="btn-signin" href="#">Sign in</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Title -->
+    <section class="title">
+      <div class="abs w" style="--x:83;--y:77;--w:844">
+        <h1>Indian Markets.</h1>
+        <p style="margin-top: calc(24 * var(--u));"><em>The market</em>, beyond the headline.</p>
+      </div>
+    </section>
+
+    <!-- Market Snapshot -->
+    <section class="snapshot">
+      <div class="glowbar abs" style="--x:96;--y:43"></div>
+      <h2 class="h-section abs" style="--x:157;--y:49">Market Snapshot</h2>
+      <p class="h-sub abs" style="--x:157;--y:113">Indian Equities</p>
+
+      <!-- Live Market (default) / Closed Market variant; switches by IST market hours (see script) -->
+      <div class="status abs" id="market-status" data-state="live" style="--x:157;--y:179">
+        <span class="status__dot"></span>
+        <span class="status__text">Live Market</span>
+      </div>
+
+      <!-- Tile 1: Nifty 50 -->
+      <article class="tile" style="--x:170;--y:345" data-index="nifty50">
+        <h3 class="tile__name" style="--x:35">Nifty 50</h3>
+        <p class="tile__value" style="--x:36" data-field="value">XX,XXX.XX</p>
+        <span class="pill pill--neg" style="--x:41" data-field="pct">- xx.xx %</span>
+        <span class="tile__chg" style="--x:207;--y:190" data-field="chg">- xx.xx</span>
+        <div class="tile__spark" style="--x:44.5;--y:277;--w:383.5;--h:115">
+          <svg viewBox="0 0 384 115" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M54.5 53C27.3835 40.9136 0 0 0 0V115H383.5C383.5 115 356 53 328.5 70C301 87 311.21 89.1136 296.5 90C282.449 90.8467 277.576 75.3971 263.5 75.5C253.249 75.5749 248.733 82.8971 238.5 83.5C222.595 84.4371 214.515 76.5695 200 70C183.341 62.4602 177.751 47.6364 159.5 46.5C143.349 45.4943 137.5 70 120.5 60.5C103.5 51 78.1935 63.5607 54.5 53Z" fill="url(#sp1)"/><defs><linearGradient id="sp1" x1="-0.5" y1="115" x2="-0.5" y2="13.5" gradientUnits="userSpaceOnUse"><stop stop-color="#9747FF" stop-opacity="0"/><stop offset="1" stop-color="#5B2B99"/></linearGradient></defs></svg>
+        </div>
+      </article>
+
+      <!-- Tile 2: Bank Nifty -->
+      <article class="tile" style="--x:770;--y:345" data-index="banknifty">
+        <h3 class="tile__name" style="--x:41">Bank Nifty</h3>
+        <p class="tile__value" style="--x:41" data-field="value">XX,XXX.XX</p>
+        <span class="pill pill--pos" style="--x:46" data-field="pct">+ xx.xx %</span>
+        <span class="tile__chg" style="--x:212;--y:190" data-field="chg">+ xx.xx</span>
+        <div class="tile__spark" style="--x:46;--y:277;--w:385;--h:126">
+          <svg viewBox="0 0 385 126" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M35.4393 35.7241C17.7604 25.884 0 0 0 0V126H385V35.7241C385 35.7241 326.926 25.763 308.215 47.3103C302.732 53.6238 304.456 88.3448 298.013 65.6552C291.569 42.9655 277.722 62.1244 264.721 59.8621C251.72 57.5997 260.366 41.9131 250.76 35.7241C229.715 22.1647 244.744 93.9551 219.616 88.3448C202.677 84.5628 207.306 65.5028 193.842 55.5172C165.24 34.3045 135.959 52.5293 99.3375 47.3103C74.1952 43.7272 57.0834 47.7713 35.4393 35.7241Z" fill="url(#sp2)"/><defs><linearGradient id="sp2" x1="192.5" y1="0" x2="192.5" y2="126" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="#9747FF" stop-opacity="0"/></linearGradient></defs></svg>
+        </div>
+      </article>
+
+      <!-- Tile 3: Sensex -->
+      <article class="tile" style="--x:170;--y:899" data-index="sensex">
+        <h3 class="tile__name" style="--x:41">Sensex</h3>
+        <p class="tile__value" style="--x:41" data-field="value">XX,XXX.XX</p>
+        <span class="pill pill--neg" style="--x:46" data-field="pct">- xx.xx %</span>
+        <span class="tile__chg" style="--x:212;--y:189" data-field="chg">- xx.xx</span>
+        <div class="tile__spark" style="--x:46;--y:277;--w:383.5;--h:115">
+          <svg viewBox="0 0 384 115" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M54.5 53C27.3835 40.9136 0 0 0 0V115H383.5C383.5 115 356 53 328.5 70C301 87 311.21 89.1136 296.5 90C282.449 90.8467 277.576 75.3971 263.5 75.5C253.249 75.5749 248.733 82.8971 238.5 83.5C222.595 84.4371 214.515 76.5695 200 70C183.341 62.4602 177.751 47.6364 159.5 46.5C143.349 45.4943 137.5 70 120.5 60.5C103.5 51 78.1935 63.5607 54.5 53Z" fill="url(#sp3)"/><defs><linearGradient id="sp3" x1="-0.5" y1="115" x2="-0.5" y2="13.5" gradientUnits="userSpaceOnUse"><stop stop-color="#9747FF" stop-opacity="0"/><stop offset="1" stop-color="#5B2B99"/></linearGradient></defs></svg>
+        </div>
+      </article>
+
+      <!-- Tile 4: India VIX -->
+      <article class="tile" style="--x:770;--y:899" data-index="indiavix">
+        <h3 class="tile__name" style="--x:58">India VIX</h3>
+        <p class="tile__value" style="--x:58" data-field="value">XX.XX</p>
+        <span class="pill pill--pos" style="--x:63" data-field="pct">+ xx.xx %</span>
+        <span class="tile__chg" style="--x:229;--y:189" data-field="chg">- xx.xx</span>
+        <div class="tile__spark" style="--x:63;--y:318;--w:344.5;--h:73.93">
+          <svg viewBox="0 0 345 74" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M64.5 14.4295L0 7.92947V73.9294H344.5V18.9294C336.167 15.2628 319 6.82947 317 2.42947C315 -1.97053 303.167 0.596134 297.5 2.42947C283.333 4.2628 254.3 9.22947 251.5 14.4295C248.7 19.6295 239 24.9295 234.5 26.9295L170 7.92947L112.5 2.42947L64.5 14.4295Z" fill="url(#sp4)"/><defs><linearGradient id="sp4" x1="-0.5" y1="6.42944" x2="-0.5" y2="74.4294" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="#9747FF" stop-opacity="0"/></linearGradient></defs></svg>
+        </div>
+      </article>
+    </section>
+
+    <!-- Macro-Market Intelligence -->
+    <section class="intel">
+      <div class="glowbar abs" style="--x:96;--y:40"></div>
+      <h2 class="h-section abs" style="--x:157;--y:45">Macro-Market Intelligence</h2>
+      <div class="status status--updated abs" style="--x:157;--y:173;width:auto">
+        <span class="status__dot"></span>
+        <span class="status__text" id="last-updated">Last Updated: DD-MM-YYYY HH:MM IST</span>
+      </div>
+
+      <!-- Card: Indian Macros (click → Indian Macros page) -->
+      <a class="card" href="indian-macros.html" style="--x:49;--y:286;--vy:100;--cw:335">
+        <div class="card__frame"></div>
+        <span class="card__dot"></span>
+        <h3 class="card__title">Indian Macros</h3>
+        <p class="card__sub">Understand the forces shaping India</p>
+        <div class="card__visual">
+          <svg width="360" height="176" viewBox="0 0 360 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip_macro)">
+<path d="M346 0H14C6.26801 0 0 6.26801 0 14V162C0 169.732 6.26801 176 14 176H346C353.732 176 360 169.732 360 162V14C360 6.26801 353.732 0 346 0Z" fill="#1D1D26"/>
+<path d="M12 32H348" stroke="white" stroke-opacity="0.06"/>
+<path d="M12 64H348" stroke="white" stroke-opacity="0.06"/>
+<path d="M12 96H348" stroke="white" stroke-opacity="0.06"/>
+<path d="M12 128H348" stroke="white" stroke-opacity="0.06"/>
+<path d="M12 144H348" stroke="white" stroke-opacity="0.2"/>
+<path d="M24 144V132L27.5 131.3L31 130.7L34.5 130L38 129.2L41.5 128.5L45 127.7L48.5 126.9L52 126.1L55.6 125.3L59.1 124.5L62.6 123.6L66.1 122.7L69.6 121.8L73.1 120.9L76.6 120L80.1 119.1L83.6 118.1L87.1 117.1L90.6 116.1L94.1 115L97.6 113.9L101.1 112.7L104.6 111.6L108.1 110.4L111.6 109.1L115.1 107.9L118.7 106.7L122.2 105.4L125.7 104.2L129.2 103L132.7 101.7L136.2 100.6L139.7 99.4L143.2 98.3L146.7 97.1L150.2 96L153.7 94.9L157.2 93.8L160.7 92.7L164.2 91.6L167.7 90.5L171.2 89.4L174.7 88.4L178.2 87.3L181.8 86.3L185.3 85.2L188.8 84.2L192.3 83.2L195.8 82.2L199.3 81.3L202.8 80.3L206.3 79.4L209.8 78.5L213.3 77.5L216.8 76.6L220.3 75.7L223.8 74.8L227.3 73.9L230.8 73L234.3 72.1L237.8 71.2L241.3 70.4L244.9 69.6L248.4 68.9L251.9 68.1L255.4 67.5L258.9 66.8L262.4 66.3L265.9 65.7L269.4 65.2L272.9 64.7L276.4 64.2L279.9 63.7L283.4 63.2L286.9 62.7L290.4 62.2L293.9 61.8L297.4 61.3L300.9 60.9L304.4 60.5L308 60.1L311.5 59.8L315 59.5L318.5 59.1L322 58.9L325.5 58.6L329 58.4L332.5 58.2L336 58V144H24Z" fill="url(#paint_macro)"/>
+<path d="M24 100L27.5 99.1L31 98.3L34.5 97.5L38 96.8L41.5 96.1L45 95.4L48.5 94.9L52 94.3L55.6 93.9L59.1 93.4L62.6 93.1L66.1 92.7L69.6 92.5L73.1 92.3L76.6 92.1L80.1 92H83.6L87.1 92.1L90.6 92.2L94.1 92.5L97.6 92.9L101.1 93.4L104.6 93.9L108.1 94.5L111.6 95.1L115.1 95.7L118.7 96.3L122.2 96.9L125.7 97.4L129.2 97.9L132.7 98.3L136.2 98.7L139.7 98.9L143.2 99L146.7 98.9L150.2 98.7L153.7 98.2L157.2 97.6L160.7 96.9L164.2 96.1L167.7 95.2L171.2 94.3L174.7 93.3L178.2 92.3L181.8 91.4L185.3 90.5L188.8 89.8L192.3 89.1L195.8 88.6L199.3 88.2L202.8 88H206.3L209.8 88.2L213.3 88.5L216.8 88.8L220.3 89.3L223.8 89.8L227.3 90.4L230.8 90.9L234.3 91.6L237.8 92.2L241.3 92.8L244.9 93.3L248.4 93.8L251.9 94.3L255.4 94.6L258.9 94.9L262.4 95H265.9H269.4L272.9 94.9L276.4 94.7L279.9 94.6L283.4 94.4L286.9 94.1L290.4 93.8L293.9 93.5L297.4 93.1L300.9 92.7L304.4 92.2L308 91.7L311.5 91.2L315 90.6L318.5 89.9L322 89.2L325.5 88.5L329 87.7L332.5 86.9L336 86" stroke="white" stroke-opacity="0.34" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 5"/>
+<path d="M60 124.2V144" stroke="white" stroke-opacity="0.14" stroke-dasharray="2 4"/>
+<path d="M60 144V150" stroke="white" stroke-opacity="0.28"/>
+<path d="M123 105.1V144" stroke="white" stroke-opacity="0.14" stroke-dasharray="2 4"/>
+<path d="M123 144V150" stroke="white" stroke-opacity="0.28"/>
+<path d="M186 85V144" stroke="white" stroke-opacity="0.14" stroke-dasharray="2 4"/>
+<path d="M186 144V150" stroke="white" stroke-opacity="0.28"/>
+<path d="M249 68.7V144" stroke="white" stroke-opacity="0.14" stroke-dasharray="2 4"/>
+<path d="M249 144V150" stroke="white" stroke-opacity="0.28"/>
+<path d="M312 59.7V144" stroke="white" stroke-opacity="0.14" stroke-dasharray="2 4"/>
+<path d="M312 144V150" stroke="white" stroke-opacity="0.28"/>
+<path d="M24 132L27.5 131.3L31 130.7L34.5 130L38 129.2L41.5 128.5L45 127.7L48.5 126.9L52 126.1L55.6 125.3L59.1 124.5L62.6 123.6L66.1 122.7L69.6 121.8L73.1 120.9L76.6 120L80.1 119.1L83.6 118.1L87.1 117.1L90.6 116.1L94.1 115L97.6 113.9L101.1 112.7L104.6 111.6L108.1 110.4L111.6 109.1L115.1 107.9L118.7 106.7L122.2 105.4L125.7 104.2L129.2 103L132.7 101.7L136.2 100.6L139.7 99.4L143.2 98.3L146.7 97.1L150.2 96L153.7 94.9L157.2 93.8L160.7 92.7L164.2 91.6L167.7 90.5L171.2 89.4L174.7 88.4L178.2 87.3L181.8 86.3L185.3 85.2L188.8 84.2L192.3 83.2L195.8 82.2L199.3 81.3L202.8 80.3L206.3 79.4L209.8 78.5L213.3 77.5L216.8 76.6L220.3 75.7L223.8 74.8L227.3 73.9L230.8 73L234.3 72.1L237.8 71.2L241.3 70.4L244.9 69.6L248.4 68.9L251.9 68.1L255.4 67.5L258.9 66.8L262.4 66.3L265.9 65.7L269.4 65.2L272.9 64.7L276.4 64.2L279.9 63.7L283.4 63.2L286.9 62.7L290.4 62.2L293.9 61.8L297.4 61.3L300.9 60.9L304.4 60.5L308 60.1L311.5 59.8L315 59.5L318.5 59.1L322 58.9L325.5 58.6L329 58.4L332.5 58.2L336 58" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M60 128.7C62.4853 128.7 64.5 126.685 64.5 124.2C64.5 121.715 62.4853 119.7 60 119.7C57.5147 119.7 55.5 121.715 55.5 124.2C55.5 126.685 57.5147 128.7 60 128.7Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<path d="M123 109.6C125.485 109.6 127.5 107.585 127.5 105.1C127.5 102.615 125.485 100.6 123 100.6C120.515 100.6 118.5 102.615 118.5 105.1C118.5 107.585 120.515 109.6 123 109.6Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<path d="M186 89.5C188.485 89.5 190.5 87.4853 190.5 85C190.5 82.5147 188.485 80.5 186 80.5C183.515 80.5 181.5 82.5147 181.5 85C181.5 87.4853 183.515 89.5 186 89.5Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<path d="M249 73.2C251.485 73.2 253.5 71.1853 253.5 68.7C253.5 66.2147 251.485 64.2 249 64.2C246.515 64.2 244.5 66.2147 244.5 68.7C244.5 71.1853 246.515 73.2 249 73.2Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<path d="M312 64.2C314.485 64.2 316.5 62.1853 316.5 59.7C316.5 57.2147 314.485 55.2 312 55.2C309.515 55.2 307.5 57.2147 307.5 59.7C307.5 62.1853 309.515 64.2 312 64.2Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+</g>
+<defs>
+<linearGradient id="paint_macro" x1="24" y1="58" x2="24" y2="144" gradientUnits="userSpaceOnUse"><stop stop-color="#8B5CF6" stop-opacity="0.24"/><stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/></linearGradient>
+<clipPath id="clip_macro"><rect width="360" height="176" fill="white"/></clipPath>
+</defs>
+</svg>
+        </div>
+        <p class="card__covers"><b>Covers </b>RBI policy, inflation, GDP growth, fiscal policy.</p>
+      </a>
+
+      <!-- Card: Sector Pulse -->
+      <div class="card" style="--x:514;--y:288;--vy:98;--cw:351">
+        <div class="card__frame"></div>
+        <span class="card__dot"></span>
+        <h3 class="card__title">Sector Pulse</h3>
+        <p class="card__sub">Track the industries driving India</p>
+        <div class="card__visual">
+          <svg width="360" height="176" viewBox="0 0 360 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip_sector)">
+<path d="M346 0H14C6.26801 0 0 6.26801 0 14V162C0 169.732 6.26801 176 14 176H346C353.732 176 360 169.732 360 162V14C360 6.26801 353.732 0 346 0Z" fill="#1D1D26"/>
+<path d="M133 16H19C15.134 16 12 19.134 12 23V97C12 100.866 15.134 104 19 104H133C136.866 104 140 100.866 140 97V23C140 19.134 136.866 16 133 16Z" fill="#8B5CF6" fill-opacity="0.78"/>
+<path d="M133 16.5H19C15.4101 16.5 12.5 19.4101 12.5 23V97C12.5 100.59 15.4101 103.5 19 103.5H133C136.59 103.5 139.5 100.59 139.5 97V23C139.5 19.4101 136.59 16.5 133 16.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="22" y="30.8182">Banking &#38; NBFC</tspan></text>
+<path d="M133 108H19C15.134 108 12 111.134 12 115V153C12 156.866 15.134 160 19 160H133C136.866 160 140 156.866 140 153V115C140 111.134 136.866 108 133 108Z" fill="#8B5CF6" fill-opacity="0.34"/>
+<path d="M133 108.5H19C15.4101 108.5 12.5 111.41 12.5 115V153C12.5 156.59 15.4101 159.5 19 159.5H133C136.59 159.5 139.5 156.59 139.5 153V115C139.5 111.41 136.59 108.5 133 108.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="22" y="122.818">Auto</tspan></text>
+<path d="M241 16H151C147.134 16 144 19.134 144 23V61C144 64.866 147.134 68 151 68H241C244.866 68 248 64.866 248 61V23C248 19.134 244.866 16 241 16Z" fill="#8B5CF6" fill-opacity="0.5"/>
+<path d="M241 16.5H151C147.41 16.5 144.5 19.4101 144.5 23V61C144.5 64.5899 147.41 67.5 151 67.5H241C244.59 67.5 247.5 64.5899 247.5 61V23C247.5 19.4101 244.59 16.5 241 16.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="154" y="30.8182">Infra &#38; Capex</tspan></text>
+<path d="M241 72H151C147.134 72 144 75.134 144 79V105C144 108.866 147.134 112 151 112H241C244.866 112 248 108.866 248 105V79C248 75.134 244.866 72 241 72Z" fill="#8B5CF6" fill-opacity="0.24"/>
+<path d="M241 72.5H151C147.41 72.5 144.5 75.4101 144.5 79V105C144.5 108.59 147.41 111.5 151 111.5H241C244.59 111.5 247.5 108.59 247.5 105V79C247.5 75.4101 244.59 72.5 241 72.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="154" y="86.8182">IT</tspan></text>
+<path d="M241 116H151C147.134 116 144 119.134 144 123V153C144 156.866 147.134 160 151 160H241C244.866 160 248 156.866 248 153V123C248 119.134 244.866 116 241 116Z" fill="#8B5CF6" fill-opacity="0.4"/>
+<path d="M241 116.5H151C147.41 116.5 144.5 119.41 144.5 123V153C144.5 156.59 147.41 159.5 151 159.5H241C244.59 159.5 247.5 156.59 247.5 153V123C247.5 119.41 244.59 116.5 241 116.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="154" y="130.818">Energy</tspan></text>
+<path d="M341 16H259C255.134 16 252 19.134 252 23V45C252 48.866 255.134 52 259 52H341C344.866 52 348 48.866 348 45V23C348 19.134 344.866 16 341 16Z" fill="#8B5CF6" fill-opacity="0.3"/>
+<path d="M341 16.5H259C255.41 16.5 252.5 19.4101 252.5 23V45C252.5 48.5899 255.41 51.5 259 51.5H341C344.59 51.5 347.5 48.5899 347.5 45V23C347.5 19.4101 344.59 16.5 341 16.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="262" y="30.8182">Metals</tspan></text>
+<path d="M341 56H259C255.134 56 252 59.134 252 63V101C252 104.866 255.134 108 259 108H341C344.866 108 348 104.866 348 101V63C348 59.134 344.866 56 341 56Z" fill="#8B5CF6" fill-opacity="0.6"/>
+<path d="M341 56.5H259C255.41 56.5 252.5 59.4101 252.5 63V101C252.5 104.59 255.41 107.5 259 107.5H341C344.59 107.5 347.5 104.59 347.5 101V63C347.5 59.4101 344.59 56.5 341 56.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="262" y="70.8182">Consumer</tspan></text>
+<path d="M341 112H259C255.134 112 252 115.134 252 119V127C252 130.866 255.134 134 259 134H341C344.866 134 348 130.866 348 127V119C348 115.134 344.866 112 341 112Z" fill="#8B5CF6" fill-opacity="0.2"/>
+<path d="M341 112.5H259C255.41 112.5 252.5 115.41 252.5 119V127C252.5 130.59 255.41 133.5 259 133.5H341C344.59 133.5 347.5 130.59 347.5 127V119C347.5 115.41 344.59 112.5 341 112.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="262" y="126.818">Real Estate</tspan></text>
+<path d="M341 138H259C255.134 138 252 141.134 252 145V153C252 156.866 255.134 160 259 160H341C344.866 160 348 156.866 348 153V145C348 141.134 344.866 138 341 138Z" fill="#8B5CF6" fill-opacity="0.32"/>
+<path d="M341 138.5H259C255.41 138.5 252.5 141.41 252.5 145V153C252.5 156.59 255.41 159.5 259 159.5H341C344.59 159.5 347.5 156.59 347.5 153V145C347.5 141.41 344.59 138.5 341 138.5Z" stroke="white" stroke-opacity="0.1"/>
+<text fill="white" fill-opacity="0.86" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="262" y="152.818">Pharma</tspan></text>
+</g>
+<defs><clipPath id="clip_sector"><rect width="360" height="176" fill="white"/></clipPath></defs>
+</svg>
+        </div>
+        <p class="card__covers"><b>Covers </b>Banking &amp; NBFC, Auto, IT, Infrastructure &amp; Capex, Energy, Metals, etc</p>
+      </div>
+
+      <!-- Card: Market Flows -->
+      <div class="card" style="--x:979;--y:288;--vy:100;--cw:335">
+        <div class="card__frame"></div>
+        <span class="card__dot"></span>
+        <h3 class="card__title">Market Flows</h3>
+        <p class="card__sub">Follow the capital moving through market</p>
+        <div class="card__visual">
+          <svg width="360" height="176" viewBox="0 0 360 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip_flows)">
+<path d="M346 0H14C6.26801 0 0 6.26801 0 14V162C0 169.732 6.26801 176 14 176H346C353.732 176 360 169.732 360 162V14C360 6.26801 353.732 0 346 0Z" fill="#1D1D26"/>
+<path d="M72 38C134 38 118 88 180 88" stroke="#8B5CF6" stroke-opacity="0.62" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M72 38C134 38 118 88 180 88" stroke="white" stroke-opacity="0.5" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="1 7"/>
+<path d="M72 88C134 88 118 88 180 88" stroke="#8B5CF6" stroke-opacity="0.62" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M72 88C134 88 118 88 180 88" stroke="white" stroke-opacity="0.5" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="1 7"/>
+<path d="M72 138C134 138 118 88 180 88" stroke="#8B5CF6" stroke-opacity="0.62" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M72 138C134 138 118 88 180 88" stroke="white" stroke-opacity="0.5" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="1 7"/>
+<path d="M180 88C242 88 226 38 288 38" stroke="#8B5CF6" stroke-opacity="0.62" stroke-width="3" stroke-linecap="round"/>
+<path d="M180 88C242 88 226 38 288 38" stroke="white" stroke-opacity="0.5" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="1 7"/>
+<path d="M180 88C242 88 226 88 288 88" stroke="#8B5CF6" stroke-opacity="0.62" stroke-width="4" stroke-linecap="round"/>
+<path d="M180 88C242 88 226 88 288 88" stroke="white" stroke-opacity="0.5" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="1 7"/>
+<path d="M180 88C242 88 226 138 288 138" stroke="#8B5CF6" stroke-opacity="0.62" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M180 88C242 88 226 138 288 138" stroke="white" stroke-opacity="0.5" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="1 7"/>
+<path d="M180 105C189.389 105 197 97.3888 197 88C197 78.6112 189.389 71 180 71C170.611 71 163 78.6112 163 88C163 97.3888 170.611 105 180 105Z" fill="#8B5CF6" fill-opacity="0.08" stroke="#8B5CF6" stroke-opacity="0.35"/>
+<path d="M180 95C183.866 95 187 91.866 187 88C187 84.134 183.866 81 180 81C176.134 81 173 84.134 173 88C173 91.866 176.134 95 180 95Z" fill="#B7A0FB"/>
+<path d="M72 43C74.7614 43 77 40.7614 77 38C77 35.2386 74.7614 33 72 33C69.2386 33 67 35.2386 67 38C67 40.7614 69.2386 43 72 43Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<text fill="white" fill-opacity="0.72" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="44.3936" y="41.3182">FPI</tspan></text>
+<path d="M72 93C74.7614 93 77 90.7614 77 88C77 85.2386 74.7614 83 72 83C69.2386 83 67 85.2386 67 88C67 90.7614 69.2386 93 72 93Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<text fill="white" fill-opacity="0.72" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="46.8955" y="91.3182">DII</tspan></text>
+<path d="M72 143C74.7614 143 77 140.761 77 138C77 135.239 74.7614 133 72 133C69.2386 133 67 135.239 67 138C67 140.761 69.2386 143 72 143Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<text fill="white" fill-opacity="0.72" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="29.7202" y="141.318">Crude</tspan></text>
+<path d="M288 43C290.761 43 293 40.7614 293 38C293 35.2386 290.761 33 288 33C285.239 33 283 35.2386 283 38C283 40.7614 285.239 43 288 43Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<text fill="white" fill-opacity="0.72" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="300" y="41.3182">USD/INR</tspan></text>
+<path d="M288 93C290.761 93 293 90.7614 293 88C293 85.2386 290.761 83 288 83C285.239 83 283 85.2386 283 88C283 90.7614 285.239 93 288 93Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<text fill="white" fill-opacity="0.72" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="300" y="91.3182">G-Sec</tspan></text>
+<path d="M288 143C290.761 143 293 140.761 293 138C293 135.239 290.761 133 288 133C285.239 133 283 135.239 283 138C283 140.761 285.239 143 288 143Z" fill="#1D1D26" stroke="#B7A0FB" stroke-width="2"/>
+<text fill="white" fill-opacity="0.72" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="10.5" letter-spacing="0em"><tspan x="300" y="141.318">Equity</tspan></text>
+</g>
+<defs><clipPath id="clip_flows"><rect width="360" height="176" fill="white"/></clipPath></defs>
+</svg>
+        </div>
+        <p class="card__covers"><b>Covers </b>FPI and DII flows, USD/INR, government bond yields and crude oil</p>
+      </div>
+    </section>
+
+    <!-- Research banner -->
+    <section class="research">
+      <img class="research__bg" src="images/peak-and-panic_research-banner_2400x840.webp" alt="" data-fallback="png,jpg,jpeg,avif" />
+      <h2>Numbers into<br />Conviction</h2>
+      <p>Fundamental research built around financial models, business analysis and valuation frameworks to understand what a company could be worth over the long term.</p>
+      <button class="btn-explore" type="button">Explore Reports</button>
+    </section>
+  </main>
+
+  <footer class="footer" id="about">
+    <a class="f1" href="#">About Us</a>
+    <a class="f2" href="#">Contact Us</a>
+    <a class="f3" href="index.html#offerings">Our Offerings</a>
+    <a class="f4" href="https://www.instagram.com/peak_and_panic" target="_blank" rel="noopener">Instagram</a>
+    <div class="copy">© 2026 Peak and Panic</div>
+  </footer>
+
+</div>
+
+<script>
+  // Live index values: fills the Nifty 50 / Bank Nifty / Sensex / India VIX tiles
+  (function () {
+    var fmt = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    var sign = function (n) { return n >= 0 ? '+' : '-'; };
+
+        // Redraws a tile's area chart from the day's prices (keeps the Figma gradient fill)
+    function drawSpark(tile, series) {
+      if (!series || series.length < 2) return;
+      var svg = tile.querySelector('.tile__spark svg');
+      var path = svg.querySelector('path');
+      var vb = svg.viewBox.baseVal, W = vb.width, H = vb.height;
+      var min = Math.min.apply(null, series), max = Math.max.apply(null, series);
+      var range = (max - min) || 1;
+      var top = H * 0.12, bottom = H * 0.75;     // keeps room for the gradient fill underneath
+      var pts = series.map(function (v, i) {
+        return [i / (series.length - 1) * W, bottom - (v - min) / range * (bottom - top)];
+      });
+      var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+      for (var i = 1; i < pts.length; i++) {
+        var mx = (pts[i - 1][0] + pts[i][0]) / 2, my = (pts[i - 1][1] + pts[i][1]) / 2;
+        d += ' Q' + pts[i - 1][0].toFixed(1) + ' ' + pts[i - 1][1].toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
+      }
+      d += ' L' + W + ' ' + pts[pts.length - 1][1].toFixed(1) + ' V' + H + ' H0 Z';
+      path.setAttribute('d', d);
+    }
+
+    function render(data) {
+      Object.keys(data).forEach(function (key) {
+        var tile = document.querySelector('.tile[data-index="' + key + '"]');
+        if (!tile) return;
+        var q = data[key], up = q.change >= 0;
+
+        tile.querySelector('[data-field="value"]').textContent = fmt.format(q.price);
+
+        var pill = tile.querySelector('[data-field="pct"]');
+        pill.textContent = sign(q.pct) + ' ' + Math.abs(q.pct).toFixed(2) + ' %';
+        pill.classList.toggle('pill--pos', up);
+        pill.classList.toggle('pill--neg', !up);
+
+        tile.querySelector('[data-field="chg"]').textContent = sign(q.change) + ' ' + Math.abs(q.change).toFixed(2);
+              drawSpark(tile, q.series);
+      });
+
+      }
+
+    function load() {
+      fetch('/api/quotes').then(function (r) { return r.json(); }).then(render)
+        .catch(function (e) { console.warn('Could not load quotes', e); });
+    }
+    load();
+    setInterval(load, 60000);   // refresh every minute
+  })();
+</script>
+
+<script>
+  // "Last Updated" = the newest change to the Indian Macros / Sector Pulse / Market Flows pages (see server.js)
+  fetch('/api/last-updated').then(function (r) { return r.json(); }).then(function (d) {
+    if (!d.updatedAt) return;
+    var p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit',
+      year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(d.updatedAt))
+      .reduce(function (a, x) { a[x.type] = x.value; return a; }, {});
+    document.getElementById('last-updated').textContent =
+      'Last Updated: ' + p.day + '-' + p.month + '-' + p.year + ' ' + p.hour + ':' + p.minute + ' IST';
+  });
+</script>
+
+<script>
+  // Live Market / Closed Market indicator (Figma "Component 1" variants).
+  // Placeholder: NSE cash hours Mon-Fri 09:15-15:30 IST, ignores holidays. Replace with your data feed later.
+  (function () {
+    var el = document.getElementById('market-status');
+    if (!el) return;
+    var ist = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    var mins = ist.getHours() * 60 + ist.getMinutes();
+    var open = ist.getDay() >= 1 && ist.getDay() <= 5 && mins >= 555 && mins <= 930;
+    el.dataset.state = open ? 'live' : 'closed';
+    el.querySelector('.status__text').textContent = open ? 'Live Market' : 'Closed Market';
+  })();
+
+  // Fallback if an image extension differs (delete once all images load)
+  document.querySelectorAll('img[data-fallback]').forEach(function (img) {
+    var exts = img.dataset.fallback.split(',');
+    img.addEventListener('error', function onErr() {
+      var next = exts.shift();
+      if (!next) { img.removeEventListener('error', onErr); return; }
+      img.src = img.src.replace(/\.[a-z0-9]+(\?.*)?$/i, '.' + next);
+    });
+    if (img.complete && img.naturalWidth === 0) img.dispatchEvent(new Event('error'));
+  });
+</script>
+</body>
+</html>

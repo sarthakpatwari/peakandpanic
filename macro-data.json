@@ -1,0 +1,45 @@
+{
+  "updatedAt": "2026-10-12T17:07:27.790Z",
+  "items": {
+    "repo": {
+      "value": "5.50%",
+      "lines": [
+        "Repo-rate last",
+        "changed in",
+        "Oct-2026"
+      ],
+      "source": "Manual entry",
+      "updatedAt": null
+    },
+    "inflation": {
+      "value": "5.54%",
+      "lines": [
+        "CPI, YoY",
+        "Inside 2-6% band",
+        "Sep-2026"
+      ],
+      "source": "MoSPI API (All India Combined)",
+      "updatedAt": "2026-10-12T17:07:27.790Z"
+    },
+    "growth": {
+      "value": "7.80%",
+      "lines": [
+        "Real GDP Growth,",
+        "YoY",
+        "Q1FY2027"
+      ],
+      "source": "Manual entry",
+      "updatedAt": null
+    },
+    "fiscal": {
+      "value": "5.59%",
+      "lines": [
+        "Fiscal Deficit of",
+        "GDP %",
+        "Q1FY27"
+      ],
+      "source": "Manual entry",
+      "updatedAt": null
+    }
+  }
+}
