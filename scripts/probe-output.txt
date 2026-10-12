@@ -1,0 +1,504 @@
+MoSPI probe, 2026-10-11T20:57:41.559Z, node v24.21.0
+
+=================================================================
+# CPI: available base years
+GET https://api.mospi.gov.in/api/cpi/getCpiBaseYear 
+HTTP 200
+{
+  "data": {
+    "base_year": [
+      {
+        "base_year": "2010"
+      },
+      {
+        "base_year": "2012"
+      },
+      {
+        "base_year": "2024"
+      }
+    ],
+    "level": [
+      {
+        "level": "Group",
+        "viz": "line,hbar,vbar,map"
+      },
+      {
+        "level": "Item",
+        "viz": "line,hbar,vbar,map"
+      }
+    ],
+    "series": [
+      {
+        "series": "Current",
+        "viz": "line"
+      },
+      {
+        "series": "Back",
+        "viz": "line"
+      }
+    ]
+  },
+  "msg": "Data fetched successfully",
+  "statusCode": true
+}
+
+=================================================================
+# CPI: filters for base year 2024 (state / sector / group codes)
+GET https://api.mospi.gov.in/api/cpi/getCpiFilterByLevelAndBaseYear?base_year=2024&level=Group&series_code=Current 
+HTTP 200
+data rows: 1
+{
+  "data": [
+    {
+      "series": [
+        {
+          "series": "Current",
+          "viz": "line"
+        },
+        {
+          "series": "Back",
+          "viz": "line"
+        }
+      ],
+      "year": [
+        {
+          "year": 2025,
+          "series": "Current"
+        },
+        {
+          "year": 2026,
+          "series": "Current"
+        }
+      ],
+      "state": [
+        {
+          "state_code": 1,
+          "state_name": "All India"
+        },
+        {
+          "state_code": 2,
+          "state_name": "Andaman And Nicobar Islands"
+        },
+        {
+          "state_code": 3,
+          "state_name": "Andhra Pradesh"
+        },
+        {
+          "state_code": 4,
+          "state_name": "Arunachal Pradesh"
+        },
+        {
+          "state_code": 5,
+          "state_name": "Assam"
+        },
+        {
+          "state_code": 6,
+          "state_name": "Bihar"
+        },
+        {
+          "state_code": 7,
+          "state_name": "Chandigarh"
+        },
+        {
+          "state_code": 8,
+          "state_name": "Chhattisgarh"
+        },
+        {
+          "state_code": 9,
+          "state_name": "Goa"
+        },
+        {
+          "state_code": 10,
+          "state_name": "Gujarat"
+        },
+        {
+          "state_code": 11,
+          "state_name": "Haryana"
+        },
+        {
+          "state_code": 12,
+          "state_name": "Himachal Pradesh"
+        },
+        {
+          "state_code": 13,
+          "state_name": "Jammu And Kashmir"
+        },
+        {
+          "state_code": 14,
+          "state_name": "Jharkhand"
+        },
+        {
+          "state_code": 15,
+          "state_name": "Karnataka"
+        },
+        {
+          "state_code": 16,
+          "state_name": "Kerala"
+        },
+        {
+          "state_code": 17,
+          "state_name": "Ladakh"
+        },
+        {
+          "state_code": 18,
+          "state_name": "Lakshadweep"
+        },
+        {
+          "state_code": 19,
+          "state_name": "Madhya Pradesh"
+        },
+        {
+          "state_code": 20,
+          "state_name": "Maharashtra"
+        },
+        {
+          "state_code": 21,
+          "state_name": "Manipur"
+        },
+        {
+          "state_code": 22,
+          "state_name": "Meghalaya"
+        },
+        {
+          "state_code": 23,
+          "state_name": "Mizoram"
+        },
+        {
+          "state_code": 24,
+          "state_name": "Nagaland"
+        },
+        {
+          "state_code": 25,
+          "state_name": "NCT of Delhi"
+        },
+        {
+          "state_code": 26,
+          "state_name": "Odisha"
+        },
+        {
+          "state_code": 27,
+          "state_name": "Puducherry"
+        },
+        {
+          "state_code": 28,
+          "state_name": "Punjab"
+        },
+        {
+          "state_code": 29,
+          "state_name": "Rajasthan"
+        },
+        {
+          "state_code": 30,
+          "state_name": "Sikkim"
+        },
+        {
+          "state_code": 31,
+          "state_name": "Tamil Nadu"
+        },
+        {
+          "state_code": 32,
+          "state_name": "Telangana"
+        },
+        {
+          "state_code": 33,
+          "state_name": "The Dadra And Nagar Haveli And Daman And Diu"
+        },
+        {
+          "state_code": 34,
+          "state_name": "Tripura"
+        },
+        {
+          "state_code": 35,
+          "state_name": "Uttar Pradesh"
+        },
+        {
+          "state_code": 36,
+          "state_name": "Uttarakhand"
+        }
+... [truncated, 135890 characters in total]
+
+=================================================================
+# CPI: sample data, 2024 base, year 2026
+GET https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&year=2026&limit=5 
+HTTP 400
+{
+  "error": "Invalid limit parameter. Minimum allowed is 10."
+}
+
+=================================================================
+# NAS: indicator list
+GET https://api.mospi.gov.in/api/nas/getNasIndicatorList 
+HTTP 500
+{
+  "error": "Please check the input parameters passed"
+}
+
+=================================================================
+# NAS: filters, quarterly, indicator 1
+GET https://api.mospi.gov.in/api/nas/getNasFilterByIndicatorId?base_year=2022-23&series=Current&frequency_code=2&indicator_code=1 
+HTTP 200
+{
+  "data": {
+    "year": [
+      {
+        "year": "2026-27"
+      },
+      {
+        "year": "2025-26"
+      },
+      {
+        "year": "2024-25"
+      },
+      {
+        "year": "2023-24"
+      },
+      {
+        "year": "2022-23"
+      }
+    ],
+    "quarterly": [
+      {
+        "quarterly_code": 1,
+        "quarterly_name": "Q1"
+      },
+      {
+        "quarterly_code": 2,
+        "quarterly_name": "Q2"
+      },
+      {
+        "quarterly_code": 3,
+        "quarterly_name": "Q3"
+      },
+      {
+        "quarterly_code": 4,
+        "quarterly_name": "Q4"
+      }
+    ],
+    "industry": [
+      {
+        "industry_code": 1,
+        "industry_name": "Agriculture, Livestock, Forestry and Fishing"
+      },
+      {
+        "industry_code": 2,
+        "industry_name": "Mining and Quarrying"
+      },
+      {
+        "industry_code": 3,
+        "industry_name": "Manufacturing"
+      },
+      {
+        "industry_code": 4,
+        "industry_name": "Electricity, Gas, Water Supply & Other Utility Services"
+      },
+      {
+        "industry_code": 5,
+        "industry_name": "Construction"
+      },
+      {
+        "industry_code": 6,
+        "industry_name": "Trade, Hotels, Transport, Communication & Services Related to Broadcasting"
+      },
+      {
+        "industry_code": 9,
+        "industry_name": "Financial, Real Estate & Professional Services"
+      },
+      {
+        "industry_code": 12,
+        "industry_name": "Public Administration, Defence & Other Services"
+      },
+      {
+        "industry_code": 15,
+        "industry_name": "Total Gross Value Added"
+      }
+    ]
+  },
+  "msg": "Data fetched successfully",
+  "statusCode": true
+}
+
+=================================================================
+# NAS: sample data, quarterly (frequency_code=2)
+GET https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=1&limit=5 
+HTTP 200
+data rows: 5
+{
+  "data": [
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Agriculture, Livestock, Forestry and Fishing",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "1399639",
+      "constant_price": "1240612",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Mining and Quarrying",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "177899",
+      "constant_price": "155584",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Manufacturing",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "1034961",
+      "constant_price": "1024417",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Electricity, Gas, Water Supply & Other Utility Services",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "228690",
+      "constant_price": "192138",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Construction",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "726325",
+      "constant_price": "678248",
+      "unit": "₹ Crore"
+    }
+  ],
+  "meta_data": {
+    "page": 1,
+    "totalRecords": 153,
+    "totalPages": 31,
+    "recordPerPage": 5
+  },
+  "msg": "Data fetched successfully",
+  "statusCode": true
+}
+
+=================================================================
+# NAS: sample data, quarterly (frequency_code=Quarterly)
+GET https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=1&limit=5 
+HTTP 200
+data rows: 5
+{
+  "data": [
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Agriculture, Livestock, Forestry and Fishing",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "1399639",
+      "constant_price": "1240612",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Mining and Quarrying",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "177899",
+      "constant_price": "155584",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Manufacturing",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "1034961",
+      "constant_price": "1024417",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Electricity, Gas, Water Supply & Other Utility Services",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "228690",
+      "constant_price": "192138",
+      "unit": "₹ Crore"
+    },
+    {
+      "base_year": "2022-23",
+      "series": "Current",
+      "year": "2026-27",
+      "indicator": "Gross Value Added",
+      "frequency": "Quarterly",
+      "revision": null,
+      "industry": "Construction",
+      "subindustry": null,
+      "institutional_sector": null,
+      "quarter": "Q1",
+      "current_price": "726325",
+      "constant_price": "678248",
+      "unit": "₹ Crore"
+    }
+  ],
+  "meta_data": {
+    "page": 1,
+    "totalRecords": 153,
+    "totalPages": 31,
+    "recordPerPage": 5
+  },
+  "msg": "Data fetched successfully",
+  "statusCode": true
+}

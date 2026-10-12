@@ -1,0 +1,86 @@
+{
+  "updatedAt": "2026-10-12T15:18:05.308Z",
+  "repo": {
+    "history": [
+      {
+        "date": "2025-06-06",
+        "rate": 5.5
+      },
+      {
+        "date": "2025-12-05",
+        "rate": 5.25
+      },
+      {
+        "date": "2026-10-07",
+        "rate": 5.5
+      }
+    ],
+    "source": "RBI MPC decisions",
+    "verifiedOn": "2026-10-11"
+  },
+  "mpc": {
+    "announceTime": "10:00",
+    "meetings": [
+      {
+        "announce": "2026-04-08"
+      },
+      {
+        "announce": "2026-06-05"
+      },
+      {
+        "announce": "2026-08-05"
+      },
+      {
+        "announce": "2026-10-07"
+      },
+      {
+        "announce": "2026-12-04"
+      },
+      {
+        "announce": "2027-02-05"
+      }
+    ],
+    "source": "RBI MPC calendar FY2026-27 (published 23 Mar 2026). Time shown is the usual 10:00 IST announcement time."
+  },
+  "stance": {
+    "current": "calibrated_tightening",
+    "since": "2026-10-07",
+    "source": "RBI MPC statement, 7 Oct 2026"
+  },
+  "gdp": {
+    "fy": { "label": "FY2026", "value": 201.9, "decimals": 2 },
+    "quarter": { "label": "Q1 FY2027", "value": 81.1, "decimals": 1 },
+    "source": "MoSPI NAS",
+    "projection": {
+      "actuals": [],
+      "estimates": [
+        { "label": "Q2 FY27", "value": 7.0 },
+        { "label": "Q3 FY27", "value": 6.8 },
+        { "label": "Q4 FY27", "value": 6.6 }
+      ]
+    }
+  },
+  "cpi": {
+    "index": 109.49,
+    "yoy": 5.54,
+    "period": "2026-09",
+    "source": "MoSPI CPI",
+    "projection": {
+      "actuals": [],
+      "estimates": [
+        { "label": "Q2 FY27", "value": 4.4 },
+        { "label": "Q3 FY27", "value": 4.2 },
+        { "label": "Q4 FY27", "value": 4.1 }
+      ]
+    }
+  
+  },
+  "commentary": {
+    "asOf": "2026-10-07",
+    "source": "RBI Monetary Policy Statement, 7 Oct 2026",
+    "paragraphs": [
+      "“After a detailed assessment of the evolving macroeconomic and financial developments and the outlook, the MPC voted unanimously to increase the policy repo rate under the liquidity adjustment facility (LAF) by 25 bps to 5.50 per cent. Consequently, the standing deposit facility (SDF) rate stands adjusted at 5.25 per cent and the marginal standing facility (MSF) rate and the Bank Rate at 5.75 per cent. The MPC also decided to change the stance to calibrated tightening.",
+      "Since the last MPC meeting in August 2026, the re-escalation of the conflict in West Asia and the consequent sharp volatility in crude oil prices has kept the global economy in a state of flux. Global growth has remained resilient. Acceleration of inflation in key economies has prompted a shift towards hawkish monetary policy. The US Fed hiked by 25 bps in September. The Fed commentary thereafter along with rate tightening by major systemically important central banks have reinforced expectations of higher global policy rates. Tighter global financial market conditions coupled with fiscal sustainability concerns in major economies are keeping global bond yields at record high levels. With a resolution of the West Asia conflict remaining elusive, significant downside risks to the global outlook remain, including further tightening of global financial conditions, continuing elevated AI-related asset valuations and high public debt.”"
+    ]
+  }
+}
