@@ -489,11 +489,16 @@
       path.setAttribute('d', d);
     }
 
-    function render(data) {
+    function render(payload) {
+      var data = (payload && payload.data) ? payload.data : payload;
+      if (!data) return;
+
       Object.keys(data).forEach(function (key) {
         var tile = document.querySelector('.tile[data-index="' + key + '"]');
         if (!tile) return;
-        var q = data[key], up = q.change >= 0;
+        var q = data[key];
+        if (!q || q.price == null) return;
+        var up = q.change >= 0;
 
         tile.querySelector('[data-field="value"]').textContent = fmt.format(q.price);
 
@@ -503,13 +508,17 @@
         pill.classList.toggle('pill--neg', !up);
 
         tile.querySelector('[data-field="chg"]').textContent = sign(q.change) + ' ' + Math.abs(q.change).toFixed(2);
-              drawSpark(tile, q.series);
+        drawSpark(tile, q.series);
       });
-
-      }
+    }
 
     function load() {
-      fetch('/api/quotes').then(function (r) { return r.json(); }).then(render)
+      fetch('/api/quotes')
+        .then(function (r) { 
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json(); 
+        })
+        .then(render)
         .catch(function (e) { console.warn('Could not load quotes', e); });
     }
     load();
