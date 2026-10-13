@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-12T17:07:27.790Z",
+  "updatedAt": "2026-10-13T07:16:18.355Z",
   "repo": {
     "history": [
       {
@@ -60,7 +60,16 @@
     },
     "source": "MoSPI NAS",
     "projection": {
-      "actuals": [],
+      "actuals": [
+        {
+          "label": "Q1 FY27",
+          "value": 7.8
+        },
+        {
+          "label": "Q4 FY26",
+          "value": 7.8
+        }
+      ],
       "estimates": [
         {
           "label": "Q2 FY27",
@@ -83,7 +92,16 @@
     "period": "2026-09",
     "source": "MoSPI API",
     "projection": {
-      "actuals": [],
+      "actuals": [
+        {
+          "label": "Q2 FY27",
+          "value": 5.54
+        },
+        {
+          "label": "Q1 FY27",
+          "value": 5.48
+        }
+      ],
       "estimates": [
         {
           "label": "Q2 FY27",
