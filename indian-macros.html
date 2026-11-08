@@ -4,222 +4,353 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Indian Macros | Peak and Panic</title>
-  <link rel="icon" type="image/png" href="images/peak-and-panic_app-icon_white-on-purple.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@700&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* Source: Figma "Indan Macros" frame (node 234:717), 1440px wide. 1u = 1/1440 of the page width. */
     :root {
       --u: 0.0694444cqw;
       --page-bg: #000000;
-      --white: #ffffff;
-      --muted: #9d97b5;
-      --lav: #b7a0fb;
-      --purple: #5519c9;
-      --glow: #4f1aaf;
+      --surface: #071713;
+      --accent: #10B981;
+      --highlight: #6EE7B7;
+      --text: #F2F7F5;
+      --muted: #A7BBB3;
+      --border: #21483C;
+      --gutter: clamp(20px, calc(80 * var(--u)), 96px);
     }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
+    *, *::before, *::after { box-sizing: border-box; }
+    html { color-scheme: dark; scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
       background: var(--page-bg);
-      color: var(--white);
-      line-height: 1.2102;
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
-
-    .page { container-type: inline-size; width: 100%; overflow: hidden; }
-    img { display: block; max-width: none; }
+    img { display: block; max-width: 100%; }
     a { color: inherit; text-decoration: none; }
-    a:focus-visible { outline: 2px solid var(--white); outline-offset: 4px; }
-
-    /* ───────────── Navigation ───────────── */
-    .nav { height: calc(164 * var(--u)); background: #000; display: flex; align-items: center; justify-content: space-between; padding-right: calc(47 * var(--u)); }
-    .nav__logo img { width: calc(486 * var(--u)); height: calc(162 * var(--u)); object-fit: cover; }
-    .nav__links { display: flex; align-items: center; gap: calc(100 * var(--u)); }
-    .nav__link { font-size: calc(18 * var(--u)); font-weight: 700; letter-spacing: calc(-0.36 * var(--u)); white-space: nowrap; }
-    .btn-signin { width: calc(150 * var(--u)); padding: calc(5 * var(--u)) calc(20 * var(--u)); background: var(--purple); border-radius: calc(15 * var(--u)); font-size: calc(24 * var(--u)); font-weight: 700; letter-spacing: calc(-0.48 * var(--u)); text-align: center; white-space: nowrap; }
-
-    /* ───────────── Title ───────────── */
-    .title { padding: calc(77 * var(--u)) 0 0 calc(83 * var(--u)); width: calc(927 * var(--u)); }
-    .title h1 { font-size: calc(64 * var(--u)); font-weight: 700; letter-spacing: calc(-1.28 * var(--u)); margin-bottom: calc(24 * var(--u)); }
-    .title p { width: calc(844 * var(--u)); font-size: calc(24 * var(--u)); line-height: 1.5; color: var(--muted); }
-
-    /* ───────────── Tracker cards (250 x 250 each) ───────────── */
-    .cards { position: relative; height: calc(250 * var(--u)); margin-top: calc(72 * var(--u)); }
-
-    .card {
+    a:focus-visible { outline: 2px solid var(--highlight); outline-offset: 4px; }
+    .sr-only {
       position: absolute;
-      left: calc(var(--x) * var(--u));
-      top: 0;
-      width: calc(250 * var(--u));
-      height: calc(250 * var(--u));
-      border: calc(2 * var(--u)) solid var(--bc);
-      border-radius: calc(20 * var(--u));
-      box-shadow: 0 calc(4 * var(--u)) calc(25 * var(--u)) calc(10 * var(--u)) var(--sc);
-      color: inherit;
-      display: block;
-      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;   /* hover effect: not in Figma, matches the other cards */
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
-    .card:hover, .card:focus-visible {
-      transform: scale(1.06);
-      z-index: 2;
-      box-shadow: 0 calc(4 * var(--u)) calc(50 * var(--u)) calc(15 * var(--u)) var(--sc);
+    .page { container-type: inline-size; width: 100%; min-height: 100vh; }
+    .site-header {
+      min-height: max(76px, calc(88 * var(--u)));
+      padding: 0 var(--gutter);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid rgba(33,72,60,.34);
+      background: #000;
     }
-    .card > * { position: absolute; }
-
-    /* two looks from the design */
-    .card--white  { --bc: #fff;       --sc: #fff;        --title: #fff;      --num: var(--lav); --desc: #fff; }
-    .card--purple { --bc: var(--lav); --sc: var(--glow); --title: var(--lav); --num: #fff;       --desc: var(--lav); }
-
-    .card__title {
-      left: 0; width: 100%; text-align: center;
-      top: calc(var(--ty) * var(--u)); transform: translateY(-50%);
-      font-size: calc(24 * var(--u)); font-weight: 700; line-height: 1.5;
-      color: var(--title); white-space: nowrap;
+    .brand {
+      min-width: 180px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
-    .card__title--roboto { font-family: 'Roboto', sans-serif; }
-    .card__num {
-      left: calc(var(--tx) * var(--u)); top: calc(57 * var(--u));
-      font-size: calc(48 * var(--u)); font-weight: 700; color: var(--num); white-space: nowrap;
+    .brand img { width: clamp(180px, calc(240 * var(--u)), 240px); height: auto; }
+    .primary-nav { display: flex; align-items: center; gap: clamp(12px, calc(32 * var(--u)), 40px); }
+    .primary-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      font-size: clamp(14px, calc(16 * var(--u)), 18px);
+      font-weight: 700;
+      white-space: nowrap;
     }
-    .card__desc {
-      left: calc(var(--tx) * var(--u)); top: calc(127 * var(--u)); width: calc(208 * var(--u));
-      font-size: calc(24 * var(--u)); font-weight: 400; color: var(--desc); white-space: nowrap;
+    .primary-nav a:hover { color: var(--highlight); }
+    main { display: block; }
+    .intro {
+      min-height: clamp(220px, calc(252 * var(--u)), 270px);
+      padding: clamp(28px, calc(38 * var(--u)), 44px) var(--gutter);
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(33,72,60,.38);
+      background: radial-gradient(circle at 82% 48%, rgba(16,185,129,.10), transparent 30%), #000;
     }
-
-    /* Figma leaves a large empty area under the cards for future content */
-    .spacer { height: calc(260 * var(--u)); }
-
-    /* ───────────── Footer ───────────── */
-    .footer { position: relative; height: calc(439 * var(--u)); }
-    .footer > * { position: absolute; left: calc(70 * var(--u)); width: calc(150 * var(--u)); font-weight: 700; letter-spacing: calc(-0.36 * var(--u)); font-size: calc(18 * var(--u)); }
-    .footer .f1 { top: calc(50 * var(--u)); }
-    .footer .f2 { top: calc(102 * var(--u)); }
-    .footer .f3 { top: calc(154 * var(--u)); }
-    .footer .f4 { top: calc(197 * var(--u)); text-decoration: underline; text-underline-position: from-font; }
-    .footer .copy { top: calc(373 * var(--u)); width: auto; white-space: nowrap; font-size: calc(24 * var(--u)); letter-spacing: calc(-0.48 * var(--u)); }
-
-    /* ───────────── Mobile (Figma only has a desktop frame) ───────────── */
-    @media (max-width: 900px) {
-      .nav { height: auto; padding: 12px 20px; flex-wrap: wrap; gap: 8px; }
-      .nav__logo img { width: 180px; height: 60px; }
-      .nav__links { gap: 16px; }
-      .nav__link { font-size: 14px; letter-spacing: 0; }
-      .btn-signin { width: auto; font-size: 14px; letter-spacing: 0; padding: 6px 16px; border-radius: 12px; }
-
-      .title { width: auto; padding: 32px 20px 0; }
-      .title h1 { font-size: 36px; letter-spacing: -0.5px; }
-      .title p { width: auto; font-size: 16px; }
-
-      .cards { height: auto; margin-top: 32px; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-      .card { position: relative; left: auto; width: 100%; height: auto; aspect-ratio: 1; --u: calc((100cqw - 60px) / 500); }
-
-      .spacer { height: 40px; }
-      .footer { height: auto; padding: 40px 20px; display: flex; flex-direction: column; gap: 14px; }
-      .footer > * { position: static; width: auto; font-size: 16px; letter-spacing: 0; }
-      .footer .copy { margin-top: 32px; font-size: 16px; }
+    .intro-copy { max-width: 850px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 600;
     }
-
-    @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+    h1, h2, h3, .macro-value { font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif; }
+    h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(36px, calc(50 * var(--u)), 56px);
+      line-height: 1.05;
+      letter-spacing: -.035em;
+    }
+    .intro-copy > p:last-child {
+      max-width: 720px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, calc(18 * var(--u)), 19px);
+      line-height: 1.65;
+    }
+    .trackers { padding: clamp(24px, calc(30 * var(--u)), 34px) var(--gutter) clamp(64px, calc(84 * var(--u)), 96px); }
+    .section-heading { margin-bottom: clamp(20px, calc(24 * var(--u)), 28px); }
+    .section-heading h2 {
+      margin: 0;
+      font-size: clamp(30px, calc(42 * var(--u)), 46px);
+      line-height: 1.1;
+      letter-spacing: -.025em;
+    }
+    .section-heading p { margin: 8px 0 0; color: var(--muted); font-size: clamp(15px, calc(17 * var(--u)), 18px); }
+    .tracker-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, calc(22 * var(--u)), 24px); }
+    .tracker-card {
+      min-width: 0;
+      min-height: 310px;
+      padding: clamp(20px, calc(26 * var(--u)), 28px);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(110,231,183,.20);
+      border-radius: 12px;
+      background: rgba(4,18,15,.72);
+      box-shadow: inset 0 1px 0 rgba(110,231,183,.04), 0 18px 44px rgba(0,0,0,.22);
+    }
+    a.tracker-card { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+    a.tracker-card:hover, a.tracker-card:focus-visible {
+      border-color: rgba(110,231,183,.52);
+      box-shadow: inset 0 1px 0 rgba(110,231,183,.07), 0 18px 44px rgba(0,0,0,.28), 0 0 24px rgba(16,185,129,.07);
+      transform: translateY(-2px);
+    }
+    .tracker-card--primary { border-color: rgba(110,231,183,.36); background: rgba(5,25,20,.82); }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .tracker-name { margin: 0; font-size: clamp(19px, calc(22 * var(--u)), 24px); line-height: 1.25; letter-spacing: -.015em; }
+    .availability {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border: 1px solid rgba(167,187,179,.28);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .tracker-card[data-state='available'] .availability { border-color: rgba(110,231,183,.34); color: var(--highlight); }
+    .macro-value {
+      margin: 28px 0 10px;
+      color: var(--text);
+      font-size: clamp(36px, calc(45 * var(--u)), 50px);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -.035em;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+    .tracker-card[data-state='unavailable'] .macro-value { color: var(--muted); font-size: clamp(28px, calc(34 * var(--u)), 38px); }
+    .macro-description { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .card-meta {
+      margin-top: auto;
+      padding-top: 24px;
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .card-meta strong { color: var(--text); font-weight: 600; }
+    .card-action {
+      min-height: 44px;
+      margin: 18px -4px -10px;
+      padding: 8px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--highlight);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .footer {
+      padding: clamp(30px, calc(44 * var(--u)), 52px) var(--gutter);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px clamp(20px, calc(32 * var(--u)), 40px);
+      border-top: 1px solid rgba(33,72,60,.55);
+      background: #020504;
+      font-size: 15px;
+    }
+    .footer a { min-height: 44px; display: inline-flex; align-items: center; font-weight: 600; }
+    .footer a:hover { color: var(--highlight); }
+    .footer-item, .copy { color: var(--muted); }
+    .copy { flex-basis: 100%; margin-top: 4px; font-size: 14px; }
+    @media (max-width: 1180px) {
+      .tracker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tracker-card { min-height: 285px; }
+    }
+    @media (max-width: 700px) {
+      .site-header { padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+      .brand img { width: 180px; }
+      .primary-nav { width: 100%; justify-content: space-between; }
+      .intro { min-height: 0; padding-top: 34px; padding-bottom: 38px; }
+      .tracker-grid { grid-template-columns: 1fr; }
+      .tracker-card { min-height: 0; }
+      .card-top { flex-wrap: wrap; }
+      .footer { gap: 6px 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      a.tracker-card:hover, a.tracker-card:focus-visible { transform: none; }
+    }
   </style>
 </head>
-
 <body>
 <div class="page">
-
-  <header class="nav">
-    <a class="nav__logo" href="index.html" aria-label="Peak and Panic home">
-      <img src="images/peak-and-panic_horizontal_purple.png" alt="Peak and Panic" />
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Peak and Panic home">
+      <img src="images/04-horizontal-emerald.png" alt="Peak and Panic" />
     </a>
-    <nav class="nav__links">
-      <a class="nav__link" href="index.html#offerings">Our Offerings</a>
-      <a class="nav__link" href="index.html#about">About Us</a>
-      <a class="btn-signin" href="#">Sign in</a>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a href="index.html#offerings">Our Offerings</a>
+      <a href="index.html#about">About Us</a>
     </nav>
   </header>
-
   <main>
-    <section class="title">
-      <h1>Indian Macros</h1>
-      <p>Understand the forces shaping India's economy, monetary policy and financial markets.</p>
-    </section>
-
-    <section class="cards" aria-label="Macro trackers">
-      <!-- Card 1: click goes to the RBI Policy Tracker page -->
-      <a class="card card--white" data-macro="repo" href="rbi-policy-tracker.html" style="--x:91;--ty:27;--tx:19">
-        <h2 class="card__title">RBI Policy Tracker</h2>
-        <p class="card__num">5.50%</p>
-        <p class="card__desc">Repo-rate last<br />changed in<br />Oct-2026</p>
-      </a>
-
-      <!-- Card 2: Inflation -->
-      <div class="card card--purple" data-macro="inflation" style="--x:430;--ty:25;--tx:24">
-        <h2 class="card__title">Inflation Tracker</h2>
-        <p class="card__num">4.82%</p>
-        <p class="card__desc">CPI, YoY<br />Inside 2-6% band<br />Aug-2026</p>
-      </div>
-
-      <!-- Card 3: Growth -->
-      <div class="card card--white" data-macro="growth" style="--x:751;--ty:27;--tx:32">
-        <h2 class="card__title">Growth Tracker</h2>
-        <p class="card__num">7.80%</p>
-        <p class="card__desc">Real GDP Growth,<br />YoY<br />Q1FY2027</p>
-      </div>
-
-      <!-- Card 4: Fiscal -->
-      <div class="card card--purple" data-macro="fiscal" style="--x:1090;--ty:26.5;--tx:13">
-        <h2 class="card__title card__title--roboto">Fiscal &amp; Government</h2>
-        <p class="card__num">5.59%</p>
-        <p class="card__desc">Fiscal Deficit of<br />GDP %<br />Q1FY27</p>
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow">Indian Macros</p>
+        <h1 id="page-title">The forces shaping India’s economy.</h1>
+        <p>Track monetary policy, inflation, growth and fiscal conditions through the latest published indicators shaping India’s economic outlook.</p>
       </div>
     </section>
-    <div class="spacer"></div>
+    <p class="sr-only" id="macro-load-status" role="status" aria-live="polite"></p>
+    <section class="trackers" aria-labelledby="trackers-title">
+      <div class="section-heading">
+        <h2 id="trackers-title">Macro trackers</h2>
+        <p>A focused view of the indicators that matter most to Indian investors.</p>
+      </div>
+      <div class="tracker-grid">
+        <a class="tracker-card tracker-card--primary" data-macro="repo" data-state="unavailable" href="rbi-policy-tracker.html" aria-label="RBI Policy Tracker. Open detailed tracker.">
+          <div class="card-top"><h3 class="tracker-name">RBI Policy Tracker</h3><span class="availability" data-field="availability">Unavailable</span></div>
+          <p class="macro-value" data-field="value">Unavailable</p>
+          <p class="macro-description" data-field="description">Policy data is currently unavailable.</p>
+          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+          <span class="card-action">View RBI policy tracker <span aria-hidden="true">→</span></span>
+        </a>
+        <article class="tracker-card" data-macro="inflation" data-state="unavailable">
+          <div class="card-top"><h3 class="tracker-name">Inflation Tracker</h3><span class="availability" data-field="availability">Coming soon</span></div>
+          <p class="macro-value" data-field="value">Unavailable</p>
+          <p class="macro-description" data-field="description">Inflation data is currently unavailable.</p>
+          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+        </article>
+        <article class="tracker-card" data-macro="growth" data-state="unavailable">
+          <div class="card-top"><h3 class="tracker-name">Growth Tracker</h3><span class="availability" data-field="availability">Coming soon</span></div>
+          <p class="macro-value" data-field="value">Unavailable</p>
+          <p class="macro-description" data-field="description">Growth data is currently unavailable.</p>
+          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+        </article>
+        <article class="tracker-card" data-macro="fiscal" data-state="unavailable">
+          <div class="card-top"><h3 class="tracker-name">Fiscal &amp; Government</h3><span class="availability" data-field="availability">Coming soon</span></div>
+          <p class="macro-value" data-field="value">Unavailable</p>
+          <p class="macro-description" data-field="description">Fiscal data is currently unavailable.</p>
+          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+        </article>
+      </div>
+    </section>
   </main>
-
   <footer class="footer" id="about">
-    <a class="f1" href="#">About Us</a>
-    <a class="f2" href="#">Contact Us</a>
-    <a class="f3" href="index.html#offerings">Our Offerings</a>
-    <a class="f4" href="https://www.instagram.com/peak_and_panic" target="_blank" rel="noopener">Instagram</a>
+    <span class="footer-item">About Us — coming soon</span>
+    <span class="footer-item">Contact Us — coming soon</span>
+    <a href="index.html#offerings">Our Offerings</a>
+    <a href="https://www.instagram.com/peak_and_panic" target="_blank" rel="noopener">Instagram</a>
     <div class="copy">© 2026 Peak and Panic</div>
   </footer>
-
 </div>
 <script>
-  // Fills the four tracker cards from macro-data.json.
-  // If the file can't be loaded, the numbers already written in the HTML stay on screen.
   (function () {
-    function fmtDate(iso) {
-      return new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso)) + ' IST';
+    'use strict';
+    var KEYS = ['repo', 'inflation', 'growth', 'fiscal'];
+    var fallbackDescriptions = {
+      repo: 'Policy data is currently unavailable.',
+      inflation: 'Inflation data is currently unavailable.',
+      growth: 'Growth data is currently unavailable.',
+      fiscal: 'Fiscal data is currently unavailable.'
+    };
+    var loadStatus = document.getElementById('macro-load-status');
+    function cleanString(value) {
+      return typeof value === 'string' && value.trim() ? value.trim() : null;
+    }
+    function validDate(value) {
+      if (typeof value !== 'string' || !value.trim()) return null;
+      var ms = Date.parse(value);
+      return Number.isFinite(ms) ? ms : null;
+    }
+    function formatDate(ms) {
+      return new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).format(new Date(ms)).replace(',', '') + ' IST';
+    }
+    function setUnavailable(card, key) {
+      card.dataset.state = 'unavailable';
+      card.querySelector('[data-field="value"]').textContent = 'Unavailable';
+      card.querySelector('[data-field="description"]').textContent = fallbackDescriptions[key];
+      card.querySelector('[data-field="source"]').textContent = 'Source unavailable';
+      card.querySelector('[data-field="updated"]').textContent = 'Update time unavailable';
+      card.querySelector('[data-field="availability"]').textContent = key === 'repo' ? 'Unavailable' : 'Coming soon';
+    }
+    function renderItem(key, item) {
+      var card = document.querySelector('[data-macro="' + key + '"]');
+      var value = item && cleanString(item.value);
+      if (!card || !value) {
+        if (card) setUnavailable(card, key);
+        return null;
+      }
+      var lines = Array.isArray(item.lines) ? item.lines.map(cleanString).filter(Boolean) : [];
+      var source = cleanString(item.source);
+      var updatedMs = validDate(item.updatedAt);
+      card.dataset.state = 'available';
+      card.querySelector('[data-field="value"]').textContent = value;
+      card.querySelector('[data-field="description"]').textContent = lines.length ? lines.join(' · ') : 'Reporting period unavailable';
+      card.querySelector('[data-field="source"]').textContent = source || 'Source unavailable';
+      card.querySelector('[data-field="updated"]').textContent = updatedMs === null ? 'Update time unavailable' : 'Updated ' + formatDate(updatedMs);
+      card.querySelector('[data-field="availability"]').textContent = key === 'repo' ? 'Detailed tracker' : 'Coming soon';
+      return true;
+    }
+    function renderDataset(payload) {
+      var items = payload && payload.items;
+      if (!items || typeof items !== 'object' || Array.isArray(items)) throw new Error('Invalid macro dataset');
+      KEYS.forEach(function (key) {
+        renderItem(key, items[key]);
+      });
+      loadStatus.textContent = 'Macro data loaded.';
+    }
+    function renderFailure() {
+      KEYS.forEach(function (key) {
+        var card = document.querySelector('[data-macro="' + key + '"]');
+        if (card) setUnavailable(card, key);
+      });
+      loadStatus.textContent = 'Macro data unavailable.';
     }
     fetch('macro-data.json', { cache: 'no-cache' })
-      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (d) {
-        Object.keys(d.items || {}).forEach(function (key) {
-          var it = d.items[key], card = document.querySelector('[data-macro="' + key + '"]');
-          if (!card || !it || typeof it.value !== 'string' || !it.value.trim()) return;   // ignore bad entries
-          card.querySelector('.card__num').textContent = it.value;
-          if (Array.isArray(it.lines) && it.lines.length) {
-            var desc = card.querySelector('.card__desc');
-            desc.textContent = '';
-            it.lines.forEach(function (line, i) {
-              if (i) desc.appendChild(document.createElement('br'));
-              desc.appendChild(document.createTextNode(String(line)));
-            });
-          }
-          var tip = [];
-          if (it.source) tip.push('Source: ' + it.source);
-          if (it.updatedAt) tip.push('Updated: ' + fmtDate(it.updatedAt));
-          if (tip.length) card.title = tip.join(' \u00b7 ');
-        });
+      .then(function (response) {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
       })
-      .catch(function (e) { if (window.console) console.warn('[macros] using built-in values:', e.message); });
+      .then(renderDataset)
+      .catch(renderFailure);
   })();
 </script>
-
 </body>
 </html>
