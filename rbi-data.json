@@ -1,25 +1,39 @@
 {
-  "updatedAt": "2026-11-09T12:43:07.997Z",
+  "updatedAt": "2026-11-09T07:29:23.214Z",
   "repo": {
     "history": [
       {
         "date": "2025-06-06",
-        "rate": 5.5
+        "rate": 5.5,
+        "provenanceStatus": "legacy"
       },
       {
         "date": "2025-12-05",
-        "rate": 5.25
+        "rate": 5.25,
+        "provenanceStatus": "legacy"
       },
       {
         "date": "2026-10-07",
-        "rate": 5.5
+        "rate": 5.5,
+        "decisionDate": "2026-10-07",
+        "provenanceStatus": "verified",
+        "provenance": {
+          "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+          "publishedAt": "2026-10-07",
+          "fetchedAt": "2026-11-09T07:29:23.214Z",
+          "verifiedAt": "2026-11-09T07:29:23.214Z"
+        }
       }
     ],
-    "source": "RBI MPC decisions",
-    "verifiedOn": "2026-11-09"
+    "source": "RBI MPC resolution",
+    "provenance": {
+      "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+      "publishedAt": "2026-10-07",
+      "fetchedAt": "2026-11-09T07:29:23.214Z",
+      "verifiedAt": "2026-11-09T07:29:23.214Z"
+    }
   },
   "mpc": {
-    "announceTime": "10:00",
     "meetings": [
       {
         "announce": "2026-04-08"
@@ -40,90 +54,245 @@
         "announce": "2027-02-05"
       }
     ],
-    "source": "RBI MPC calendar FY2026-27 (published 23 Mar 2026). Time shown is the usual 10:00 IST announcement time."
+    "source": "RBI annual MPC schedule",
+    "provenance": {
+      "sourceUrl": "https://rbi.org.in/scripts/Annualpolicy.aspx",
+      "publishedAt": "2026-03-23",
+      "fetchedAt": "2026-11-09T06:49:24.050Z",
+      "verifiedAt": "2026-11-09T06:49:24.050Z"
+    }
   },
   "stance": {
     "current": "calibrated_tightening",
     "since": "2026-10-07",
-    "source": "RBI MPC statement, 7 Oct 2026"
+    "source": "RBI MPC resolution",
+    "provenance": {
+      "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+      "publishedAt": "2026-10-07",
+      "fetchedAt": "2026-11-08T21:31:44.690Z",
+      "verifiedAt": "2026-11-08T21:31:44.690Z"
+    }
   },
   "gdp": {
     "fy": {
-      "label": "FY2026",
-      "value": 201.9,
-      "decimals": 2
+      "label": "FY2025-26",
+      "value": 324.7,
+      "decimals": 2,
+      "growth": 7.82,
+      "provenance": {
+        "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100",
+        "publishedAt": "2026-09-02",
+        "fetchedAt": "2026-11-09T07:29:23.214Z",
+        "verifiedAt": "2026-11-09T07:29:23.214Z",
+        "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+      }
     },
     "quarter": {
-      "label": "Q1 FY2027",
-      "value": 81.1,
-      "decimals": 1
+      "label": "Q1 FY2026-27",
+      "value": 81.36,
+      "decimals": 2,
+      "growth": 7.82,
+      "provenance": {
+        "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
+        "publishedAt": "2026-09-02",
+        "fetchedAt": "2026-11-09T07:29:23.214Z",
+        "verifiedAt": "2026-11-09T07:29:23.214Z",
+        "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+      }
     },
-    "source": "MoSPI NAS",
+    "unit": "₹ lakh crore",
     "projection": {
       "actuals": [
         {
-          "label": "Q1 FY27",
-          "value": 7.8
+          "label": "Q4 FY26",
+          "value": 7.8,
+          "kind": "legacy",
+          "provenanceStatus": "legacy"
         },
         {
-          "label": "Q4 FY26",
-          "value": 7.8
+          "label": "Q1 FY27",
+          "value": 7.82,
+          "kind": "actual",
+          "provenanceStatus": "verified",
+          "provenance": {
+            "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
+            "publishedAt": "2026-09-02",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z",
+            "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+          }
         }
       ],
       "estimates": [
         {
           "label": "Q2 FY27",
-          "value": 7
+          "value": 7.2,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
         },
         {
           "label": "Q3 FY27",
-          "value": 6.8
+          "value": 6.9,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
         },
         {
           "label": "Q4 FY27",
-          "value": 6.6
+          "value": 6.8,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
+        },
+        {
+          "label": "Q1 FY28",
+          "value": 7.1,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
         }
       ]
-    }
+    },
+    "provenance": {
+      "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
+      "publishedAt": "2026-09-02",
+      "fetchedAt": "2026-11-09T07:29:23.214Z",
+      "verifiedAt": "2026-11-09T07:29:23.214Z",
+      "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+    },
+    "source": "MoSPI National Accounts Statistics"
   },
   "cpi": {
     "index": 109.49,
     "yoy": 5.54,
     "period": "2026-09",
-    "source": "MoSPI API",
+    "baseYear": "2024=100",
     "projection": {
       "actuals": [
         {
-          "label": "Q2 FY27",
-          "value": 5.54
+          "label": "Q3 FY26",
+          "value": 0,
+          "kind": "derived-quarterly-average",
+          "provenanceStatus": "derived",
+          "derivation": {
+            "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "observationCount": 3,
+            "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
+            "baseYear": "2024=100"
+          }
+        },
+        {
+          "label": "Q4 FY26",
+          "value": 3.12,
+          "kind": "derived-quarterly-average",
+          "provenanceStatus": "derived",
+          "derivation": {
+            "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "observationCount": 3,
+            "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
+            "baseYear": "2024=100"
+          }
         },
         {
           "label": "Q1 FY27",
-          "value": 5.48
+          "value": 3.93,
+          "kind": "derived-quarterly-average",
+          "provenanceStatus": "derived",
+          "derivation": {
+            "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "observationCount": 3,
+            "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
+            "baseYear": "2024=100"
+          }
+        },
+        {
+          "label": "Q2 FY27",
+          "value": 4.94,
+          "kind": "derived-quarterly-average",
+          "provenanceStatus": "derived",
+          "derivation": {
+            "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "observationCount": 3,
+            "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
+            "baseYear": "2024=100"
+          }
         }
       ],
       "estimates": [
         {
-          "label": "Q2 FY27",
-          "value": 4.4
-        },
-        {
           "label": "Q3 FY27",
-          "value": 4.2
+          "value": 6,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
         },
         {
           "label": "Q4 FY27",
-          "value": 4.1
+          "value": 5.7,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
+        },
+        {
+          "label": "Q1 FY28",
+          "value": 5.6,
+          "kind": "projection",
+          "provenance": {
+            "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T07:29:23.214Z",
+            "verifiedAt": "2026-11-09T07:29:23.214Z"
+          }
         }
       ]
-    }
+    },
+    "provenance": {
+      "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
+      "publishedAt": "2026-10-12",
+      "fetchedAt": "2026-11-09T07:29:23.214Z",
+      "verifiedAt": "2026-11-09T07:29:23.214Z",
+      "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1791800601071_643518af-5320-4e52-b78c-75c92b83885b_Press_Release_for_the_month_of_September,_2026.pdf"
+    },
+    "source": "MoSPI CPI API (All India Combined)"
   },
   "commentary": {
     "asOf": "2026-10-07",
-    "source": "RBI Monetary Policy Statement, 7 Oct 2026",
+    "source": "RBI MPC resolution",
     "paragraphs": [
-      "“After a detailed assessment of the evolving macroeconomic and financial developments and the outlook, the MPC voted unanimously to increase the policy repo rate under the liquidity adjustment facility (LAF) by 25 bps to 5.50 per cent. Consequently, the standing deposit facility (SDF) rate stands adjusted at 5.25 per cent and the marginal standing facility (MSF) rate and the Bank Rate at 5.75 per cent. The MPC also decided to change the stance to calibrated tightening.",
-      "Since the last MPC meeting in August 2026, the re-escalation of the conflict in West Asia and the consequent sharp volatility in crude oil prices has kept the global economy in a state of flux. Global growth has remained resilient. Acceleration of inflation in key economies has prompted a shift towards hawkish monetary policy. The US Fed hiked by 25 bps in September. The Fed commentary thereafter along with rate tightening by major systemically important central banks have reinforced expectations of higher global policy rates. Tighter global financial market conditions coupled with fiscal sustainability concerns in major economies are keeping global bond yields at record high levels. With a resolution of the West Asia conflict remaining elusive, significant downside risks to the global outlook remain, including further tightening of global financial conditions, continuing elevated AI-related asset valuations and high public debt.”"
-    ]
-  }
+      "After a detailed assessment of the evolving macroeconomic and financial developments and the outlook, the MPC voted unanimously to increase the policy repo rate under the liquidity adjustment facility (LAF) by 25 bps to 5.50 per cent. Consequently, the standing deposit facility (SDF) rate stands adjusted at 5.25 per cent and the marginal standing facility (MSF) rate and the Bank Rate at 5.75 per cent. The MPC also decided to change the stance to calibrated tightening.",
+      "Looking ahead, global economic uncertainty will continue to have some bearing on domestic economic activity."
+    ],
+    "provenance": {
+      "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+      "publishedAt": "2026-10-07",
+      "fetchedAt": "2026-11-09T06:53:52.713Z",
+      "verifiedAt": "2026-11-09T06:53:52.713Z"
+    }
+  },
+  "schemaVersion": 2
 }

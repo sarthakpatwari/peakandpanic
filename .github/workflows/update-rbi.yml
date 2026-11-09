@@ -2,11 +2,18 @@ name: Update RBI data
 
 on:
   schedule:
-    - cron: '*/15 4-9 * * 1-5'     # every 15 minutes, 09:30-15:29 IST, Monday to Friday (MPC announcements are weekday mornings)
-  workflow_dispatch: {}             # lets you press "Run workflow" by hand to test it
+    # Weekdays every 30 minutes, 03:00-13:59 UTC (08:30-19:29 IST).
+    # Scheduled GitHub Actions runs may start later than the nominal time.
+    - cron: '*/30 3-13 * * 1-5'
+    # Weekday fallback outside the frequent window: 00:17, 16:17 and 20:17 UTC.
+    - cron: '17 0,16,20 * * 1-5'
+    # Weekend fallback every six hours, offset from the top of the hour.
+    - cron: '17 */6 * * 0,6'
+  workflow_dispatch: {}
 
 permissions:
-  contents: write                   # lets the job save rbi-data.json back to the repository
+  contents: write
+  issues: write
 
 concurrency:
   group: update-rbi
@@ -20,16 +27,62 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Read the RBI home page and update rbi-data.json
+      - name: Run deterministic updater tests
+        run: node scripts/update-rbi.test.js
+      - name: Fetch, merge and validate official RBI and MoSPI data
+        id: update
+        continue-on-error: true
         run: node scripts/update-rbi.js
-      - name: Save the file if it changed
+      - name: Ensure only generated data changed
+        id: allowlist
+        if: always()
         run: |
-          if [ -n "$(git status --porcelain rbi-data.json)" ]; then
+          unexpected="$(git status --porcelain --untracked-files=all | grep -vE '^( M|M |A |\?\?) (rbi-data|macro-data)\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files changed:"
+            echo "$unexpected"
+            exit 1
+          fi
+      - name: Save validated generated data if changed
+        if: always() && steps.allowlist.outcome == 'success'
+        run: |
+          if [ -n "$(git status --porcelain -- rbi-data.json macro-data.json)" ]; then
             git config user.name "peak-and-panic-bot"
             git config user.email "actions@users.noreply.github.com"
-            git add rbi-data.json
-            git commit -m "data: RBI update"
+            git add -- rbi-data.json macro-data.json
+            git commit -m "data: refresh official RBI and MoSPI indicators"
             git push
           else
-            echo "rbi-data.json unchanged"
+            echo "Validated official data is unchanged"
           fi
+      - name: Open or update the automation health issue
+        if: always() && steps.update.outputs.automation_failed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILURE_SUMMARY: ${{ steps.update.outputs.failure_summary }}
+        run: |
+          title='[automation-health] RBI/MoSPI data updater failure'
+          body="The official-data updater reported a persistent source or validation failure.
+
+          **Failure:** ${FAILURE_SUMMARY}
+
+          Last-known-good data was retained for each failed section. Independently validated sections may still have been updated. No response bodies, credentials or tokens are included."
+          issue_number="$(gh issue list --state all --limit 100 --search 'RBI/MoSPI data updater failure in:title' --json number,title --jq '.[] | select(.title == "[automation-health] RBI/MoSPI data updater failure") | .number' | head -n 1)"
+          if [ -n "$issue_number" ]; then
+            gh issue reopen "$issue_number" >/dev/null 2>&1 || true
+            gh issue edit "$issue_number" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi
+      - name: Close the automation health issue after recovery
+        if: always() && steps.update.outputs.automation_failed == 'false' && steps.allowlist.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          issue_number="$(gh issue list --state open --limit 100 --search 'RBI/MoSPI data updater failure in:title' --json number,title --jq '.[] | select(.title == "[automation-health] RBI/MoSPI data updater failure") | .number' | head -n 1)"
+          if [ -n "$issue_number" ]; then
+            gh issue close "$issue_number" --comment 'Official-source polling and validation recovered; generated data remains valid.'
+          fi
+      - name: Fail the run after preserving validated updates
+        if: always() && steps.update.outputs.automation_failed == 'true'
+        run: exit 1

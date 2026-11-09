@@ -302,13 +302,13 @@
   }
 
   function repoPoints(g, now) {
-    var h = (data.repo.history || []).map(function (e) { return { t: istDate(e.date).getTime(), rate: e.rate }; }).sort(function (a, b) { return a.t - b.t; }).filter(function (e) { return e.t <= now; });
+    var h = (data.repo.history || []).map(function (e) { return { t: istDate(e.date).getTime(), rate: e.rate, provenanceStatus: e.provenanceStatus }; }).sort(function (a, b) { return a.t - b.t; }).filter(function (e) { return e.t <= now; });
     if (!h.length) return { pts: [], end: null };
     var ws = new Date(now); ws.setUTCFullYear(ws.getUTCFullYear() - 1); ws = ws.getTime();
     var before = h.filter(function (e) { return e.t <= ws; }), inside = h.filter(function (e) { return e.t > ws; });
-    var series = before.length ? [{ t: ws, rate: before[before.length - 1].rate }].concat(inside) : inside;   // never invents a rate before our first record
+    var series = before.length ? [{ t: ws, rate: before[before.length - 1].rate, provenanceStatus: before[before.length - 1].provenanceStatus }].concat(inside) : inside;   // never invents a rate before our first record
     var t0 = series[0].t, span = Math.max(now - t0, 1);
-    var pts = series.map(function (e) { return { x: g.x0 + (e.t - t0) / span * (g.x1 - g.x0), value: e.rate, l1: my(new Date(e.t)), l2: e.rate.toFixed(2) + '%' }; });
+    var pts = series.map(function (e) { return { x: g.x0 + (e.t - t0) / span * (g.x1 - g.x0), value: e.rate, l1: my(new Date(e.t)) + (e.provenanceStatus === 'legacy' ? ' · Legacy' : ''), l2: e.rate.toFixed(2) + '%' }; });
     return { pts: pts, end: g.x1 };
   }
   function projPoints(g, proj) {
@@ -320,8 +320,9 @@
     var ests = (proj.estimates || []).filter(function (p) { return !have[p.label]; }).map(function (p) { return Object.assign({ kind: 'E' }, p); });
     var arr = acts.concat(ests, proj.points || []).filter(function (p) { return p && typeof p.value === 'number' && isFinite(p.value); });
     var n = arr.length;
+    var kindName = { A: 'Actual', E: 'Projection', actual: 'Actual', projection: 'Projection', legacy: 'Legacy', 'derived-quarterly-average': 'Derived avg' };
     return arr.map(function (p, i) {
-      return { x: n === 1 ? (g.x0 + g.x1) / 2 : g.x0 + i * (g.x1 - g.x0) / (n - 1), value: p.value, l1: p.label + (p.kind ? ' \u201C' + p.kind + '\u201D' : ''), l2: Number(p.value).toFixed(2) + '%' };
+      return { x: n === 1 ? (g.x0 + g.x1) / 2 : g.x0 + i * (g.x1 - g.x0) / (n - 1), value: p.value, l1: p.label + (p.kind ? ' · ' + (kindName[p.kind] || p.kind) : ''), l2: Number(p.value).toFixed(2) + '%' };
     });
   }
   function drawAll() {
@@ -367,8 +368,8 @@
     // GDP
     if (d.gdp) {
       var u = ' L';
-      if (d.gdp.fy) { text('gdp-fy-value', d.gdp.fy.value.toFixed(d.gdp.fy.decimals == null ? 2 : d.gdp.fy.decimals) + u); text('gdp-fy-label', 'India\u2019s National GDP ' + d.gdp.fy.label + ' (in \u20B9 crores)'); tip('gdp-fy-value', 'Source: ' + d.gdp.source); }
-      if (d.gdp.quarter) { text('gdp-q-value', d.gdp.quarter.value.toFixed(d.gdp.quarter.decimals == null ? 2 : d.gdp.quarter.decimals) + u); text('gdp-q-label', 'India\u2019s National GDP ' + d.gdp.quarter.label + ' (in \u20B9 crores)'); tip('gdp-q-value', 'Source: ' + d.gdp.source); }
+      if (d.gdp.fy) { text('gdp-fy-value', d.gdp.fy.value.toFixed(d.gdp.fy.decimals == null ? 2 : d.gdp.fy.decimals) + u); text('gdp-fy-label', 'India\u2019s National GDP ' + d.gdp.fy.label + ' (' + (d.gdp.unit || '\u20B9 lakh crore') + ')'); tip('gdp-fy-value', 'Source: ' + d.gdp.source); }
+      if (d.gdp.quarter) { text('gdp-q-value', d.gdp.quarter.value.toFixed(d.gdp.quarter.decimals == null ? 2 : d.gdp.quarter.decimals) + u); text('gdp-q-label', 'India\u2019s National GDP ' + d.gdp.quarter.label + ' (' + (d.gdp.unit || '\u20B9 lakh crore') + ')'); tip('gdp-q-value', 'Source: ' + d.gdp.source); }
     }
     // CPI
     if (d.cpi) {
