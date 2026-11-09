@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T12:12:47.851Z",
+  "updatedAt": "2026-11-09T12:43:07.997Z",
   "repo": {
     "history": [
       {
@@ -16,7 +16,7 @@
       }
     ],
     "source": "RBI MPC decisions",
-    "verifiedOn": "2026-11-02"
+    "verifiedOn": "2026-11-09"
   },
   "mpc": {
     "announceTime": "10:00",
