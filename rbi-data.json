@@ -1,36 +1,174 @@
 {
-  "updatedAt": "2026-11-09T07:29:23.214Z",
+  "updatedAt": "2026-11-09T12:39:59.023Z",
   "repo": {
     "history": [
       {
+        "date": "2025-04-09",
+        "decisionDate": "2025-04-09",
+        "rate": 6,
+        "publicationDate": "2025-04-09",
+        "resolutionUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60176",
+        "verificationStatus": "verified",
+        "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) April 7 to 9, 2025",
+        "provenance": {
+          "sourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60176",
+          "publishedAt": "2025-04-09",
+          "fetchedAt": "2026-11-09T12:39:59.023Z",
+          "verifiedAt": "2026-11-09T12:39:59.023Z",
+          "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) April 7 to 9, 2025",
+          "releaseIdentifier": "Press Release: 2025-2026/61"
+        },
+        "effectiveDate": "2025-04-09",
+        "effectiveDateBasis": "explicit-immediate-effect",
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12831&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification",
+        "releaseIdentifier": "Press Release: 2025-2026/61",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12831&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2025-04-09",
+          "previousRate": 6.25,
+          "newRate": 6,
+          "direction": "reduce",
+          "rbiCircularNumber": "RBI/2025-26/22",
+          "departmentCircularNumber": "FMOD.MAOG.No.151/01.01.001/2025-26",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12831&fn=2752&Mode=0",
+            "publishedAt": "2025-04-09",
+            "fetchedAt": "2026-11-09T12:39:59.023Z",
+            "verifiedAt": "2026-11-09T12:39:59.023Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        }
+      },
+      {
         "date": "2025-06-06",
+        "decisionDate": "2025-06-06",
         "rate": 5.5,
-        "provenanceStatus": "legacy"
+        "publicationDate": "2025-06-06",
+        "resolutionUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60604",
+        "verificationStatus": "verified",
+        "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) June 4 to 6, 2025",
+        "provenance": {
+          "sourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60604",
+          "publishedAt": "2025-06-06",
+          "fetchedAt": "2026-11-09T12:39:59.023Z",
+          "verifiedAt": "2026-11-09T12:39:59.023Z",
+          "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) June 4 to 6, 2025",
+          "releaseIdentifier": "Press Release: 2025-2026/489"
+        },
+        "effectiveDate": "2025-06-06",
+        "effectiveDateBasis": "explicit-immediate-effect",
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12854&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification",
+        "releaseIdentifier": "Press Release: 2025-2026/489",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12854&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2025-06-06",
+          "previousRate": 6,
+          "newRate": 5.5,
+          "direction": "reduce",
+          "rbiCircularNumber": "RBI/2025-26/42",
+          "departmentCircularNumber": "FMOD.MAOG.No.152/01.01.001/2025-26",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12854&fn=2752&Mode=0",
+            "publishedAt": "2025-06-06",
+            "fetchedAt": "2026-11-09T12:39:59.023Z",
+            "verifiedAt": "2026-11-09T12:39:59.023Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        }
       },
       {
         "date": "2025-12-05",
+        "decisionDate": "2025-12-05",
         "rate": 5.25,
-        "provenanceStatus": "legacy"
+        "publicationDate": "2025-12-05",
+        "resolutionUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=61749",
+        "verificationStatus": "verified",
+        "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) December 3 to 5, 2025",
+        "provenance": {
+          "sourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=61749",
+          "publishedAt": "2025-12-05",
+          "fetchedAt": "2026-11-09T12:39:59.023Z",
+          "verifiedAt": "2026-11-09T12:39:59.023Z",
+          "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) December 3 to 5, 2025",
+          "releaseIdentifier": "Press Release: 2025-2026/1633"
+        },
+        "releaseIdentifier": "Press Release: 2025-2026/1633",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13206&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2025-12-05",
+          "previousRate": 5.5,
+          "newRate": 5.25,
+          "direction": "reduce",
+          "rbiCircularNumber": "RBI/2025-26/132",
+          "departmentCircularNumber": "FMOD.MAOG.No.153/01.01.001/2025-26",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13206&fn=2752&Mode=0",
+            "publishedAt": "2025-12-05",
+            "fetchedAt": "2026-11-09T12:39:59.023Z",
+            "verifiedAt": "2026-11-09T12:39:59.023Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        },
+        "effectiveDate": "2025-12-05",
+        "effectiveDateBasis": "explicit-immediate-effect",
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13206&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification"
       },
       {
         "date": "2026-10-07",
-        "rate": 5.5,
         "decisionDate": "2026-10-07",
-        "provenanceStatus": "verified",
+        "rate": 5.5,
+        "publicationDate": "2026-10-07",
+        "resolutionUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "verificationStatus": "verified",
+        "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) October 5 to 7, 2026",
         "provenance": {
           "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
           "publishedAt": "2026-10-07",
-          "fetchedAt": "2026-11-09T07:29:23.214Z",
-          "verifiedAt": "2026-11-09T07:29:23.214Z"
-        }
+          "fetchedAt": "2026-11-09T12:39:59.023Z",
+          "verifiedAt": "2026-11-09T12:39:59.023Z",
+          "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) October 5 to 7, 2026",
+          "releaseIdentifier": "Press Release: 2026-2027/1264"
+        },
+        "releaseIdentifier": "Press Release: 2026-2027/1264",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13727&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2026-10-07",
+          "previousRate": 5.25,
+          "newRate": 5.5,
+          "direction": "increase",
+          "rbiCircularNumber": "RBI/2026-27/282",
+          "departmentCircularNumber": "FMOD.MAOG.No.154/01.01.001/2026-27",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13727&fn=2752&Mode=0",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-09T12:39:59.023Z",
+            "verifiedAt": "2026-11-09T12:39:59.023Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        },
+        "effectiveDate": "2026-10-07",
+        "effectiveDateBasis": "explicit-immediate-effect",
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13727&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification"
       }
     ],
     "source": "RBI MPC resolution",
     "provenance": {
       "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
       "publishedAt": "2026-10-07",
-      "fetchedAt": "2026-11-09T07:29:23.214Z",
-      "verifiedAt": "2026-11-09T07:29:23.214Z"
+      "fetchedAt": "2026-11-09T12:39:59.023Z",
+      "verifiedAt": "2026-11-09T12:39:59.023Z"
     }
   },
   "mpc": {
@@ -79,12 +217,18 @@
       "value": 324.7,
       "decimals": 2,
       "growth": 7.82,
+      "classification": "constant-price real GDP",
+      "baseYear": "2022-23",
+      "series": "Current",
+      "frequency": "Annual",
+      "revisionStatus": "Provisional Estimates",
       "provenance": {
         "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100",
-        "publishedAt": "2026-09-02",
-        "fetchedAt": "2026-11-09T07:29:23.214Z",
-        "verifiedAt": "2026-11-09T07:29:23.214Z",
-        "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+        "publishedAt": "2026-06-05",
+        "fetchedAt": "2026-11-09T12:11:23.633Z",
+        "verifiedAt": "2026-11-09T12:11:23.633Z",
+        "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+        "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
       }
     },
     "quarter": {
@@ -92,12 +236,18 @@
       "value": 81.36,
       "decimals": 2,
       "growth": 7.82,
+      "classification": "constant-price real GDP",
+      "baseYear": "2022-23",
+      "series": "Current",
+      "frequency": "Quarterly",
+      "revisionStatus": "Not stated by API",
       "provenance": {
         "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
         "publishedAt": "2026-09-02",
-        "fetchedAt": "2026-11-09T07:29:23.214Z",
-        "verifiedAt": "2026-11-09T07:29:23.214Z",
-        "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+        "fetchedAt": "2026-11-09T12:11:23.633Z",
+        "verifiedAt": "2026-11-09T12:11:23.633Z",
+        "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
+        "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
       }
     },
     "unit": "₹ lakh crore",
@@ -105,21 +255,44 @@
       "actuals": [
         {
           "label": "Q4 FY26",
-          "value": 7.8,
-          "kind": "legacy",
-          "provenanceStatus": "legacy"
+          "value": 8.56,
+          "kind": "actual",
+          "provenanceStatus": "verified",
+          "classification": "constant-price real GDP",
+          "baseYear": "2022-23",
+          "series": "Current",
+          "frequency": "Quarterly",
+          "revisionStatus": "Not stated by API",
+          "unit": "₹ Crore",
+          "publicationDate": "2026-06-05",
+          "provenance": {
+            "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
+            "publishedAt": "2026-06-05",
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z",
+            "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+            "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
+          }
         },
         {
           "label": "Q1 FY27",
           "value": 7.82,
           "kind": "actual",
           "provenanceStatus": "verified",
+          "classification": "constant-price real GDP",
+          "baseYear": "2022-23",
+          "series": "Current",
+          "frequency": "Quarterly",
+          "revisionStatus": "Not stated by API",
+          "unit": "₹ Crore",
+          "publicationDate": "2026-09-02",
           "provenance": {
             "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
             "publishedAt": "2026-09-02",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z",
-            "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z",
+            "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
+            "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
           }
         }
       ],
@@ -131,8 +304,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         },
         {
@@ -142,8 +315,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         },
         {
@@ -153,8 +326,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         },
         {
@@ -164,8 +337,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         }
       ]
@@ -173,9 +346,10 @@
     "provenance": {
       "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
       "publishedAt": "2026-09-02",
-      "fetchedAt": "2026-11-09T07:29:23.214Z",
-      "verifiedAt": "2026-11-09T07:29:23.214Z",
-      "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf"
+      "fetchedAt": "2026-11-09T12:11:23.633Z",
+      "verifiedAt": "2026-11-09T12:11:23.633Z",
+      "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
+      "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
     },
     "source": "MoSPI National Accounts Statistics"
   },
@@ -187,27 +361,49 @@
     "projection": {
       "actuals": [
         {
-          "label": "Q3 FY26",
-          "value": 0,
-          "kind": "derived-quarterly-average",
-          "provenanceStatus": "derived",
-          "derivation": {
-            "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
-            "observationCount": 3,
-            "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
-            "baseYear": "2024=100"
-          }
-        },
-        {
           "label": "Q4 FY26",
           "value": 3.12,
           "kind": "derived-quarterly-average",
           "provenanceStatus": "derived",
+          "partial": false,
           "derivation": {
             "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "formula": "sum(monthly YoY values) / observation count",
             "observationCount": 3,
+            "expectedObservationCount": 3,
+            "observations": [
+              {
+                "period": "2026-01",
+                "value": 2.74
+              },
+              {
+                "period": "2026-02",
+                "value": 3.21
+              },
+              {
+                "period": "2026-03",
+                "value": 3.4
+              }
+            ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
-            "baseYear": "2024=100"
+            "baseYear": "2024=100",
+            "releases": [
+              {
+                "period": "2026-01",
+                "publishedAt": "2026-02-12",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1770891893893_6b458c0a-c327-4fef-a554-41131ea67273_Press_Relase_of_CPI_for_Jan26.pdf"
+              },
+              {
+                "period": "2026-02",
+                "publishedAt": "2026-03-12",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1773310539387_714ce3b5-4644-4aef-b2e3-64433640a9c3_Press_Release_of_CPI_February_2026.pdf"
+              },
+              {
+                "period": "2026-03",
+                "publishedAt": "2026-04-13",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1776075408775_60ad93d0-aedc-405b-864a-d1e965e7ba40_Press_Release_of_CPI_March_2026.pdf"
+              }
+            ]
           }
         },
         {
@@ -215,11 +411,45 @@
           "value": 3.93,
           "kind": "derived-quarterly-average",
           "provenanceStatus": "derived",
+          "partial": false,
           "derivation": {
             "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "formula": "sum(monthly YoY values) / observation count",
             "observationCount": 3,
+            "expectedObservationCount": 3,
+            "observations": [
+              {
+                "period": "2026-04",
+                "value": 3.48
+              },
+              {
+                "period": "2026-05",
+                "value": 3.93
+              },
+              {
+                "period": "2026-06",
+                "value": 4.38
+              }
+            ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
-            "baseYear": "2024=100"
+            "baseYear": "2024=100",
+            "releases": [
+              {
+                "period": "2026-04",
+                "publishedAt": "2026-05-12",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/PressRelease/CPI%20Press%20Release%20of%20April%202026.pdf"
+              },
+              {
+                "period": "2026-05",
+                "publishedAt": "2026-06-12",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1781259853555_04875571-19f2-4830-9cad-3a1bfd5992e1_Press_Release_of_CPI_for_May_2026.pdf"
+              },
+              {
+                "period": "2026-06",
+                "publishedAt": "2026-07-13",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1783937698596_1013f1a1-3400-41aa-b4f4-5bbff10db7b7_Press_Release_of_CPI_for_June_2026.pdf"
+              }
+            ]
           }
         },
         {
@@ -227,11 +457,45 @@
           "value": 4.94,
           "kind": "derived-quarterly-average",
           "provenanceStatus": "derived",
+          "partial": false,
           "derivation": {
             "method": "arithmetic mean of monthly All India Combined CPI YoY observations",
+            "formula": "sum(monthly YoY values) / observation count",
             "observationCount": 3,
+            "expectedObservationCount": 3,
+            "observations": [
+              {
+                "period": "2026-07",
+                "value": 4.45
+              },
+              {
+                "period": "2026-08",
+                "value": 4.83
+              },
+              {
+                "period": "2026-09",
+                "value": 5.54
+              }
+            ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
-            "baseYear": "2024=100"
+            "baseYear": "2024=100",
+            "releases": [
+              {
+                "period": "2026-07",
+                "publishedAt": "2026-08-12",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1786529680747_3113661d-1a2b-4b9a-af06-b340193ef9a0_Press_Release_CPI_July_2026.pdf"
+              },
+              {
+                "period": "2026-08",
+                "publishedAt": "2026-09-14",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1789381904344_6c792dcf-8a9f-4fca-93d3-99d833bdb358_Press_Release_of_CPI_for_August_2026.pdf"
+              },
+              {
+                "period": "2026-09",
+                "publishedAt": "2026-10-12",
+                "sourceUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1791800601071_643518af-5320-4e52-b78c-75c92b83885b_Press_Release_for_the_month_of_September,_2026.pdf"
+              }
+            ]
           }
         }
       ],
@@ -243,8 +507,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         },
         {
@@ -254,8 +518,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         },
         {
@@ -265,8 +529,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T07:29:23.214Z",
-            "verifiedAt": "2026-11-09T07:29:23.214Z"
+            "fetchedAt": "2026-11-09T12:11:23.633Z",
+            "verifiedAt": "2026-11-09T12:11:23.633Z"
           }
         }
       ]
@@ -274,8 +538,8 @@
     "provenance": {
       "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
       "publishedAt": "2026-10-12",
-      "fetchedAt": "2026-11-09T07:29:23.214Z",
-      "verifiedAt": "2026-11-09T07:29:23.214Z",
+      "fetchedAt": "2026-11-09T12:11:23.633Z",
+      "verifiedAt": "2026-11-09T12:11:23.633Z",
       "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1791800601071_643518af-5320-4e52-b78c-75c92b83885b_Press_Release_for_the_month_of_September,_2026.pdf"
     },
     "source": "MoSPI CPI API (All India Combined)"
@@ -294,5 +558,5 @@
       "verifiedAt": "2026-11-09T06:53:52.713Z"
     }
   },
-  "schemaVersion": 2
+  "schemaVersion": 3
 }

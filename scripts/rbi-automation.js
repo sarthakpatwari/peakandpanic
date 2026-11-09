@@ -10,6 +10,7 @@ const UA = 'PeakAndPanicDataBot/2.0 (+https://github.com/sarthakpatwari/peakandp
 const URLS = Object.freeze({
   rbiHome: 'https://www.rbi.org.in/',
   rbiPolicy: 'https://rbi.org.in/scripts/Annualpolicy.aspx',
+  rbiNotifications: 'https://rbi.org.in/scripts/FS_Notification.aspx?fn=2752',
   mospiReleases: 'https://www.mospi.gov.in/api/latest-release/get-web-latest-release-list',
   cpi: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100',
   gdpQuarterly: 'https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100',
@@ -46,7 +47,7 @@ function parseCurrentRates(html) {
   return unique[0];
 }
 
-function parsePolicyIndex(html, baseUrl) {
+function parsePolicyLinks(html, baseUrl) {
   const source = String(html);
   const candidates = [];
   const re = /<a\b[^>]*href=["']([^"']*(?:BS_|FS_)PressRelease(?:Display)?\.aspx[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
@@ -59,13 +60,122 @@ function parsePolicyIndex(html, baseUrl) {
     const resolutionContext = context.slice(resolutionAt);
     const dateMatch = resolutionContext.match(/([A-Za-z]+)\s+\d{1,2}\s+to\s+(\d{1,2}),?\s+(\d{4})/i);
     const publishedAt = dateMatch && MONTH[dateMatch[1].toLowerCase()] ? isoDate(+dateMatch[3], MONTH[dateMatch[1].toLowerCase()], +dateMatch[2]) : null;
-    candidates.push({ url: new URL(m[1].replace(/&amp;/g, '&'), baseUrl).toString(), publishedAt, context });
+    const sourceTitle = tidy((resolutionContext.match(/Resolution of the Monetary Policy Committee(?: \(MPC\))?[^<\n]{0,120}/i) || [])[0]);
+    candidates.push({ url: new URL(m[1].replace(/&amp;/g, '&'), baseUrl).toString(), publishedAt, sourceTitle, context });
   }
+  return [...new Map(candidates.map(item => [item.url, item])).values()].filter(item=>validIsoDate(item.publishedAt)).sort((a,b) => a.publishedAt.localeCompare(b.publishedAt));
+}
+
+function parsePolicyIndex(html, baseUrl) {
+  const candidates = parsePolicyLinks(html, baseUrl);
   if (!candidates.length) throw new Error('No official MPC resolution link found');
   const dated = candidates.filter(x => x.publishedAt).sort((a,b) => a.publishedAt.localeCompare(b.publishedAt));
   const latest = dated[dated.length - 1] || candidates[candidates.length - 1];
   if (!latest.publishedAt) throw new Error('Latest MPC resolution is missing a publication date');
   return latest;
+}
+
+function parseRepoDecision(html, url, fetchedAt, archiveMeta) {
+  const text = textOf(html);
+  const dateRaw = text.match(/Date\s*:\s*([A-Za-z]+\s+\d{1,2},?\s+\d{4})/i);
+  const publicationDate = dateRaw && parseNamedDate(dateRaw[1]) || archiveMeta && archiveMeta.publishedAt;
+  if (!validIsoDate(publicationDate)) throw new Error('RBI repo decision publication date missing');
+  const decisionScope = (text.match(/Monetary Policy Decisions[\s\S]{0,4500}?(?=Growth and Inflation Outlook|The minutes of the MPC|$)/i) || [text])[0];
+  const rateHits = [...decisionScope.matchAll(/(?:reduce|increase|keep|maintain)[^.]{0,260}?policy repo rate[^.]{0,120}?(?:to|at)?\s*([0-9]+(?:\.[0-9]+)?)\s*per cent/gi)]
+    .map(match => Number(match[1])).filter(value => value >= 2 && value <= 10);
+  const rates = [...new Set(rateHits)];
+  if (rates.length !== 1) throw new Error('RBI repo decision rate is missing or ambiguous');
+  let effectiveDate = null, effectiveDateBasis = null;
+  const explicitEffective = decisionScope.match(/(?:with effect from|effective from)\s+([A-Za-z]+\s+\d{1,2},?\s+\d{4})/i);
+  if (explicitEffective) { effectiveDate = parseNamedDate(explicitEffective[1]); effectiveDateBasis = 'explicit-date'; }
+  else if (/with immediate effect/i.test(decisionScope)) { effectiveDate = publicationDate; effectiveDateBasis = 'explicit-immediate-effect'; }
+  const releaseIdentifier = tidy((text.match(/Press Release\s*:\s*[^\s]+/i) || [])[0]) || null;
+  const sourceTitle = archiveMeta && cleanTitle(archiveMeta.sourceTitle) || tidy((text.match(/Monetary Policy Statement[^\n]{0,180}Resolution of the Monetary Policy Committee[^\n]{0,120}/i) || [])[0]) || 'RBI MPC resolution';
+  const point = {
+    date: publicationDate,
+    decisionDate: publicationDate,
+    rate: rates[0],
+    publicationDate,
+    resolutionUrl: url,
+    verificationStatus: 'verified',
+    sourceTitle,
+    provenance: provenance(url, publicationDate, fetchedAt, { sourceTitle })
+  };
+  if (effectiveDate) Object.assign(point, {effectiveDate, effectiveDateBasis, effectiveDateSourceUrl:url, effectiveDateSourceType:'RBI MPC resolution'});
+  if (releaseIdentifier) {
+    point.releaseIdentifier = releaseIdentifier;
+    point.provenance.releaseIdentifier = releaseIdentifier;
+  }
+  return point;
+}
+
+function parseLafNotificationLinks(html, baseUrl) {
+  const source=String(html), found=[];
+  const token=/<th\b[^>]*>[\s\S]*?<\/t[hd]>|<a\b[^>]*href\s*=\s*(?:["']([^"']+)["']|([^\s>]+))[^>]*>[\s\S]*?<\/a>/gi;
+  let currentDate=null,match;
+  while((match=token.exec(source))){
+    if(/^<th\b/i.test(match[0])){const parsed=parseNamedDate(textOf(match[0]));if(parsed)currentDate=parsed;continue;}
+    const title=tidy(textOf(match[0]));
+    if(title.toLowerCase()!=='liquidity adjustment facility - change in rates')continue;
+    const href=decodeHtmlAttribute(match[1]||match[2]||'');
+    if(!currentDate||!href)continue;
+    const url=new URL(href,baseUrl).toString();
+    if(!/^https:\/\/(?:www\.)?rbi\.org\.in\//i.test(url))continue;
+    found.push({notificationDate:currentDate,url,title:'Liquidity Adjustment Facility - Change in rates'});
+  }
+  return [...new Map(found.map(item=>[item.url,item])).values()].sort((a,b)=>a.notificationDate.localeCompare(b.notificationDate));
+}
+
+function parseLafNotification(html,url,fetchedAt,meta){
+  const text=textOf(html),title='Liquidity Adjustment Facility - Change in rates';
+  if(!new RegExp(title.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&'),'i').test(text))throw new Error('RBI LAF notification title mismatch');
+  const notificationDate=meta&&meta.notificationDate;
+  if(!validIsoDate(notificationDate))throw new Error('RBI LAF notification date missing');
+  const transition=text.match(/\b(reduce|increase)[^.]{0,500}?policy repo rate[^.]{0,220}?from\s+([0-9]+(?:\.[0-9]+)?)\s*per cent\s+to\s+([0-9]+(?:\.[0-9]+)?)\s*per cent/i);
+  if(!transition)throw new Error('RBI LAF repo-rate transition missing');
+  const direction=transition[1].toLowerCase(),previousRate=Number(transition[2]),newRate=Number(transition[3]);
+  if(previousRate<2||previousRate>10||newRate<2||newRate>10||direction!==(newRate<previousRate?'reduce':'increase'))throw new Error('RBI LAF repo-rate transition is inconsistent');
+  const scope=transition[0]+' '+text.slice(Math.max(0,transition.index-120),transition.index+transition[0].length+260);
+  let effectiveDate=null,effectiveDateBasis=null;
+  const explicit=scope.match(/(?:with effect from|effective from)\s+([A-Za-z]+\s+\d{1,2},?\s+\d{4})/i);
+  if(explicit){effectiveDate=parseNamedDate(explicit[1]);effectiveDateBasis='explicit-date';}
+  else if(/with immediate effect/i.test(scope)){effectiveDate=notificationDate;effectiveDateBasis='explicit-immediate-effect';}
+  const rbiCircularNumber=tidy((text.match(/RBI\/\d{4}-\d{2}\/\d+/i)||[])[0])||null;
+  const departmentCircularNumber=tidy((text.match(/FMOD\.[A-Z.]+No\.[^\s<]+/i)||[])[0])||null;
+  const result={title,notificationDate,notificationUrl:url,previousRate,newRate,direction,rbiCircularNumber,departmentCircularNumber,department:departmentCircularNumber?'Financial Markets Operation Department':null,provenance:provenance(url,notificationDate,fetchedAt,{sourceTitle:title})};
+  if(effectiveDate)Object.assign(result,{effectiveDate,effectiveDateBasis});
+  return result;
+}
+
+function reconcileRepoNotifications(decisions,notifications){
+  const sorted=(decisions||[]).slice().sort((a,b)=>a.decisionDate.localeCompare(b.decisionDate));
+  const byDate=new Map(sorted.map((point,index)=>[point.decisionDate,{point,index}]));
+  const seen=new Set();
+  for(const notification of notifications||[]){
+    if(seen.has(notification.notificationUrl))continue;
+    seen.add(notification.notificationUrl);
+    const match=byDate.get(notification.notificationDate);
+    if(!match){
+      if(sorted.length&&notification.notificationDate>=sorted[0].decisionDate&&notification.notificationDate<=sorted.at(-1).decisionDate)throw new Error('RBI LAF notification date does not match an MPC decision');
+      continue;
+    }
+    const previous=sorted[match.index-1];
+    if(!previous||previous.rate!==notification.previousRate||match.point.rate!==notification.newRate)throw new Error('RBI LAF notification rate transition does not match MPC decisions');
+    match.point.lafNotification={sourceUrl:notification.notificationUrl,title:notification.title,notificationDate:notification.notificationDate,previousRate:notification.previousRate,newRate:notification.newRate,direction:notification.direction,rbiCircularNumber:notification.rbiCircularNumber,departmentCircularNumber:notification.departmentCircularNumber,department:notification.department,provenance:notification.provenance};
+    if(notification.effectiveDate)Object.assign(match.point,{effectiveDate:notification.effectiveDate,effectiveDateBasis:notification.effectiveDateBasis,effectiveDateSourceUrl:notification.notificationUrl,effectiveDateSourceType:'RBI LAF notification'});
+  }
+  return sorted;
+}
+
+function cleanTitle(value) { return tidy(value).replace(/\s*Full Document\s*$/i, ''); }
+
+function reconstructRepoHistory(decisions) {
+  const sorted = (decisions || []).slice().sort((a,b) => a.decisionDate.localeCompare(b.decisionDate));
+  const changed = [];
+  sorted.forEach(point => {
+    if (!changed.length || changed[changed.length - 1].rate !== point.rate) changed.push(point);
+  });
+  return dedupeHistory(changed);
 }
 
 function parseResolution(html, url, fetchedAt) {
@@ -145,6 +255,20 @@ function findRelease(releases, kind, period) {
   if (!found) throw new Error('No matching official MoSPI ' + kind.toUpperCase() + ' release metadata for ' + period);
   return found;
 }
+function findGdpRelease(releases, quarter, year) {
+  const ordinal = {Q1:'first quarter',Q2:'second quarter',Q3:'third quarter',Q4:'fourth quarter'}[quarter];
+  const quarterPattern = new RegExp('\\b'+quarter+'\\b|'+ordinal, 'i');
+  const found = releases.filter(item => /\bGDP\b|Gross Domestic Product/i.test(item.title) && item.title.includes(year) && quarterPattern.test(item.title))
+    .sort((a,b) => a.publishedAt.localeCompare(b.publishedAt)).pop();
+  if (!found) throw new Error('No matching official MoSPI GDP release metadata for '+quarter+' '+year);
+  return found;
+}
+function findAnnualGdpRelease(releases, year) {
+  const found = releases.filter(item => /\bGDP\b|Gross Domestic Product/i.test(item.title) && item.title.includes(year) && /annual|provisional estimates/i.test(item.title))
+    .sort((a,b) => a.publishedAt.localeCompare(b.publishedAt)).pop();
+  if (!found) throw new Error('No matching official MoSPI annual GDP release metadata for '+year);
+  return found;
+}
 
 function parseCpi(payload, releases, fetchedAt) {
   if (!payload || !Array.isArray(payload.data)) throw new Error('MoSPI CPI response is malformed');
@@ -157,14 +281,38 @@ function parseCpi(payload, releases, fetchedAt) {
   const monthName = new Intl.DateTimeFormat('en', { month:'long', timeZone:'UTC' }).format(new Date(latest.period + '-01T00:00:00Z'));
   const release = findRelease(releases, 'cpi', monthName + ' ' + latest.year);
   const quarter = new Map();
-  rows.forEach(r => { const q = r.month <= 3 ? 4 : Math.ceil((r.month - 3) / 3), fy = r.month <= 3 ? r.year : r.year + 1, label='Q'+q+' FY'+String(fy).slice(-2); if(!quarter.has(label))quarter.set(label,[]); quarter.get(label).push(r.yoy); });
-  const actuals = [...quarter].map(([label,v]) => ({
-    label,
-    value:+(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2),
-    kind:'derived-quarterly-average',
-    provenanceStatus:'derived',
-    derivation:{method:'arithmetic mean of monthly All India Combined CPI YoY observations',observationCount:v.length,sourceUrl:URLS.cpi,baseYear:'2024=100'}
-  })).slice(-4);
+  rows.forEach(r => {
+    const q = r.month <= 3 ? 4 : Math.ceil((r.month - 3) / 3), fy = r.month <= 3 ? r.year : r.year + 1, label='Q'+q+' FY'+String(fy).slice(-2);
+    const monthName = new Intl.DateTimeFormat('en', { month:'long', timeZone:'UTC' }).format(new Date(r.period + '-01T00:00:00Z'));
+    let releaseMeta = null;
+    try { releaseMeta = findRelease(releases, 'cpi', monthName + ' ' + r.year); } catch (_) {}
+    if(!quarter.has(label))quarter.set(label,[]);
+    quarter.get(label).push(Object.assign({}, r, { releaseMeta }));
+  });
+  const latestQuarterLabel = rows.length ? (() => { const r=rows[rows.length-1],q=r.month<=3?4:Math.ceil((r.month-3)/3),fy=r.month<=3?r.year:r.year+1;return 'Q'+q+' FY'+String(fy).slice(-2); })() : null;
+  const actuals = [...quarter].map(([label,observations]) => {
+    if (!observations.every(item => item.releaseMeta)) return null;
+    const complete = observations.length === 3;
+    if (!complete && label !== latestQuarterLabel) return null;
+    const releasesForPoint = observations.map(item => ({ period:item.period, publishedAt:item.releaseMeta.publishedAt, sourceUrl:item.releaseMeta.sourceUrl }));
+    return {
+      label,
+      value:+(observations.reduce((sum,item)=>sum+item.yoy,0)/observations.length).toFixed(2),
+      kind:'derived-quarterly-average',
+      provenanceStatus:'derived',
+      partial:!complete,
+      derivation:{
+        method:'arithmetic mean of monthly All India Combined CPI YoY observations',
+        formula:'sum(monthly YoY values) / observation count',
+        observationCount:observations.length,
+        expectedObservationCount:3,
+        observations:observations.map(item=>({period:item.period,value:item.yoy})),
+        sourceUrl:URLS.cpi,
+        baseYear:'2024=100',
+        releases:releasesForPoint
+      }
+    };
+  }).filter(Boolean).slice(-4);
   return { index:latest.index, yoy:latest.yoy, period:latest.period, baseYear:'2024=100', projection:{actuals}, provenance:provenance(URLS.cpi, release.publishedAt, fetchedAt, { publicationUrl:release.sourceUrl }) };
 }
 
@@ -172,22 +320,43 @@ function parseGdp(quarterPayload, annualPayload, releases, fetchedAt) {
   const qRows = quarterPayload && Array.isArray(quarterPayload.data) ? quarterPayload.data : null;
   const aRows = annualPayload && Array.isArray(annualPayload.data) ? annualPayload.data : null;
   if (!qRows || !aRows) throw new Error('MoSPI GDP response is malformed');
-  const q = qRows.filter(r => r.indicator === 'Gross Domestic Product' && r.quarter && finite(+r.constant_price)).map(r => ({ year:r.year, quarter:r.quarter, value:+r.constant_price })).sort(comparePeriod);
-  const a = aRows.filter(r => r.indicator === 'Gross Domestic Product' && finite(+r.constant_price)).map(r => ({ year:r.year, value:+r.constant_price })).sort((x,y)=>x.year.localeCompare(y.year));
+  const q = qRows.filter(r => r.indicator === 'Gross Domestic Product' && r.quarter && finite(+r.constant_price)).map(r => ({
+    year:r.year, quarter:r.quarter, value:+r.constant_price, baseYear:r.base_year, series:r.series,
+    frequency:r.frequency, revisionStatus:tidy(r.revision)||'Not stated by API', unit:r.unit
+  })).sort(comparePeriod);
+  const a = aRows.filter(r => r.indicator === 'Gross Domestic Product' && finite(+r.constant_price)).map(r => ({
+    year:r.year, value:+r.constant_price, baseYear:r.base_year, series:r.series,
+    frequency:r.frequency, revisionStatus:tidy(r.revision)||'Not stated by API', unit:r.unit
+  })).sort((x,y)=>x.year.localeCompare(y.year));
   if (q.length < 2 || a.length < 2) throw new Error('MoSPI GDP observations are incomplete');
   const latestQ=q[q.length-1], previousQ=[...q].reverse().find(x=>x.quarter===latestQ.quarter&&x.year<latestQ.year);
   if(!previousQ) throw new Error('GDP prior-year quarter is missing');
   const growth=+((latestQ.value/previousQ.value-1)*100).toFixed(2);
   if(growth < -20 || growth > 30) throw new Error('GDP quarterly growth is implausible');
-  const latestA=a[a.length-1], previousA=a[a.length-2], annualGrowth=+((latestA.value/previousA.value-1)*100).toFixed(2), period=latestQ.quarter+' FY'+latestQ.year.slice(-2);
+  const latestA=a[a.length-1], previousA=a[a.length-2], annualGrowth=+((latestA.value/previousA.value-1)*100).toFixed(2);
   if(annualGrowth < -20 || annualGrowth > 30) throw new Error('GDP annual growth is implausible');
-  const release=findRelease(releases,'gdp',latestQ.quarter+' '+latestQ.year);
-  const quarterProvenance=provenance(URLS.gdpQuarterly,release.publishedAt,fetchedAt,{publicationUrl:release.sourceUrl});
-  const annualProvenance=provenance(URLS.gdpAnnual,release.publishedAt,fetchedAt,{publicationUrl:release.sourceUrl});
+  const release=findGdpRelease(releases,latestQ.quarter,latestQ.year);
+  const annualRelease=findAnnualGdpRelease(releases,latestA.year);
+  const quarterProvenance=provenance(URLS.gdpQuarterly,release.publishedAt,fetchedAt,{publicationUrl:release.sourceUrl,releaseTitle:release.title});
+  const annualProvenance=provenance(URLS.gdpAnnual,annualRelease.publishedAt,fetchedAt,{publicationUrl:annualRelease.sourceUrl,releaseTitle:annualRelease.title});
+  const actuals=q.map(row=>{
+    const prior=[...q].reverse().find(item=>item.quarter===row.quarter&&item.year<row.year);
+    if(!prior)return null;
+    let pointRelease;
+    try{pointRelease=findGdpRelease(releases,row.quarter,row.year);}catch(_){return null;}
+    const pointGrowth=+((row.value/prior.value-1)*100).toFixed(2);
+    if(pointGrowth < -20 || pointGrowth > 30)return null;
+    return {
+      label:row.quarter+' FY'+row.year.slice(-2),value:pointGrowth,kind:'actual',provenanceStatus:'verified',
+      classification:'constant-price real GDP',baseYear:row.baseYear,series:row.series,frequency:row.frequency,
+      revisionStatus:row.revisionStatus,unit:row.unit,publicationDate:pointRelease.publishedAt,
+      provenance:provenance(URLS.gdpQuarterly,pointRelease.publishedAt,fetchedAt,{publicationUrl:pointRelease.sourceUrl,releaseTitle:pointRelease.title})
+    };
+  }).filter(Boolean).slice(-8);
   return {
-    fy:{label:'FY'+latestA.year,value:+(latestA.value/100000).toFixed(2),decimals:2,growth:annualGrowth,provenance:annualProvenance},
-    quarter:{label:latestQ.quarter+' FY'+latestQ.year,value:+(latestQ.value/100000).toFixed(2),decimals:2,growth,provenance:quarterProvenance},
-    unit:'₹ lakh crore',projection:{actuals:[{label:period,value:growth,kind:'actual',provenanceStatus:'verified',provenance:quarterProvenance}]},
+    fy:{label:'FY'+latestA.year,value:+(latestA.value/100000).toFixed(2),decimals:2,growth:annualGrowth,classification:'constant-price real GDP',baseYear:latestA.baseYear,series:latestA.series,frequency:latestA.frequency,revisionStatus:latestA.revisionStatus,provenance:annualProvenance},
+    quarter:{label:latestQ.quarter+' FY'+latestQ.year,value:+(latestQ.value/100000).toFixed(2),decimals:2,growth,classification:'constant-price real GDP',baseYear:latestQ.baseYear,series:latestQ.series,frequency:latestQ.frequency,revisionStatus:latestQ.revisionStatus,provenance:quarterProvenance},
+    unit:'₹ lakh crore',projection:{actuals},
     provenance:quarterProvenance
   };
 }
@@ -199,7 +368,7 @@ function validatePoint(p, kind) {
   if (p.value < range[0] || p.value > range[1]) throw new Error(kind + ' contains an implausible value');
 }
 function mergeProjection(oldProjection, actuals, estimates, kind) {
-  const actualMap=new Map((oldProjection && oldProjection.actuals || []).map(x=>[x.label,x]));
+  const actualMap=new Map();
   actuals.forEach(x=>{validatePoint(x,kind);actualMap.set(x.label,x);});
   const estimateMap=new Map();
   estimates.forEach(x=>{validatePoint(x,kind);if(!actualMap.has(x.label))estimateMap.set(x.label,x);});
@@ -209,10 +378,21 @@ function quarterKey(label){const m=String(label).match(/^Q([1-4]) FY(\d{2})$/);r
 function sameObservation(a,b){const strip=x=>JSON.parse(JSON.stringify(x,(key,value)=>(key==='fetchedAt'||key==='verifiedAt')?undefined:value));return JSON.stringify(strip(a))===JSON.stringify(strip(b));}
 function retainTimestamp(oldSection,newSection){return sameObservation(oldSection,newSection)&&oldSection&&oldSection.provenance?clone(oldSection):newSection;}
 
+function sanitizeStoredData(stored) {
+  const clean=clone(stored);
+  if(clean.repo&&Array.isArray(clean.repo.history))clean.repo.history=clean.repo.history.filter(item=>item&&item.provenance&&item.provenance.sourceUrl&&(item.verificationStatus==='verified'||item.provenanceStatus==='verified')).map(item=>{
+    const point=Object.assign({},item,{verificationStatus:'verified'});delete point.provenanceStatus;return point;
+  });
+  if(clean.gdp&&clean.gdp.projection&&Array.isArray(clean.gdp.projection.actuals))clean.gdp.projection.actuals=clean.gdp.projection.actuals.filter(point=>point&&point.kind==='actual'&&point.provenanceStatus==='verified'&&point.provenance&&point.provenance.sourceUrl);
+  if(clean.gdp&&clean.gdp.projection&&Array.isArray(clean.gdp.projection.estimates))clean.gdp.projection.estimates=clean.gdp.projection.estimates.filter(point=>point&&point.kind==='projection'&&point.provenance&&point.provenance.sourceUrl);
+  if(clean.cpi&&clean.cpi.projection&&Array.isArray(clean.cpi.projection.actuals))clean.cpi.projection.actuals=clean.cpi.projection.actuals.filter(point=>point&&point.kind==='derived-quarterly-average'&&point.provenanceStatus==='derived'&&point.derivation&&point.derivation.sourceUrl===URLS.cpi);
+  return clean;
+}
+
 function buildCandidate(stored, sources, fetchedAt) {
   if(!sources||!sources.resolution||!sources.schedule||!sources.gdp||!sources.cpi)throw new Error('Complete source set required');
   return buildMergedCandidate(stored,{
-    policy:{ok:true,value:{currentRate:sources.currentRate,resolution:sources.resolution}},
+    policy:{ok:true,value:{currentRate:sources.currentRate,resolution:sources.resolution,repoHistory:sources.repoHistory}},
     schedule:{ok:true,value:sources.schedule},
     gdp:{ok:true,value:sources.gdp},
     cpi:{ok:true,value:sources.cpi}
@@ -220,10 +400,10 @@ function buildCandidate(stored, sources, fetchedAt) {
 }
 
 function buildMergedCandidate(stored, outcomes, fetchedAt) {
-  const next=clone(stored);
-  const legacyRbi=outcomes&&outcomes.rbi;
-  const policy=outcomes&&(outcomes.policy||(legacyRbi&&(legacyRbi.ok?{ok:true,value:{currentRate:legacyRbi.value.currentRate,resolution:legacyRbi.value.resolution}}:legacyRbi)));
-  const schedule=outcomes&&(outcomes.schedule||(legacyRbi&&(legacyRbi.ok?{ok:true,value:legacyRbi.value.schedule}:legacyRbi)));
+  const next=sanitizeStoredData(stored);
+  const combinedRbi=outcomes&&outcomes.rbi;
+  const policy=outcomes&&(outcomes.policy||(combinedRbi&&(combinedRbi.ok?{ok:true,value:{currentRate:combinedRbi.value.currentRate,resolution:combinedRbi.value.resolution,repoHistory:combinedRbi.value.repoHistory}}:combinedRbi)));
+  const schedule=outcomes&&(outcomes.schedule||(combinedRbi&&(combinedRbi.ok?{ok:true,value:combinedRbi.value.schedule}:combinedRbi)));
   const gdp=outcomes&&outcomes.gdp, cpi=outcomes&&outcomes.cpi;
   if(!policy||!schedule||!gdp||!cpi)throw new Error('Source outcomes are incomplete');
 
@@ -231,14 +411,12 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
     const resolution=policy.value.resolution;
     if(resolution.rate !== policy.value.currentRate) throw new Error('RBI current rate disagrees with the latest MPC resolution');
     rejectRegression(next.repo,resolution,'repo');rejectRegression(next.stance,resolution,'stance');rejectRegression(next.commentary,resolution,'commentary');
-    const latest=(next.repo&&next.repo.history||[]).slice().sort((a,b)=>a.date.localeCompare(b.date)).pop();
-    let history=(next.repo&&next.repo.history||[]).map(item=>{
-      if(item.date===resolution.decisionDate&&item.rate===resolution.rate)return Object.assign({},item,{decisionDate:resolution.decisionDate,provenanceStatus:'verified',provenance:resolution.provenance});
-      return item.provenance?item:Object.assign({},item,{provenanceStatus:'legacy'});
-    });
+    const officialHistory=Array.isArray(policy.value.repoHistory)&&policy.value.repoHistory.length?reconstructRepoHistory(policy.value.repoHistory):null;
+    let history=officialHistory||((next.repo&&next.repo.history)||[]).slice();
+    const latest=history.slice().sort((a,b)=>a.date.localeCompare(b.date)).pop();
     if(!latest||latest.rate!==resolution.rate){
       if(latest&&resolution.decisionDate<=latest.date) throw new Error('Older repo-rate observation cannot replace newer history');
-      const observation={date:resolution.decisionDate,decisionDate:resolution.decisionDate,rate:resolution.rate,provenanceStatus:'verified',provenance:resolution.provenance};
+      const observation={date:resolution.decisionDate,decisionDate:resolution.decisionDate,rate:resolution.rate,publicationDate:resolution.provenance.publishedAt,resolutionUrl:resolution.provenance.sourceUrl,verificationStatus:'verified',sourceTitle:resolution.provenance.sourceTitle||'RBI MPC resolution',provenance:resolution.provenance};
       if(validIsoDate(resolution.effectiveDate))observation.effectiveDate=resolution.effectiveDate;
       history.push(observation);
     }
@@ -253,7 +431,6 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
     const gdpRaw=clone(gdp.value);gdpRaw.source='MoSPI National Accounts Statistics';
     const estimates=policy.ok?policy.value.resolution.gdpProjections.map(x=>Object.assign({},x,{kind:'projection',provenance:policy.value.resolution.provenance})):(next.gdp&&next.gdp.projection&&next.gdp.projection.estimates||[]);
     gdpRaw.projection=mergeProjection(next.gdp&&next.gdp.projection,gdpRaw.projection.actuals,estimates,'GDP');
-    gdpRaw.projection.actuals=gdpRaw.projection.actuals.map(point=>point.provenance?Object.assign({},point,{kind:point.kind||'actual',provenanceStatus:'verified'}):Object.assign({},point,{kind:'legacy',provenanceStatus:'legacy'}));
     next.gdp=retainTimestamp(next.gdp,gdpRaw);
   }
   if(cpi.ok){
@@ -263,7 +440,7 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
     cpiRaw.projection=mergeProjection(next.cpi&&next.cpi.projection,cpiRaw.projection.actuals,estimates,'CPI');
     next.cpi=retainTimestamp(next.cpi,cpiRaw);
   }
-  next.schemaVersion=2;
+  next.schemaVersion=3;
   validateDataset(next,fetchedAt);
   const changed=JSON.stringify(next)!==JSON.stringify(stored);
   if(changed)next.updatedAt=fetchedAt;
@@ -277,7 +454,11 @@ function dedupeHistory(history){
 function validateDataset(data, nowIso) {
   if(!data||!data.repo||!data.stance||!data.mpc||!data.gdp||!data.cpi||!data.commentary)throw new Error('Candidate dataset is incomplete');
   dedupeHistory(data.repo.history||[]);
-  if(data.repo.history.some(item=>!['legacy','verified'].includes(item.provenanceStatus)))throw new Error('Repo history provenance status is incomplete');
+  if(!data.repo.history.length||data.repo.history.some(item=>item.verificationStatus!=='verified'||!item.provenance||!/^https:\/\//.test(item.provenance.sourceUrl)||!validIsoDate(item.provenance.publishedAt)))throw new Error('Repo history verification is incomplete');
+  data.repo.history.forEach(item=>{
+    if(item.effectiveDate&&(!validIsoDate(item.effectiveDate)||!['explicit-immediate-effect','explicit-date'].includes(item.effectiveDateBasis)||!/^https:\/\/(?:www\.)?rbi\.org\.in\//i.test(item.effectiveDateSourceUrl||'')||!['RBI LAF notification','RBI MPC resolution'].includes(item.effectiveDateSourceType)))throw new Error('Repo effective-date provenance is incomplete');
+    if(item.lafNotification){const n=item.lafNotification;if(n.title!=='Liquidity Adjustment Facility - Change in rates'||n.notificationDate!==item.decisionDate||n.newRate!==item.rate||!finite(n.previousRate)||!['reduce','increase'].includes(n.direction)||!/^https:\/\/(?:www\.)?rbi\.org\.in\//i.test(n.sourceUrl||'')||!n.provenance||n.provenance.sourceUrl!==n.sourceUrl)throw new Error('RBI LAF notification provenance is incomplete');}
+  });
   if(!STANCES.includes(data.stance.current)||!validIsoDate(data.stance.since))throw new Error('Invalid stance');
   if(!(data.mpc.meetings||[]).length||data.mpc.meetings.some(x=>!validIsoDate(x.announce)))throw new Error('Invalid MPC schedule');
   if(!finite(data.cpi.index)||data.cpi.index<50||data.cpi.index>300||!finite(data.cpi.yoy)||data.cpi.yoy< -10||data.cpi.yoy>30||!/^\d{4}-\d{2}$/.test(data.cpi.period)||data.cpi.baseYear!=='2024=100')throw new Error('Invalid CPI actual');
@@ -286,8 +467,8 @@ function validateDataset(data, nowIso) {
   ['repo','stance','mpc','gdp','cpi','commentary'].forEach(k=>{const p=data[k].provenance;if(!p||!/^https:\/\//.test(p.sourceUrl)||!validIsoDate(p.publishedAt)||!validIsoTime(p.fetchedAt))throw new Error(k+' provenance is incomplete');if(Date.parse(p.publishedAt+'T00:00:00Z')>Date.parse(nowIso))throw new Error(k+' publication is future-dated');});
   [data.gdp.fy,data.gdp.quarter].forEach((point,index)=>{const p=point.provenance;if(!p||!/^https:\/\//.test(p.sourceUrl)||!validIsoDate(p.publishedAt))throw new Error('GDP '+(index?'quarterly':'annual')+' provenance is incomplete');});
   [...(data.gdp.projection.estimates||[]),...(data.cpi.projection.estimates||[])].forEach(point=>{if(point.kind!=='projection'||!point.provenance||!/^https:\/\//.test(point.provenance.sourceUrl)||!validIsoDate(point.provenance.publishedAt))throw new Error('Projection provenance is incomplete');});
-  (data.gdp.projection.actuals||[]).forEach(point=>{if(point.provenanceStatus==='verified'){if(point.kind!=='actual'||!point.provenance||!validIsoDate(point.provenance.publishedAt))throw new Error('Verified GDP actual provenance is incomplete');}else if(point.provenanceStatus!=='legacy'||point.kind!=='legacy')throw new Error('GDP actual provenance status is incomplete');});
-  (data.cpi.projection.actuals||[]).forEach(point=>{if(point.kind!=='derived-quarterly-average'||point.provenanceStatus!=='derived'||!point.derivation||point.derivation.method!=='arithmetic mean of monthly All India Combined CPI YoY observations'||point.derivation.sourceUrl!==URLS.cpi)throw new Error('CPI actual derivation metadata is incomplete');});
+  (data.gdp.projection.actuals||[]).forEach(point=>{if(point.provenanceStatus!=='verified'||point.kind!=='actual'||point.classification!=='constant-price real GDP'||!point.baseYear||!point.series||!point.frequency||!point.revisionStatus||!point.provenance||!validIsoDate(point.provenance.publishedAt))throw new Error('Verified GDP actual provenance is incomplete');});
+  (data.cpi.projection.actuals||[]).forEach(point=>{const d=point.derivation;if(point.kind!=='derived-quarterly-average'||point.provenanceStatus!=='derived'||!d||d.method!=='arithmetic mean of monthly All India Combined CPI YoY observations'||d.formula!=='sum(monthly YoY values) / observation count'||d.sourceUrl!==URLS.cpi||d.expectedObservationCount!==3||!Array.isArray(d.observations)||d.observations.length!==d.observationCount||!Array.isArray(d.releases)||d.releases.length!==d.observationCount||(!point.partial&&d.observationCount!==3))throw new Error('CPI actual derivation metadata is incomplete');});
   return true;
 }
 
@@ -319,33 +500,73 @@ function atomicWriteMany(entries, hooks) {
 async function request(url, options) {
   const parsed=new URL(url),body=options&&options.body||null,max=5*1024*1024;
   return new Promise((resolve,reject)=>{
-    const req=https.request({protocol:parsed.protocol,hostname:parsed.hostname,port:parsed.port||443,path:parsed.pathname+parsed.search,method:body?'POST':'GET',headers:Object.assign({'User-Agent':UA,'Accept':options&&options.accept||'*/*'},body?{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}:{}),secureOptions:parsed.hostname==='api.mospi.gov.in'?constants.SSL_OP_LEGACY_SERVER_CONNECT:undefined,timeout:30000},res=>{
+    const req=https.request({protocol:parsed.protocol,hostname:parsed.hostname,port:parsed.port||443,path:parsed.pathname+parsed.search,method:(options&&options.method)||(body?'POST':'GET'),headers:Object.assign({'User-Agent':UA,'Accept':options&&options.accept||'*/*'},body?{'Content-Type':options&&options.contentType||'application/json','Content-Length':Buffer.byteLength(body)}:{},options&&options.headers||{}),secureOptions:parsed.hostname==='api.mospi.gov.in'?constants.SSL_OP_LEGACY_SERVER_CONNECT:undefined,timeout:30000},res=>{
       if(res.statusCode>=300&&res.statusCode<400&&res.headers.location){res.resume();return resolve(request(new URL(res.headers.location,url).toString(),options));}
       let size=0,chunks=[];res.on('data',d=>{size+=d.length;if(size>max){req.destroy(new Error('response exceeds 5 MB'));return;}chunks.push(d);});
-      res.on('end',()=>{const text=Buffer.concat(chunks).toString('utf8');if(res.statusCode<200||res.statusCode>=300)return reject(new Error('HTTP '+res.statusCode+' from '+url));resolve(text);});
+      res.on('end',()=>{const text=Buffer.concat(chunks).toString('utf8');if(res.statusCode<200||res.statusCode>=300)return reject(new Error('HTTP '+res.statusCode+' from '+url));resolve(options&&options.returnResponse?{text,headers:res.headers,statusCode:res.statusCode}:text);});
     });req.on('timeout',()=>req.destroy(new Error('timeout from '+url)));req.on('error',reject);if(body)req.write(body);req.end();
   });
 }
+
+function decodeHtmlAttribute(value){return String(value||'').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&#(d+);/g,(_,n)=>String.fromCharCode(Number(n)));}
+function archiveForm(html,year){
+  const form=new URLSearchParams();
+  for(const match of String(html).matchAll(/<input\b[^>]*type=["']hidden["'][^>]*>/gi)){
+    const tag=match[0],name=(tag.match(/\bname=["']([^"']+)["']/i)||[])[1],value=(tag.match(/\bvalue=["']([^"']*)["']/i)||[])[1]||'';
+    if(name)form.set(decodeHtmlAttribute(name),decodeHtmlAttribute(value));
+  }
+  form.set('hdnYear',String(year));form.set('UsrFontCntr$btn','');return form.toString();
+}
+async function fetchPolicyArchivePages(nowIso){
+  const first=await request(URLS.rbiPolicy,{accept:'text/html',returnResponse:true});
+  const cookies=(first.headers['set-cookie']||[]).map(value=>value.split(';')[0]).join('; ');
+  const date=new Date(nowIso),year=date.getUTCFullYear(),endYear=date.getUTCMonth()>=3?year+1:year;
+  const years=[endYear-2,endYear-1,endYear],pages=[];
+  for(const archiveYear of years){
+    const response=await request(URLS.rbiPolicy,{accept:'text/html',method:'POST',body:archiveForm(first.text,archiveYear),contentType:'application/x-www-form-urlencoded',headers:cookies?{Cookie:cookies}:{}});
+    pages.push({archiveYear,html:response});
+  }
+  return pages;
+}
+
+async function fetchRepoNotifications(fetchedAt){
+  const indexHtml=await request(URLS.rbiNotifications,{accept:'text/html'});
+  const links=parseLafNotificationLinks(indexHtml,URLS.rbiNotifications);
+  if(!links.length)throw new Error('No official RBI LAF rate-change notifications discovered');
+  return Promise.all(links.map(async meta=>parseLafNotification(await request(meta.url,{accept:'text/html'}),meta.url,fetchedAt,meta)));
+}
+
+async function fetchPolicyData(homeHtml,pages,fetchedAt,notifications){
+  const links=[...new Map(pages.flatMap(page=>parsePolicyLinks(page.html,URLS.rbiPolicy)).map(item=>[item.url,item])).values()].sort((a,b)=>a.publishedAt.localeCompare(b.publishedAt));
+  if(!links.length)throw new Error('No official RBI MPC resolutions discovered across archive years');
+  const documents=await Promise.all(links.map(async meta=>({meta,html:await request(meta.url,{accept:'text/html'})})));
+  const decisions=reconcileRepoNotifications(documents.map(item=>parseRepoDecision(item.html,item.meta.url,fetchedAt,item.meta)),notifications||[]);
+  const latest=documents[documents.length-1];
+  const latestArchiveYear=Math.max(...pages.map(page=>page.archiveYear));
+  const historyStart=String(latestArchiveYear-2)+'-04-01';
+  return {currentRate:parseCurrentRates(homeHtml),resolution:parseResolution(latest.html,latest.meta.url,fetchedAt),repoHistory:reconstructRepoHistory(decisions).filter(point=>point.decisionDate>=historyStart)};
+}
 async function fetchSources(nowIso) {
   const fetchedAt=nowIso;
-  const [home,policy,releasesText,cpiText,gdpQText,gdpAText]=await Promise.all([
-    request(URLS.rbiHome,{accept:'text/html'}),request(URLS.rbiPolicy,{accept:'text/html'}),
+  const [home,policyPages,notifications,releasesText,cpiText,gdpQText,gdpAText]=await Promise.all([
+    request(URLS.rbiHome,{accept:'text/html'}),fetchPolicyArchivePages(fetchedAt),fetchRepoNotifications(fetchedAt),
     request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}),
     request(URLS.cpi,{accept:'application/json'}),request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'})
   ]);
-  const resolutionMeta=parsePolicyIndex(policy,URLS.rbiPolicy);
-  const resolutionHtml=await request(resolutionMeta.url,{accept:'text/html'});
+  const policyData=await fetchPolicyData(home,policyPages,fetchedAt,notifications);
   const releases=parseReleaseList(JSON.parse(releasesText));
-  return {fetchedAt,currentRate:parseCurrentRates(home),resolution:parseResolution(resolutionHtml,resolutionMeta.url,fetchedAt),schedule:parseSchedule(policy,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt)};
+  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt)};
 }
 
 async function fetchSourceOutcomes(nowIso) {
   const fetchedAt=nowIso;
-  const homePromise=request(URLS.rbiHome,{accept:'text/html'}),policyPagePromise=request(URLS.rbiPolicy,{accept:'text/html'});
+  const homePromise=request(URLS.rbiHome,{accept:'text/html'}),policyPagesPromise=fetchPolicyArchivePages(fetchedAt);
+  const notificationsPromise=fetchRepoNotifications(fetchedAt);
   const releasesPromise=request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}).then(text=>parseReleaseList(JSON.parse(text)));
   const tasks={
-    policy:(async()=>{const [home,policyPage]=await Promise.all([homePromise,policyPagePromise]);const meta=parsePolicyIndex(policyPage,URLS.rbiPolicy);const resolutionHtml=await request(meta.url,{accept:'text/html'});return {currentRate:parseCurrentRates(home),resolution:parseResolution(resolutionHtml,meta.url,fetchedAt)};})(),
-    schedule:(async()=>parseSchedule(await policyPagePromise,URLS.rbiPolicy,fetchedAt))(),
+    policy:(async()=>{const [home,pages,notificationResult]=await Promise.all([homePromise,policyPagesPromise,notificationsPromise.then(value=>({ok:true,value}),error=>({ok:false,error}))]);return fetchPolicyData(home,pages,fetchedAt,notificationResult.ok?notificationResult.value:[]);})(),
+    notifications:notificationsPromise,
+    schedule:(async()=>{const pages=await policyPagesPromise;return parseSchedule(pages[pages.length-1].html,URLS.rbiPolicy,fetchedAt);})(),
     cpi:(async()=>{const [text,releases]=await Promise.all([request(URLS.cpi,{accept:'application/json'}),releasesPromise]);return parseCpi(JSON.parse(text),releases,fetchedAt);})(),
     gdp:(async()=>{const [q,a,releases]=await Promise.all([request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),releasesPromise]);return parseGdp(JSON.parse(q),JSON.parse(a),releases,fetchedAt);})()
   };
@@ -355,4 +576,4 @@ async function fetchSourceOutcomes(nowIso) {
 }
 function conciseError(error){return tidy(error&&error.message||error||'unknown error').slice(0,300);}
 
-module.exports={URLS,textOf,parseCurrentRates,parsePolicyIndex,parseResolution,parseSchedule,parseReleaseList,findRelease,parseCpi,parseGdp,mergeProjection,buildCandidate,buildMergedCandidate,validateDataset,macroFromCandidate,atomicWriteMany,fetchSources,fetchSourceOutcomes,request};
+module.exports={URLS,textOf,parseCurrentRates,parsePolicyLinks,parsePolicyIndex,parseRepoDecision,parseLafNotificationLinks,parseLafNotification,reconcileRepoNotifications,reconstructRepoHistory,parseResolution,parseSchedule,parseReleaseList,findRelease,findGdpRelease,parseCpi,parseGdp,mergeProjection,buildCandidate,buildMergedCandidate,validateDataset,macroFromCandidate,atomicWriteMany,fetchSources,fetchSourceOutcomes,request,archiveForm,fetchPolicyArchivePages,fetchRepoNotifications,fetchPolicyData};

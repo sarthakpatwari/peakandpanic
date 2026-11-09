@@ -2,7 +2,7 @@
 'use strict';
 
 // Backwards-compatible entry point for the server's explicit opt-in updater.
-// The official RBI/MoSPI pipeline owns both generated data files so legacy
+// The official RBI/MoSPI pipeline owns both generated data files so older
 // callers cannot reintroduce sample values or bypass validation/atomic writes.
 const { main } = require('./update-rbi');
 

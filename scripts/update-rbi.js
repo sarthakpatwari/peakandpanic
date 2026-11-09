@@ -20,7 +20,7 @@ async function main(options) {
   let outcomes;
   try {
     if(options&&options.outcomes)outcomes=options.outcomes;
-    else if(options&&options.sources)outcomes={policy:{ok:true,value:{currentRate:options.sources.currentRate,resolution:options.sources.resolution}},schedule:{ok:true,value:options.sources.schedule},gdp:{ok:true,value:options.sources.gdp},cpi:{ok:true,value:options.sources.cpi}};
+    else if(options&&options.sources)outcomes={policy:{ok:true,value:{currentRate:options.sources.currentRate,resolution:options.sources.resolution,repoHistory:options.sources.repoHistory}},schedule:{ok:true,value:options.sources.schedule},gdp:{ok:true,value:options.sources.gdp},cpi:{ok:true,value:options.sources.cpi}};
     else outcomes=await automation.fetchSourceOutcomes(now);
   } catch (error) {
     throw new Error('official-sources/request-or-parse: ' + error.message + '; last-known-good retained');
