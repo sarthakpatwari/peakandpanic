@@ -4,400 +4,330 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RBI Policy Tracker | Peak and Panic</title>
-  <link rel="icon" type="image/png" href="images/peak-and-panic_app-icon_white-on-purple.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* Source: Figma "RBI Policy Tracker" frame (node 307:220), 1440px wide. 1u = 1/1440 of the page width. */
     :root {
-      --u: 0.0694444cqw;
-      --page-bg: #000;
-      --muted: #9d97b5;
-      --purple: #5519c9;
-      --deep: #4f1aaf;
+      --u: .0694444cqw;
+      --bg: #000;
+      --surface: #071713;
+      --surface-soft: rgba(7, 23, 19, .76);
+      --accent: #10b981;
+      --mint: #6ee7b7;
+      --text: #f2f7f5;
+      --muted: #a7bbb3;
+      --border: #21483c;
+      --partial: #c8b88a;
+      --projection: #8fc8ff;
+      --derived: #b9a8ff;
+      --danger: #f5a5a5;
+      --gutter: clamp(20px, calc(80 * var(--u)), 96px);
+      --section: clamp(52px, calc(72 * var(--u)), 84px);
     }
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--page-bg); color: #fff; line-height: 1.2102; -webkit-font-smoothing: antialiased; }
-    .page { container-type: inline-size; width: 100%; overflow: hidden; }
-    img { display: block; max-width: none; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+    body { min-width: 0; background: var(--bg); color: var(--text); font: 400 16px/1.6 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    img, svg { display: block; max-width: 100%; }
     a { color: inherit; text-decoration: none; }
-    a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+    a:hover { color: var(--mint); }
+    a:focus-visible { outline: 2px solid var(--mint); outline-offset: 4px; }
+    h1, h2, h3, .value { font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif; }
+    .page { container-type: inline-size; width: 100%; overflow-x: clip; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-    /* placement helpers: --x/--y offsets, --w/--h sizes (all in Figma units) */
-    .abs { position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); }
-    [style*="--w:"] { width: calc(var(--w) * var(--u)); }
-    [style*="--h:"] { height: calc(var(--h) * var(--u)); }
+    .nav { min-height: max(76px, calc(88 * var(--u))); padding: 12px var(--gutter); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; }
+    .nav__logo { --logo-art-width: 240px; position: relative; display: block; flex: 0 0 auto; width: calc(var(--logo-art-width) + 16px); height: 52px; min-height: 44px; }
+    .nav__logo img { position: absolute; left: 50%; top: 50%; width: calc(var(--logo-art-width) * 1.1772358); max-width: none; height: auto; transform: translate(-50%, -50%); pointer-events: none; }
+    .nav__links { display: flex; align-items: center; flex-wrap: wrap; gap: clamp(12px, calc(32 * var(--u)), 40px); }
+    .nav__link { min-height: 44px; display: inline-flex; align-items: center; font-size: clamp(14px, calc(16 * var(--u)), 18px); font-weight: 600; }
 
-    /* ── Navigation ── */
-    .nav { height: calc(164 * var(--u)); background: #000; display: flex; align-items: center; justify-content: space-between; padding-right: calc(47 * var(--u)); }
-    .nav__logo img { width: calc(486 * var(--u)); height: calc(162 * var(--u)); object-fit: cover; }
-    .nav__links { display: flex; align-items: center; gap: calc(100 * var(--u)); }
-    .nav__link { font-size: calc(18 * var(--u)); font-weight: 700; letter-spacing: calc(-0.36 * var(--u)); white-space: nowrap; }
-    .btn-signin { width: calc(150 * var(--u)); padding: calc(5 * var(--u)) calc(20 * var(--u)); background: var(--purple); border-radius: calc(15 * var(--u)); font-size: calc(24 * var(--u)); font-weight: 700; letter-spacing: calc(-0.48 * var(--u)); text-align: center; white-space: nowrap; }
+    main { min-width: 0; }
+    .intro { padding: clamp(44px, calc(58 * var(--u)), 68px) var(--gutter) clamp(50px, calc(68 * var(--u)), 80px); border-bottom: 1px solid rgba(33,72,60,.5); }
+    .intro__copy { max-width: 850px; }
+    .eyebrow { margin-bottom: 10px; color: var(--mint); font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { max-width: 18ch; font-size: clamp(38px, calc(58 * var(--u)), 66px); line-height: 1.04; letter-spacing: -.035em; }
+    .intro__copy > p:last-child { max-width: 68ch; margin-top: 16px; color: var(--muted); font-size: clamp(16px, calc(19 * var(--u)), 20px); }
 
-    /* ── Title ── */
-    .title { padding: calc(77 * var(--u)) 0 0 calc(83 * var(--u)); width: calc(927 * var(--u)); }
-    .title h1 { font-size: calc(64 * var(--u)); font-weight: 700; letter-spacing: calc(-1.28 * var(--u)); margin-bottom: calc(24 * var(--u)); }
-    .title p { width: calc(844 * var(--u)); font-size: calc(24 * var(--u)); line-height: 1.5; color: var(--muted); }
+    .section { padding: var(--section) var(--gutter) 0; }
+    .section:last-of-type { padding-bottom: var(--section); }
+    .section-head { max-width: 780px; margin-bottom: 24px; }
+    .section-head h2 { font-size: clamp(30px, calc(40 * var(--u)), 46px); line-height: 1.12; letter-spacing: -.025em; }
+    .section-head p { max-width: 68ch; margin-top: 8px; color: var(--muted); }
+    .panel { min-width: 0; border: 1px solid rgba(110,231,183,.2); border-radius: 16px; background: linear-gradient(145deg, rgba(7,23,19,.94), rgba(4,18,15,.7)); box-shadow: 0 18px 50px rgba(0,0,0,.25), inset 0 1px rgba(110,231,183,.035); }
+    .panel-pad { padding: clamp(20px, calc(28 * var(--u)), 34px); }
+    .state-badge, .type-badge { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 9px; border: 1px solid rgba(110,231,183,.25); border-radius: 999px; color: var(--mint); background: rgba(16,185,129,.07); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .state-badge[data-state="partial"] { color: var(--partial); border-color: rgba(200,184,138,.35); }
+    .state-badge[data-state="unavailable"] { color: var(--muted); border-color: rgba(167,187,179,.25); background: transparent; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 13px; }
+    .meta a { min-height: 44px; display: inline-flex; align-items: center; color: var(--mint); text-decoration: underline; text-underline-offset: 3px; }
+    .unavailable { color: var(--muted); }
 
-    /* ── Panels ── */
-    .panel { position: relative; margin-left: calc(91 * var(--u)); width: calc(1250 * var(--u)); }
-    .panel__frame { position: absolute; inset: 0; border: calc(2 * var(--u)) solid #fff; border-radius: calc(20 * var(--u)); box-shadow: 0 calc(4 * var(--u)) calc(25 * var(--u)) calc(10 * var(--u)) #fff; pointer-events: none; }
-    .panel > .abs { position: absolute; }
+    .policy-grid { min-width: 0; display: grid; grid-template-columns: minmax(260px,.72fr) minmax(0,1.28fr); gap: 18px; }
+    .policy-summary { padding: clamp(22px, calc(32 * var(--u)), 38px); display: flex; flex-direction: column; gap: 26px; }
+    .metric-label { color: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .repo-value { margin-top: 4px; color: var(--mint); font-size: clamp(54px, calc(78 * var(--u)), 86px); font-weight: 600; line-height: 1; letter-spacing: -.04em; }
+    .decision-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--border); }
+    .date-card { min-width: 0; padding: 20px 22px 0 0; display: flex; flex-direction: column; }
+    .date-card + .date-card { padding-right: 0; padding-left: 22px; border-left: 1px solid var(--border); }
+    .date-card strong { display: block; margin-top: 6px; font: 600 clamp(20px, calc(23 * var(--u)), 25px)/1.25 'Space Grotesk', sans-serif; overflow-wrap: anywhere; }
+    .policy-meta { margin-top: 14px; display: flex; flex: 1; flex-direction: column; align-items: flex-start; color: var(--muted); font-size: 13px; }
+    .policy-meta a { min-height: 44px; display: inline-flex; align-items: center; color: var(--mint); text-decoration: underline; text-underline-offset: 3px; }
+    .policy-publication { margin-top: 4px; color: var(--muted); }
+    .policy-verification { margin-top: 7px; color: rgba(167,187,179,.7); font-size: 12px; }
+    .chart-panel { min-width: 0; padding: clamp(20px, calc(26 * var(--u)), 30px); }
+    .chart-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .chart-top h3 { font-size: clamp(20px, calc(24 * var(--u)), 26px); }
+    .chart-box { min-height: 260px; }
+    .chart-box svg { width: 100%; height: auto; overflow: visible; }
+    .chart-table { width: 100%; margin-top: 16px; border-collapse: collapse; font-size: 13px; }
+    .chart-table th, .chart-table td { padding: 9px 8px; border-top: 1px solid rgba(33,72,60,.62); text-align: left; vertical-align: top; }
+    .chart-table th { color: var(--muted); font-weight: 600; }
+    .chart-table td:nth-child(3), .chart-table th:nth-child(3) { text-align: right; }
+    .row-detail { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .type-badge { min-height: 24px; padding: 2px 7px; text-transform: none; letter-spacing: 0; }
+    .type-badge--partial { color: var(--partial); border-color: rgba(200,184,138,.38); background: rgba(200,184,138,.06); }
+    .type-badge--projection { color: var(--projection); border-color: rgba(143,200,255,.35); background: rgba(143,200,255,.06); }
+    .type-badge--derived { color: var(--derived); border-color: rgba(185,168,255,.35); background: rgba(185,168,255,.06); }
 
-    .valbox { background: #fff; color: var(--purple); border-radius: calc(10 * var(--u)); display: flex; align-items: center; justify-content: center; font-size: calc(60 * var(--u)); font-weight: 700; line-height: 1.2102; white-space: nowrap; }
-    .lbl { font-size: calc(24 * var(--u)); font-weight: 400; }
-    .lbl--bold { font-weight: 700; }
-    .datebox { background: #fff; color: #000; border-radius: calc(10 * var(--u)); display: flex; align-items: center; padding-left: calc(11 * var(--u)); font-size: calc(24 * var(--u)); font-weight: 700; white-space: nowrap; }
-    .chart-title { font-size: calc(24 * var(--u)); font-weight: 400; white-space: nowrap; }
-    .chart { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
-    .chart text { font-family: 'Inter', system-ui, sans-serif; fill: #fff; }
-    .chart .empty { fill: var(--muted); }
+    .stance-card { display: grid; grid-template-columns: minmax(230px,.65fr) minmax(0,1.35fr); gap: 24px; padding: clamp(24px, calc(34 * var(--u)), 42px); }
+    .stance-name { margin-top: 10px; color: var(--mint); font-size: clamp(34px, calc(46 * var(--u)), 52px); line-height: 1.08; letter-spacing: -.025em; }
+    .stance-since { margin-top: 8px; color: var(--muted); }
+    .stance-copy { align-self: center; max-width: 66ch; }
+    .stance-copy p { color: var(--muted); }
+    .stance-copy .meta { margin-top: 16px; }
 
-    /* ── Stance ── */
-    .stance { position: relative; margin: calc(69 * var(--u)) 0 0 calc(92 * var(--u)); width: calc(1249 * var(--u)); height: calc(282 * var(--u)); border: 1px solid var(--purple); border-radius: calc(10 * var(--u)); box-shadow: 0 calc(4 * var(--u)) calc(20 * var(--u)) calc(10 * var(--u)) var(--purple); }
-    .stance > .abs { position: absolute; }
-    .stance h2 { font-size: calc(48 * var(--u)); font-weight: 700; }
-    .track { height: calc(22 * var(--u)); background: #fff; border-radius: calc(20 * var(--u)); }
-    .sdot { width: calc(22 * var(--u)); height: calc(22 * var(--u)); border-radius: 50%; background: var(--deep); }
-    .pill { height: calc(22 * var(--u)); border-radius: calc(20 * var(--u)); background: linear-gradient(to right, #4f1aaf 37%, #210b49); box-shadow: 0 0 calc(5 * var(--u)) calc(5 * var(--u)) var(--deep); transition: left 0.5s ease-out, width 0.5s ease-out; }
-    .slabel { transform: translateX(-50%); width: calc(260 * var(--u)); text-align: center; font-size: calc(24 * var(--u)); font-weight: 700; color: rgba(255, 255, 255, 0.86); }
-    .stance__now { display: none; }
+    .actual-grid { min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin-bottom: 18px; }
+    .actual-card { padding: clamp(20px, calc(28 * var(--u)), 32px); }
+    .actual-card h3 { font-size: 18px; }
+    .actual-card .value { margin-top: 16px; font-size: clamp(34px, calc(46 * var(--u)), 52px); line-height: 1; letter-spacing: -.03em; }
+    .actual-card .growth { margin-top: 12px; color: var(--mint); font-weight: 700; }
+    .actual-card .period { margin-top: 6px; color: var(--muted); }
+    .actual-card .meta { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .outlook-grid { min-width: 0; display: grid; grid-template-columns: minmax(0,1.2fr) minmax(280px,.8fr); gap: 18px; }
+    .outlook-note { padding: 24px; }
+    .outlook-note h3 { font-size: 20px; }
+    .outlook-note p { margin-top: 10px; color: var(--muted); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 
-    /* ── Commentary ── */
-    .commentary { padding: calc(107 * var(--u)) 0 0 calc(91 * var(--u)); width: calc(1341 * var(--u)); }
-    .commentary h2 { font-size: calc(60 * var(--u)); font-weight: 700; margin-bottom: calc(44 * var(--u)); }
-    .commentary p { font-size: calc(24 * var(--u)); }
-    .commentary p + p { margin-top: calc(29 * var(--u)); }
-    .commentary .src { margin-top: calc(24 * var(--u)); font-size: calc(18 * var(--u)); color: var(--muted); }   /* source line: not in Figma, delete if unwanted */
-    .spacer { height: calc(260 * var(--u)); }
+    .commentary-card { max-width: 980px; padding: clamp(24px, calc(36 * var(--u)), 44px); }
+    .commentary-body { max-width: 74ch; }
+    .commentary-body p { font-size: clamp(16px, calc(18 * var(--u)), 19px); line-height: 1.75; }
+    .commentary-body p + p { margin-top: 18px; }
+    .commentary-card .meta { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
 
-    /* ── Footer ── */
-    .footer { position: relative; height: calc(439 * var(--u)); }
-    .footer > * { position: absolute; left: calc(70 * var(--u)); width: calc(150 * var(--u)); font-weight: 700; letter-spacing: calc(-0.36 * var(--u)); font-size: calc(18 * var(--u)); }
-    .footer .f1 { top: calc(50 * var(--u)); } .footer .f2 { top: calc(102 * var(--u)); } .footer .f3 { top: calc(154 * var(--u)); }
-    .footer .f4 { top: calc(197 * var(--u)); text-decoration: underline; text-underline-position: from-font; }
-    .footer .copy { top: calc(373 * var(--u)); width: auto; white-space: nowrap; font-size: calc(24 * var(--u)); letter-spacing: calc(-0.48 * var(--u)); }
+    .footer { padding: 30px var(--gutter) 42px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px clamp(18px, calc(30 * var(--u)), 36px); border-top: 1px solid rgba(33,72,60,.5); }
+    .footer a, .footer-item { min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; font-weight: 600; }
+    .footer-item { color: var(--muted); }
+    .footer .copy { flex-basis: 100%; color: var(--muted); font-size: 14px; }
 
-    /* ── Mobile (Figma only has a desktop frame) ── */
-    @media (max-width: 900px) {
-      .nav { height: auto; padding: 12px 20px; flex-wrap: wrap; gap: 8px; }
-      .nav__logo img { width: 180px; height: 60px; }
-      .nav__links { gap: 16px; }
-      .nav__link { font-size: 14px; letter-spacing: 0; }
-      .btn-signin { width: auto; font-size: 14px; letter-spacing: 0; padding: 6px 16px; border-radius: 12px; }
-      .title { width: auto; padding: 32px 20px 0; }
-      .title h1 { font-size: 36px; letter-spacing: -0.5px; }
-      .title p { width: auto; font-size: 16px; }
-
-      .panel { margin: 32px 20px 0; width: auto; height: auto !important; padding: 24px 20px; border-radius: 16px; display: flex; flex-direction: column; gap: 14px; }
-      .panel__frame { border-width: 2px; border-radius: 16px; box-shadow: 0 2px 16px 4px #fff; }
-      .panel > .abs { position: relative; left: auto; top: auto; width: auto !important; height: auto !important; }
-      .valbox { font-size: 40px; padding: 8px 12px; align-self: flex-start; min-width: 170px; border-radius: 10px; }
-      .lbl, .datebox, .chart-title { font-size: 16px; }
-      .datebox { padding: 12px; align-self: flex-start; border-radius: 10px; }
-      .chart { position: relative; width: 100%; height: auto; }
-
-      .stance { margin: 32px 20px 0; width: auto; height: auto; padding: 20px; border-radius: 12px; }
-      .stance > .abs { position: relative; left: auto; top: auto; width: auto !important; height: auto !important; }
-      .stance h2 { font-size: 32px; }
-      .stance .track, .stance .sdot, .stance .pill, .stance .slabel { display: none; }
-      .stance__now { display: block; margin-top: 12px; font-size: 22px; font-weight: 700; color: #fff; }
-      .stance__now small { display: block; margin-top: 4px; font-size: 13px; font-weight: 400; color: var(--muted); }
-
-      .commentary { width: auto; padding: 40px 20px 0; }
-      .commentary h2 { font-size: 36px; margin-bottom: 16px; }
-      .commentary p { font-size: 16px; }
-      .commentary p + p { margin-top: 16px; }
-      .commentary .src { font-size: 13px; }
-      .spacer { height: 40px; }
-      .footer { height: auto; padding: 40px 20px; display: flex; flex-direction: column; gap: 14px; }
-      .footer > * { position: static; width: auto; font-size: 16px; letter-spacing: 0; }
-      .footer .copy { margin-top: 32px; font-size: 16px; }
+    @media (max-width: 980px) {
+      .policy-grid, .outlook-grid { grid-template-columns: minmax(0,1fr); }
+      .stance-card { grid-template-columns: 1fr; }
+      .chart-box { min-height: 230px; }
     }
-    @media (prefers-reduced-motion: reduce) { .pill { transition: none; } }
+    @media (max-width: 700px) {
+      .nav__logo { --logo-art-width: 180px; height: 44px; }
+      .nav__links { width: 100%; justify-content: space-between; gap: 8px; }
+      .intro { padding-top: 34px; }
+      .actual-grid, .decision-grid { grid-template-columns: 1fr; }
+      .date-card { padding: 20px 0 22px; }
+      .date-card + .date-card { padding: 22px 0 0; border-top: 1px solid var(--border); border-left: 0; }
+      .section { padding-top: 48px; }
+      .chart-panel { padding: 18px 14px; }
+      .chart-box { min-height: 210px; }
+      .chart-table { font-size: 12px; }
+      .chart-table th, .chart-table td { padding: 8px 4px; }
+      .footer { gap: 8px 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
-
 <body>
 <div class="page">
-
   <header class="nav">
     <a class="nav__logo" href="index.html" aria-label="Peak and Panic home">
-      <img src="images/peak-and-panic_horizontal_purple.png" alt="Peak and Panic" />
+      <img src="images/04-horizontal-emerald.png" width="2172" height="724" alt="Peak and Panic" />
     </a>
-    <nav class="nav__links">
+    <nav class="nav__links" aria-label="Primary navigation">
       <a class="nav__link" href="index.html#offerings">Our Offerings</a>
       <a class="nav__link" href="index.html#about">About Us</a>
-      <a class="btn-signin" href="#">Sign in</a>
     </nav>
   </header>
 
   <main>
-    <section class="title">
-      <h1>RBI Policy Tracker</h1>
-      <p>Track monetary policy decisions, the RBI's evolving stance, and their implications for markets.</p>
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro__copy">
+        <p class="eyebrow">RBI Policy Tracker</p>
+        <h1 id="page-title">India’s monetary-policy dashboard.</h1>
+        <p>Track policy rates, the RBI’s stance, growth and inflation outlook through the latest validated official releases.</p>
+      </div>
     </section>
 
-    <!-- Repo rate -->
-    <section class="panel" style="--h:359;margin-top:calc(72 * var(--u))" aria-label="Repo rate">
-      <div class="panel__frame"></div>
-      <div class="valbox abs" id="repo-value" style="--x:19;--y:30;--w:250;--h:85">—</div>
-      <p class="lbl abs" style="--x:19;--y:126;--w:250">Latest Verified Repo-<br />Rate</p>
-      <p class="lbl lbl--bold abs" style="--x:19;--y:208;--w:250">Upcoming MPC<br />meeting date</p>
-      <div class="datebox abs" id="mpc-next" style="--x:19;--y:275;--w:328;--h:54">—</div>
-      <svg class="chart" id="chart-repo" style="--w:1250;--h:359" aria-label="Repo rate trend, last 12 months"></svg>
-      <p class="chart-title abs" style="--x:628;--y:282">Repo Rate Trend of last 1 Year</p>
+    <p id="load-status" class="sr-only" role="status" aria-live="polite">Loading RBI policy data.</p>
+
+    <section class="section" aria-labelledby="policy-title">
+      <div class="section-head"><h2 id="policy-title">Policy overview</h2><p>The current policy rate, the latest decision and the next scheduled MPC decision.</p></div>
+      <div class="policy-grid">
+        <article class="panel policy-summary" id="policy-summary">
+          <span class="sr-only" id="policy-state" data-state="unavailable">Loading RBI policy overview.</span>
+          <div><p class="metric-label">Current repo rate</p><p class="repo-value" id="repo-value">Unavailable</p></div>
+          <div class="decision-grid">
+            <div class="date-card">
+              <span class="metric-label">Last decision</span>
+              <strong id="decision-date">Unavailable</strong>
+              <div class="policy-meta" id="repo-meta"><span>Source unavailable</span><span class="policy-publication">Publication date unavailable</span><span class="policy-verification">Verification time unavailable</span></div>
+            </div>
+            <div class="date-card">
+              <span class="metric-label">Next scheduled decision</span>
+              <strong id="next-meeting">Unavailable</strong>
+              <div class="policy-meta" id="schedule-meta"><span>Source unavailable</span><span class="policy-publication">Schedule publication date unavailable</span><span class="policy-verification">Verification time unavailable</span></div>
+            </div>
+          </div>
+        </article>
+        <article class="panel chart-panel" aria-labelledby="repo-chart-title">
+          <div class="chart-top"><h3 id="repo-chart-title">Repo-rate history · rolling 12 months</h3><span class="state-badge" id="repo-chart-state" data-state="unavailable">Loading</span></div>
+          <div class="chart-box" id="repo-chart-box"><svg id="repo-chart" role="img" aria-labelledby="repo-chart-title repo-chart-desc"></svg></div>
+          <p id="repo-chart-desc" class="sr-only">Repo-rate decisions over the rolling last twelve months.</p>
+          <div id="repo-table-wrap"></div>
+        </article>
+      </div>
     </section>
 
-    <!-- Stance -->
-    <section class="stance" aria-label="Policy stance">
-      <h2 class="abs" style="--x:18;--y:12">Stance</h2>
-      <div class="track abs" style="--x:54;--y:154;--w:1140"></div>
-      <div class="pill abs" id="stance-pill" style="--x:726;--y:154;--w:242"></div>
-      <div class="sdot abs" style="--x:54;--y:154"></div>
-      <div class="sdot abs" style="--x:278;--y:154"></div>
-      <div class="sdot abs" style="--x:502;--y:154"></div>
-      <div class="sdot abs" style="--x:726;--y:154"></div>
-      <div class="sdot abs" style="--x:950;--y:154"></div>
-      <div class="sdot abs" style="--x:1174;--y:153"></div>
-      <p class="slabel abs" data-stance="hawkish" style="--x:141;--y:190">Hawkish</p>
-      <p class="slabel abs" data-stance="accommodative" style="--x:394;--y:116">Accommodative</p>
-      <p class="slabel abs" data-stance="neutral" style="--x:625;--y:187">Neutral</p>
-      <p class="slabel abs" data-stance="calibrated_tightening" style="--x:847;--y:87">Calibrated<br />Tightening</p>
-      <p class="slabel abs" data-stance="withdrawal_of_accommodation" style="--x:1068;--y:190">Withdrawal of<br />Accommodation</p>
-      <p class="stance__now" id="stance-now"></p>
+    <section class="section" aria-labelledby="stance-title">
+      <div class="section-head"><h2 id="stance-title">Policy stance</h2><p>The stance explicitly stated by the Reserve Bank of India. No market interpretation is inferred.</p></div>
+      <article class="panel stance-card">
+        <div><span class="state-badge" id="stance-state" data-state="unavailable">Loading</span><h3 class="stance-name" id="stance-name">Unavailable</h3><p class="stance-since" id="stance-since">Since date unavailable</p></div>
+        <div class="stance-copy"><p id="stance-explanation">Policy stance is unavailable.</p><div class="meta" id="stance-meta"><span>Source unavailable</span><span>Publication date unavailable</span></div></div>
+      </article>
     </section>
 
-    <!-- GDP -->
-    <section class="panel" style="--h:401;margin-top:calc(64 * var(--u))" aria-label="GDP">
-      <div class="panel__frame"></div>
-      <div class="valbox abs" id="gdp-fy-value" style="--x:23;--y:27;--w:307;--h:85">—</div>
-      <p class="lbl abs" id="gdp-fy-label" style="--x:23;--y:123;--w:294"></p>
-      <div class="valbox abs" id="gdp-q-value" style="--x:21;--y:219;--w:307;--h:85">—</div>
-      <p class="lbl abs" id="gdp-q-label" style="--x:21;--y:315;--w:296"></p>
-      <svg class="chart" id="chart-gdp" style="--w:1250;--h:401" aria-label="Quarterly GDP growth projection by RBI"></svg>
-      <p class="chart-title abs" style="--x:628;--y:319">Quarterly GDP growth projection by RBI</p>
+    <section class="section" aria-labelledby="growth-title">
+      <div class="section-head"><h2 id="growth-title">Growth outlook</h2><p>Official MoSPI real-GDP actuals alongside projections published by RBI.</p></div>
+      <div class="actual-grid">
+        <article class="panel actual-card" id="gdp-annual-card"><span class="state-badge" id="gdp-annual-state" data-state="unavailable">Loading</span><h3>Latest annual real GDP</h3><p class="value" id="gdp-annual-value">Unavailable</p><p class="growth" id="gdp-annual-growth">Growth unavailable</p><p class="period" id="gdp-annual-period">Reporting period unavailable</p><div class="meta" id="gdp-annual-meta"><span>Source unavailable</span></div></article>
+        <article class="panel actual-card" id="gdp-quarter-card"><span class="state-badge" id="gdp-quarter-state" data-state="unavailable">Loading</span><h3>Latest quarterly real GDP</h3><p class="value" id="gdp-quarter-value">Unavailable</p><p class="growth" id="gdp-quarter-growth">Growth unavailable</p><p class="period" id="gdp-quarter-period">Reporting period unavailable</p><div class="meta" id="gdp-quarter-meta"><span>Source unavailable</span></div></article>
+      </div>
+      <div class="outlook-grid">
+        <article class="panel chart-panel" aria-labelledby="gdp-chart-title"><div class="chart-top"><h3 id="gdp-chart-title">RBI growth outlook</h3><span class="state-badge" id="gdp-chart-state" data-state="unavailable">Loading</span></div><div class="chart-box" id="gdp-chart-box"><svg id="gdp-chart" role="img" aria-labelledby="gdp-chart-title gdp-chart-desc"></svg></div><p id="gdp-chart-desc" class="sr-only">Official MoSPI GDP actuals followed by RBI projections.</p><div id="gdp-table-wrap"></div></article>
+        <aside class="panel outlook-note"><h3>How to read this</h3><p>Actuals are verified against official MoSPI API records and release metadata. Projections are published by RBI and are not Peak and Panic forecasts.</p><div class="legend"><span class="type-badge">Actual</span><span class="type-badge type-badge--projection">RBI projection</span></div><div class="meta" id="gdp-section-meta" style="margin-top:18px"><span>Source unavailable</span></div></aside>
+      </div>
     </section>
 
-    <!-- CPI -->
-    <section class="panel" style="--h:401;margin-top:calc(67 * var(--u))" aria-label="CPI">
-      <div class="panel__frame"></div>
-      <div class="valbox abs" id="cpi-index-value" style="--x:21;--y:28;--w:307;--h:85">—</div>
-      <p class="lbl abs" id="cpi-index-label" style="--x:21;--y:124;--w:250"></p>
-      <div class="valbox abs" id="cpi-yoy-value" style="--x:19;--y:220;--w:307;--h:85">—</div>
-      <p class="lbl abs" id="cpi-yoy-label" style="--x:19;--y:316;--w:250"></p>
-      <svg class="chart" id="chart-cpi" style="--w:1250;--h:401" aria-label="Quarterly CPI general growth projection by RBI"></svg>
-      <p class="chart-title abs" style="--x:533;--y:317">Quarterly CPI General growth projection by RBI</p>
+    <section class="section" aria-labelledby="inflation-title">
+      <div class="section-head"><h2 id="inflation-title">Inflation outlook</h2><p>Latest All-India Combined CPI actuals, derived quarterly averages and projections published by RBI.</p></div>
+      <div class="actual-grid">
+        <article class="panel actual-card"><span class="state-badge" id="cpi-index-state" data-state="unavailable">Loading</span><h3>Latest CPI index</h3><p class="value" id="cpi-index-value">Unavailable</p><p class="period" id="cpi-period">Reporting period unavailable</p><div class="meta" id="cpi-index-meta"><span>Source unavailable</span></div></article>
+        <article class="panel actual-card"><span class="state-badge" id="cpi-yoy-state" data-state="unavailable">Loading</span><h3>YoY inflation</h3><p class="value" id="cpi-yoy-value">Unavailable</p><p class="period" id="cpi-classification">Classification unavailable</p><div class="meta" id="cpi-yoy-meta"><span>Publication date unavailable</span></div></article>
+      </div>
+      <div class="outlook-grid">
+        <article class="panel chart-panel" aria-labelledby="cpi-chart-title"><div class="chart-top"><h3 id="cpi-chart-title">CPI outlook</h3><span class="state-badge" id="cpi-chart-state" data-state="unavailable">Loading</span></div><div class="chart-box" id="cpi-chart-box"><svg id="cpi-chart" role="img" aria-labelledby="cpi-chart-title cpi-chart-desc"></svg></div><p id="cpi-chart-desc" class="sr-only">Derived quarterly CPI averages followed by RBI projections.</p><div id="cpi-table-wrap"></div></article>
+        <aside class="panel outlook-note"><h3>Method</h3><p>Derived averages are arithmetic means of monthly All-India Combined CPI YoY observations; projections are published by RBI.</p><div class="legend"><span class="type-badge type-badge--derived">Derived average</span><span class="type-badge type-badge--projection">RBI projection</span></div><div class="meta" id="cpi-section-meta" style="margin-top:18px"><span>Source unavailable</span></div></aside>
+      </div>
     </section>
 
-    <!-- Commentary -->
-    <section class="commentary" aria-label="RBI commentary">
-      <h2>RBI Commentary</h2>
-      <div id="commentary-body"><p>Commentary unavailable right now.</p></div>
-      <p class="src" id="commentary-src"></p>
+    <section class="section" aria-labelledby="commentary-title">
+      <div class="section-head"><h2 id="commentary-title">Latest RBI commentary</h2><p>Official extracted text from the latest validated RBI resolution, presented without interpretation.</p></div>
+      <article class="panel commentary-card"><span class="state-badge" id="commentary-state" data-state="unavailable">Loading</span><div class="commentary-body" id="commentary-body" style="margin-top:18px"><p class="unavailable">Commentary unavailable.</p></div><div class="meta" id="commentary-meta"><span>Source unavailable</span><span>Publication date unavailable</span></div></article>
     </section>
-    <div class="spacer"></div>
   </main>
 
   <footer class="footer" id="about">
-    <a class="f1" href="#">About Us</a>
-    <a class="f2" href="#">Contact Us</a>
-    <a class="f3" href="index.html#offerings">Our Offerings</a>
-    <a class="f4" href="https://www.instagram.com/peak_and_panic" target="_blank" rel="noopener">Instagram</a>
+    <span class="footer-item">About Us — coming soon</span><span class="footer-item">Contact Us — coming soon</span>
+    <a href="index.html#offerings">Our Offerings</a><a href="https://www.instagram.com/peak_and_panic" target="_blank" rel="noopener noreferrer">Instagram</a>
     <div class="copy">© 2026 Peak and Panic</div>
   </footer>
-
 </div>
 
 <script>
-/*
- * Everything on this page comes from rbi-data.json:
- *   - repo rate + the "last 1 year" graph are computed from repo.history and today's date (the window rolls on its own)
- *   - the upcoming MPC meeting is the first date in mpc.meetings that is still in the future
- *   - the stance marker moves to stance.current
- *   - GDP / CPI numbers and their period labels come from gdp / cpi
- *   - the two projection graphs draw whatever points are in gdp.projection.points / cpi.projection.points
- * Nothing is invented: a graph with no data says so.
- */
 (function () {
   'use strict';
-  var IST = 'Asia/Kolkata', NS = 'http://www.w3.org/2000/svg';
-  var data = null;
+  var NS = 'http://www.w3.org/2000/svg';
+  var OFFICIAL_HOSTS = ['rbi.org.in','www.rbi.org.in','api.mospi.gov.in','mospi.gov.in','www.mospi.gov.in'];
+  var currentData = null;
 
-  /* ───────── formatting ───────── */
-  function parts(d, opts) { var o = {}; new Intl.DateTimeFormat('en-GB', Object.assign({ timeZone: IST }, opts)).formatToParts(d).forEach(function (p) { o[p.type] = p.value; }); return o; }
-  function dmy(d) { var p = parts(d, { day: '2-digit', month: '2-digit', year: 'numeric' }); return p.day + '-' + p.month + '-' + p.year; }
-  function my(d) { var p = parts(d, { month: '2-digit', year: 'numeric' }); return p.month + '-' + p.year; }
-  function dmyHm(d) { var p = parts(d, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); return p.day + '-' + p.month + '-' + p.year + ' ' + p.hour + ':' + p.minute + ' IST'; }
-  function monthName(ym) { return new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(ym + '-01T00:00:00Z')); }
-  function istDate(ymd) { return new Date(ymd + 'T00:00:00+05:30'); }
-  function pct(n) { return n.toFixed(2) + '%'; }
   function $(id) { return document.getElementById(id); }
-  function text(id, v) { var e = $(id); if (e) e.textContent = v; }
-  function tip(id, v) { var e = $(id); if (e) e.title = v; }
-
-  /* ───────── chart ───────── */
-  var mq = window.matchMedia('(max-width: 900px)');
-  function geom(h) {
-    return mq.matches
-      ? { W: 1000, H: 520, x0: 90, x1: 910, yTop: 250, yBase: 420, font: 34, dot: 13, gap: 14 }
-      : { W: 1250, H: h, x0: 444, x1: 1152, yTop: h === 359 ? 95 : 132, yBase: h === 359 ? 236 : 273, font: 24, dot: 10, gap: 10 };
+  function finite(value) { return typeof value === 'number' && Number.isFinite(value); }
+  function clean(value) { return typeof value === 'string' ? value.trim() : ''; }
+  function isoDate(value) { return /^\d{4}-\d{2}-\d{2}$/.test(clean(value)) && !Number.isNaN(Date.parse(value + 'T00:00:00Z')); }
+  function isoTime(value) { return typeof value === 'string' && !Number.isNaN(Date.parse(value)); }
+  function dateLabel(value) { if (!isoDate(value)) return 'Publication date unavailable'; return new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(value+'T00:00:00Z')); }
+  function monthLabel(value) { if (!/^\d{4}-\d{2}$/.test(clean(value))) return 'Reporting period unavailable'; var d=new Date(value+'-01T00:00:00Z'); return Number.isNaN(d.getTime())?'Reporting period unavailable':new Intl.DateTimeFormat('en-IN',{month:'long',year:'numeric',timeZone:'UTC'}).format(d); }
+  function verifiedLabel(value) { return isoTime(value) ? 'Verified ' + new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'}).format(new Date(value)) + ' IST' : 'Verification time unavailable'; }
+  function officialUrl(value) { try { var u=new URL(value); return u.protocol==='https:' && OFFICIAL_HOSTS.indexOf(u.hostname.toLowerCase())!==-1 ? u.href : null; } catch (_) { return null; } }
+  function setState(id, state) { var e=$(id); if (!e) return; e.dataset.state=state; e.textContent=state.charAt(0).toUpperCase()+state.slice(1); }
+  function clear(node) { while (node && node.firstChild) node.removeChild(node.firstChild); }
+  function addText(node, value) { var span=document.createElement('span'); span.textContent=value; node.appendChild(span); }
+  function setMeta(id, provenance, sourceLabel) {
+    var node=$(id); if (!node) return; clear(node); var url=provenance&&officialUrl(provenance.sourceUrl); var publication=provenance&&isoDate(provenance.publishedAt)?dateLabel(provenance.publishedAt):'Publication date unavailable';
+    if (url) { var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener noreferrer'; a.textContent=clean(sourceLabel)||'Official source'; node.appendChild(a); }
+    else addText(node,'Source unavailable');
+    addText(node,publication==='Publication date unavailable'?publication:'Published '+publication);
+    addText(node,verifiedLabel(provenance&&provenance.verifiedAt));
   }
-  function el(name, attrs) { var e = document.createElementNS(NS, name); Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); }); return e; }
-
-  var uid = 0;
-  function drawChart(svg, g, pts, curve, extendTo) {
-    // Tries the normal label size first; if labels would touch, steps the text down (never lets them overlap).
-    [1, 0.88, 0.78].some(function (k, i, arr) { return paint(svg, g, pts, curve, extendTo, Math.round(g.font * k), i === arr.length - 1); });
+  function setPolicyMeta(id, provenance, sourceLabel, publicationPrefix) {
+    var node=$(id); if(!node)return; clear(node);
+    var url=provenance&&officialUrl(provenance.sourceUrl),source=document.createElement(url?'a':'span');
+    if(url){source.href=url;source.target='_blank';source.rel='noopener noreferrer';source.textContent=clean(sourceLabel)||'Official source';}
+    else source.textContent='Source unavailable';
+    node.appendChild(source);
+    var publication=document.createElement('span');publication.className='policy-publication';
+    publication.textContent=provenance&&isoDate(provenance.publishedAt)?publicationPrefix+' '+dateLabel(provenance.publishedAt):(publicationPrefix==='Schedule published'?'Schedule publication date unavailable':'Publication date unavailable');
+    node.appendChild(publication);
+    var verification=document.createElement('span');verification.className='policy-verification';verification.textContent=verifiedLabel(provenance&&provenance.verifiedAt);node.appendChild(verification);
   }
-  function paint(svg, g, pts, curve, extendTo, fs, finalTry) {
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
-    svg.setAttribute('viewBox', '0 0 ' + g.W + ' ' + g.H);
-    if (!pts.length) {
-      var t = el('text', { x: (g.x0 + g.x1) / 2, y: (g.yTop + g.yBase) / 2 + 8, 'text-anchor': 'middle', 'font-size': g.font, 'class': 'empty' });
-      t.textContent = 'No data added yet'; svg.appendChild(t); return true;
-    }
-    var vals = pts.map(function (p) { return p.value; }), mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
-    pts.forEach(function (p) { p.y = mx === mn ? (g.yTop + g.yBase) / 2 : g.yBase - (p.value - mn) / (mx - mn) * (g.yBase - g.yTop); });
-
-    var id = 'gr' + (++uid), last = pts[pts.length - 1], endX = extendTo != null && extendTo > last.x ? extendTo : last.x;
-    var defs = el('defs'), grad = el('radialGradient', { id: id, cx: '0.9', cy: '1', r: '1' });
-    grad.appendChild(el('stop', { offset: '0', 'stop-color': '#4f1aaf' })); grad.appendChild(el('stop', { offset: '1', 'stop-color': '#240c51' }));
-    defs.appendChild(grad); svg.appendChild(defs);
-
-    if (pts.length > 1 || endX > pts[0].x) {
-      var d = 'M' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
-      for (var i = 1; i < pts.length; i++) d += curve === 'step' ? ' H' + pts[i].x.toFixed(1) + ' V' + pts[i].y.toFixed(1) : ' L' + pts[i].x.toFixed(1) + ' ' + pts[i].y.toFixed(1);
-      if (endX > last.x) d += ' H' + endX.toFixed(1);
-      svg.appendChild(el('path', { d: d + ' L' + endX.toFixed(1) + ' ' + g.yBase + ' L' + pts[0].x.toFixed(1) + ' ' + g.yBase + ' Z', fill: 'url(#' + id + ')' }));
-      svg.appendChild(el('path', { d: d, fill: 'none', stroke: '#5519c9', 'stroke-width': 3, 'stroke-linejoin': 'round' }));
-    }
-    var placed = [], ok = true;
-    pts.forEach(function (p) {
-      svg.appendChild(el('circle', { cx: p.x, cy: p.y, r: g.dot, fill: '#d9d9d9' }));
-      var vy0 = p.y - g.dot - fs * 0.6, ly0 = vy0 - fs * 1.25;
-      var tv = el('text', { 'text-anchor': 'middle', 'font-size': fs }); tv.textContent = p.l2;
-      var tl = el('text', { 'text-anchor': 'middle', 'font-size': fs }); tl.textContent = p.l1;
-      svg.appendChild(tl); svg.appendChild(tv);
-      var half = Math.max(tv.getComputedTextLength(), tl.getComputedTextLength()) / 2, gap = g.gap, done = false;
-      for (var lvl = 0; lvl <= 2 && !done; lvl++) {                                   // lvl 0 = normal row; 1-2 = raised rows
-        var off = lvl * fs * 2.7, vy = vy0 - off, ly = ly0 - off;
-        if (lvl && ly - fs < 2) break;
-        var box = function (c) { return { l: c - half, r: c + half, t: ly - fs, b: vy + fs * 0.3 }; };
-        var clash = function (c) { var b = box(c); return placed.some(function (o) { return b.l < o.r + gap && b.r > o.l - gap && b.t < o.b && b.b > o.t; }); };
-        var cx = Math.min(Math.max(p.x, half + 12), g.W - 12 - half);                   // keep inside the panel
-        for (var s = 0; clash(cx) && s < 30 && cx + half < g.W - 12; s++) cx += 6;      // nudge right until clear
-        if (!clash(cx)) {
-          done = true; placed.push(box(cx));
-          tv.setAttribute('x', cx); tv.setAttribute('y', vy); tl.setAttribute('x', cx); tl.setAttribute('y', ly);
-          if (lvl) svg.appendChild(el('line', { x1: p.x, y1: vy + fs * 0.35, x2: p.x, y2: p.y - g.dot - 2, stroke: 'rgba(255,255,255,.3)', 'stroke-width': 1 }));
-        }
-      }
-      if (!done) { ok = false; tv.setAttribute('x', p.x); tv.setAttribute('y', vy0); tl.setAttribute('x', p.x); tl.setAttribute('y', ly0); }
-    });
-    return ok || finalTry;
+  function svgEl(name, attrs) { var e=document.createElementNS(NS,name); Object.keys(attrs||{}).forEach(function(k){e.setAttribute(k,attrs[k]);}); return e; }
+  function quarterKey(label) { var m=clean(label).match(/^Q([1-4]) FY(\d{2})$/); return m ? Number(m[2])*10+Number(m[1]) : NaN; }
+  function badge(type) { var s=document.createElement('span'), label=type==='decision'?'Verified decision':type==='projection'?'RBI projection':type==='partial-derived'?'Partial derived average':type==='derived'?'Derived average':'Actual'; s.className='type-badge'+(type==='projection'?' type-badge--projection':type==='derived'?' type-badge--derived':type==='partial-derived'?' type-badge--partial':''); s.textContent=label; return s; }
+  function rowSource(row) { var raw=row&&row.raw,url=raw&&raw.provenance&&officialUrl(raw.provenance.sourceUrl);if(!url&&raw&&raw.derivation)url=officialUrl(raw.derivation.sourceUrl);return url; }
+  function table(id, rows, dateHeading) {
+    var wrap=$(id); clear(wrap); if (!rows.length) return; var t=document.createElement('table'); t.className='chart-table'; var thead=document.createElement('thead'), tr=document.createElement('tr'); [dateHeading||'Period','Classification','Value','Official source'].forEach(function(v){var th=document.createElement('th');th.textContent=v;tr.appendChild(th);});thead.appendChild(tr);t.appendChild(thead);var body=document.createElement('tbody');
+    rows.forEach(function(row){var r=document.createElement('tr'), a=document.createElement('td'), b=document.createElement('td'), c=document.createElement('td'), d=document.createElement('td'),url=rowSource(row);a.textContent=row.label;b.appendChild(badge(row.type));if(row.detail){var detail=document.createElement('span');detail.className='row-detail';detail.textContent=row.detail;b.appendChild(detail);}c.textContent=row.value.toFixed(2)+'%';if(url){var link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Official source';d.appendChild(link);}else d.textContent='Source unavailable';r.append(a,b,c,d);body.appendChild(r);});t.appendChild(body);wrap.appendChild(t);
   }
-
-  function repoPoints(g, now) {
-    var h = (data.repo.history || []).map(function (e) { return { t: istDate(e.date).getTime(), rate: e.rate, provenanceStatus: e.provenanceStatus }; }).sort(function (a, b) { return a.t - b.t; }).filter(function (e) { return e.t <= now; });
-    if (!h.length) return { pts: [], end: null };
-    var ws = new Date(now); ws.setUTCFullYear(ws.getUTCFullYear() - 1); ws = ws.getTime();
-    var before = h.filter(function (e) { return e.t <= ws; }), inside = h.filter(function (e) { return e.t > ws; });
-    var series = before.length ? [{ t: ws, rate: before[before.length - 1].rate, provenanceStatus: before[before.length - 1].provenanceStatus }].concat(inside) : inside;   // never invents a rate before our first record
-    var t0 = series[0].t, span = Math.max(now - t0, 1);
-    var pts = series.map(function (e) { return { x: g.x0 + (e.t - t0) / span * (g.x1 - g.x0), value: e.rate, l1: my(new Date(e.t)) + (e.provenanceStatus === 'legacy' ? ' · Legacy' : ''), l2: e.rate.toFixed(2) + '%' }; });
-    return { pts: pts, end: g.x1 };
+  function emptyChart(svg, message) { clear(svg); svg.setAttribute('viewBox','0 0 720 220'); var t=svgEl('text',{x:360,y:112,'text-anchor':'middle',fill:'#a7bbb3','font-size':'16'});t.textContent=message;svg.appendChild(t); }
+  function lineChart(id, rows, step) {
+    var svg=$(id); clear(svg); if (!rows.length) { emptyChart(svg,'Data unavailable'); return; }
+    var W=720,H=250,L=44,R=22,T=34,B=54, vals=rows.map(function(p){return p.value;}),min=Math.min.apply(null,vals),max=Math.max.apply(null,vals),pad=Math.max((max-min)*.25,.25);min-=pad;max+=pad;
+    svg.setAttribute('viewBox','0 0 '+W+' '+H); var grid=svgEl('g',{'aria-hidden':'true'}); [0,.5,1].forEach(function(f){var y=T+(H-T-B)*f;grid.appendChild(svgEl('line',{x1:L,y1:y,x2:W-R,y2:y,stroke:'rgba(167,187,179,.16)','stroke-width':'1'}));});svg.appendChild(grid);
+    rows.forEach(function(p,i){p.x=rows.length===1?(L+W-R)/2:L+i*(W-L-R)/(rows.length-1);p.y=T+(max-p.value)/(max-min)*(H-T-B);});
+    var d='M '+rows[0].x+' '+rows[0].y;for(var i=1;i<rows.length;i++)d+=step?' H '+rows[i].x+' V '+rows[i].y:' L '+rows[i].x+' '+rows[i].y;svg.appendChild(svgEl('path',{d:d,fill:'none',stroke:'#6ee7b7','stroke-width':'3','stroke-linejoin':'round'}));
+    rows.forEach(function(p){var color=p.type==='projection'?'#8fc8ff':p.type==='derived'?'#b9a8ff':p.type==='partial-derived'?'#c8b88a':'#6ee7b7';svg.appendChild(svgEl('circle',{cx:p.x,cy:p.y,r:'6',fill:'#071713',stroke:color,'stroke-width':'3'}));var v=svgEl('text',{x:p.x,y:p.y-14,'text-anchor':'middle',fill:'#f2f7f5','font-size':'13','font-weight':'700'});v.textContent=p.value.toFixed(2)+'%';svg.appendChild(v);var l=svgEl('text',{x:p.x,y:H-20,'text-anchor':'middle',fill:'#a7bbb3','font-size':'12'});l.textContent=p.label;svg.appendChild(l);});
   }
-  function projPoints(g, proj) {
-    // Order: automated actuals first, then your estimates. An estimate is dropped as soon as an actual
-    // for the same quarter exists, so the graph corrects itself when new data is published.
-    proj = proj || {};
-    var acts = (proj.actuals || []).map(function (p) { return Object.assign({ kind: 'A' }, p); });
-    var have = {}; acts.forEach(function (p) { have[p.label] = true; });
-    var ests = (proj.estimates || []).filter(function (p) { return !have[p.label]; }).map(function (p) { return Object.assign({ kind: 'E' }, p); });
-    var arr = acts.concat(ests, proj.points || []).filter(function (p) { return p && typeof p.value === 'number' && isFinite(p.value); });
-    var n = arr.length;
-    var kindName = { A: 'Actual', E: 'Projection', actual: 'Actual', projection: 'Projection', legacy: 'Legacy', 'derived-quarterly-average': 'Derived avg' };
-    return arr.map(function (p, i) {
-      return { x: n === 1 ? (g.x0 + g.x1) / 2 : g.x0 + i * (g.x1 - g.x0) / (n - 1), value: p.value, l1: p.label + (p.kind ? ' · ' + (kindName[p.kind] || p.kind) : ''), l2: Number(p.value).toFixed(2) + '%' };
-    });
+  function provenanceType(point) { if (point&&point.kind==='projection') return 'projection'; if (point&&point.provenanceStatus==='derived') return point.partial?'partial-derived':'derived'; return 'actual'; }
+
+  function renderPolicy(data) {
+    var repo=data&&data.repo, history=repo&&Array.isArray(repo.history)?repo.history.filter(function(p){return p&&isoDate(p.date)&&finite(p.rate)&&p.rate>=2&&p.rate<=10;}).sort(function(a,b){return a.date.localeCompare(b.date);}):[];
+    var now=Date.now(), validPast=history.filter(function(p){return Date.parse(p.date+'T00:00:00Z')<=now;}), latest=validPast[validPast.length-1];
+    var repoAvailable=!!latest,repoProvenance=repoAvailable&&(latest.provenance||repo&&repo.provenance);
+    if(repoAvailable){$('repo-value').textContent=latest.rate.toFixed(2)+'%';$('decision-date').textContent=dateLabel(latest.decisionDate||latest.date);}else{$('repo-value').textContent='Unavailable';$('decision-date').textContent='Unavailable';}
+    setPolicyMeta('repo-meta',repoProvenance,repo&&repo.source,'Published');
+    var mpc=data&&data.mpc, meetings=mpc&&Array.isArray(mpc.meetings)?mpc.meetings.map(function(m){return m&&m.announce;}).filter(isoDate).sort():[],scheduleAvailable=!!(mpc&&Array.isArray(mpc.meetings)&&mpc.meetings.length&&mpc.provenance),next=meetings.find(function(d){return Date.parse(d+'T23:59:59Z')>=now;});
+    $('next-meeting').textContent=scheduleAvailable?(next?dateLabel(next):'Not scheduled'):'Unavailable';setPolicyMeta('schedule-meta',scheduleAvailable&&mpc.provenance,mpc&&mpc.source,'Schedule published');
+    var policyState=repoAvailable&&scheduleAvailable?'available':repoAvailable||scheduleAvailable?'partial':'unavailable';setState('policy-state',policyState);$('policy-state').textContent=policyState==='available'?'Official RBI policy and schedule data loaded.':policyState==='partial'?'RBI policy overview is partially available.':'RBI policy overview is unavailable.';
+    var start=new Date(now);start.setUTCFullYear(start.getUTCFullYear()-1);var before=validPast.filter(function(p){return Date.parse(p.date+'T00:00:00Z')<=start.getTime();}),inside=validPast.filter(function(p){return Date.parse(p.date+'T00:00:00Z')>start.getTime();}),points=[];
+    if(before.length){var anchor=before[before.length-1];points.push({label:'12-month start',value:anchor.rate,type:'decision',raw:anchor});}inside.forEach(function(p){points.push({label:dateLabel(p.date),value:p.rate,type:'decision',raw:p});});
+    lineChart('repo-chart',points,true);table('repo-table-wrap',points,'Decision');setState('repo-chart-state',points.length?'available':'unavailable');
   }
-  function drawAll() {
-    if (!data) return;
-    var now = Date.now(), g1 = geom(359), g2 = geom(401), r = repoPoints(g1, now);
-    drawChart($('chart-repo'), g1, r.pts, 'step', r.end);
-    drawChart($('chart-gdp'), g2, projPoints(g2, data.gdp && data.gdp.projection), 'line', null);
-    drawChart($('chart-cpi'), g2, projPoints(g2, data.cpi && data.cpi.projection), 'line', null);
-  }
-
-  /* ───────── page content ───────── */
-  var SEG = { hawkish: 0, accommodative: 1, neutral: 2, calibrated_tightening: 3, withdrawal_of_accommodation: 4 };
-  var STANCE_NAME = { hawkish: 'Hawkish', accommodative: 'Accommodative', neutral: 'Neutral', calibrated_tightening: 'Calibrated Tightening', withdrawal_of_accommodation: 'Withdrawal of Accommodation' };
-
-  function fill() {
-    var now = Date.now(), d = data;
-
-    // repo rate = latest history entry that is not in the future
-    var hist = (d.repo.history || []).filter(function (e) { return istDate(e.date).getTime() <= now; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-    if (hist.length) {
-      var lastE = hist[hist.length - 1];
-      text('repo-value', pct(lastE.rate));
-      tip('repo-value', 'Last changed ' + dmy(istDate(lastE.date)) + ' \u00b7 Source: ' + d.repo.source + (d.repo.verifiedOn ? ' \u00b7 Verified ' + dmy(istDate(d.repo.verifiedOn)) : ''));
-    }
-
-    // next MPC announcement = first scheduled date still ahead of us
-    var time = (d.mpc && d.mpc.announceTime) || '10:00';
-    var next = ((d.mpc && d.mpc.meetings) || []).map(function (m) { return new Date(m.announce + 'T' + time + ':00+05:30'); }).filter(function (t) { return t.getTime() > now; }).sort(function (a, b) { return a - b; })[0];
-    text('mpc-next', next ? dmyHm(next) : 'Not scheduled yet');
-    if (d.mpc && d.mpc.source) tip('mpc-next', d.mpc.source);
-
-    // stance
-    var key = d.stance && d.stance.current, seg = SEG[key];
-    if (seg !== undefined) {
-      var lefts = [54, 278, 502, 726, 950];
-      var pill = $('stance-pill'); pill.style.setProperty('--x', lefts[seg]); pill.style.setProperty('--w', 242);
-      document.querySelectorAll('[data-stance]').forEach(function (e) { if (e.dataset.stance === key) e.setAttribute('aria-current', 'true'); });
-      var now_ = $('stance-now'); now_.textContent = STANCE_NAME[key];
-      if (d.stance.since) { var s = document.createElement('small'); s.textContent = 'Since ' + dmy(istDate(d.stance.since)); now_.appendChild(s); }
-      if (d.stance.source) $('stance-pill').title = d.stance.source;
-    }
-
-    // GDP
-    if (d.gdp) {
-      var u = ' L';
-      if (d.gdp.fy) { text('gdp-fy-value', d.gdp.fy.value.toFixed(d.gdp.fy.decimals == null ? 2 : d.gdp.fy.decimals) + u); text('gdp-fy-label', 'India\u2019s National GDP ' + d.gdp.fy.label + ' (' + (d.gdp.unit || '\u20B9 lakh crore') + ')'); tip('gdp-fy-value', 'Source: ' + d.gdp.source); }
-      if (d.gdp.quarter) { text('gdp-q-value', d.gdp.quarter.value.toFixed(d.gdp.quarter.decimals == null ? 2 : d.gdp.quarter.decimals) + u); text('gdp-q-label', 'India\u2019s National GDP ' + d.gdp.quarter.label + ' (' + (d.gdp.unit || '\u20B9 lakh crore') + ')'); tip('gdp-q-value', 'Source: ' + d.gdp.source); }
-    }
-    // CPI
-    if (d.cpi) {
-      var m = monthName(d.cpi.period);
-      text('cpi-index-value', d.cpi.index.toFixed(2)); text('cpi-yoy-value', pct(d.cpi.yoy));
-      $('cpi-index-label').innerHTML = ''; $('cpi-index-label').append('CPI Index', document.createElement('br'), m);
-      $('cpi-yoy-label').innerHTML = ''; $('cpi-yoy-label').append('CPI Growth rate', document.createElement('br'), m);
-      tip('cpi-index-value', 'Source: ' + d.cpi.source); tip('cpi-yoy-value', 'Source: ' + d.cpi.source);
-    }
-    // Commentary (rendered as plain text, so markup in the data can never run)
-    if (d.commentary && d.commentary.paragraphs && d.commentary.paragraphs.length) {
-      var body = $('commentary-body'); body.textContent = '';
-      d.commentary.paragraphs.forEach(function (t) { var p = document.createElement('p'); p.textContent = t; body.appendChild(p); });
-      var src = []; if (d.commentary.source) src.push('Source: ' + d.commentary.source);
-      if (d.updatedAt) src.push('Data updated ' + dmy(new Date(d.updatedAt)));
-      text('commentary-src', src.join(' \u00b7 '));
-    }
-  }
-
-  function render() { fill(); drawAll(); }
+  var STANCE_NAMES={hawkish:'Hawkish',accommodative:'Accommodative',neutral:'Neutral',calibrated_tightening:'Calibrated tightening',withdrawal_of_accommodation:'Withdrawal of accommodation'};
+  function renderStance(data) { var s=data&&data.stance,name=s&&STANCE_NAMES[s.current];if(name){$('stance-name').textContent=name;$('stance-since').textContent=isoDate(s.since)?'Since '+dateLabel(s.since):'Since date unavailable';$('stance-explanation').textContent='This is the policy stance explicitly stated by RBI in the validated resolution.';setState('stance-state',s.provenance?'available':'partial');}else{$('stance-name').textContent='Unavailable';$('stance-since').textContent='Since date unavailable';$('stance-explanation').textContent='A validated RBI policy stance is not available.';setState('stance-state','unavailable');}setMeta('stance-meta',s&&s.provenance,s&&s.source); }
+  function sourceBaseYear(provenance) { var url=provenance&&officialUrl(provenance.sourceUrl);if(!url)return '';try{return new URL(url).searchParams.get('base_year')||'';}catch(_){return '';} }
+  function renderActual(prefix, point, unit, source) { var ok=point&&finite(point.value), growth=point&&finite(point.growth), period=clean(point&&point.label), base=sourceBaseYear(point&&point.provenance);$(prefix+'-value').textContent=ok?point.value.toFixed(point.decimals==null?2:point.decimals)+' '+unit:'Unavailable';$(prefix+'-growth').textContent=growth?'Real GDP growth '+point.growth.toFixed(2)+'%':'Growth unavailable';$(prefix+'-period').textContent=period?(period+' · Constant-price real GDP'+(base?' · Base '+base:'')):'Reporting period unavailable';setState(prefix+'-state',ok&&growth?'available':ok?'partial':'unavailable');setMeta(prefix+'-meta',point&&point.provenance,source); }
+  function projectionRows(projection, mode) { var actuals=projection&&Array.isArray(projection.actuals)?projection.actuals:[], estimates=projection&&Array.isArray(projection.estimates)?projection.estimates:[], rows=[],have={};actuals.forEach(function(p){var key=quarterKey(p&&p.label),count=p&&p.derivation&&Number.isInteger(p.derivation.observationCount)?p.derivation.observationCount:null,base=clean(p&&p.derivation&&p.derivation.baseYear),revision=clean(p&&p.revisionStatus);if(Number.isFinite(key)&&finite(p.value)){have[p.label]=true;rows.push({label:p.label,value:p.value,type:provenanceType(p),key:key,raw:p,detail:count?(count+' monthly observations'+(base?' · Base '+base:'')):(revision?'Revision: '+revision:'')});}});estimates.forEach(function(p){var key=quarterKey(p&&p.label);if(!have[p&&p.label]&&Number.isFinite(key)&&finite(p.value)){rows.push({label:p.label,value:p.value,type:'projection',key:key,raw:p});}});rows.sort(function(a,b){return a.key-b.key;});if(mode==='cpi')rows=rows.filter(function(p){return p.type==='derived'||p.type==='partial-derived'||p.type==='projection';});return rows; }
+  function renderGrowth(data) { var g=data&&data.gdp,unit=clean(g&&g.unit)||'Unit unavailable';renderActual('gdp-annual',g&&g.fy,unit,g&&g.source);renderActual('gdp-quarter',g&&g.quarter,unit,g&&g.source);var rows=projectionRows(g&&g.projection,'gdp');lineChart('gdp-chart',rows,false);table('gdp-table-wrap',rows);setState('gdp-chart-state',rows.length?'available':'unavailable');setMeta('gdp-section-meta',g&&g.provenance,g&&g.source); }
+  function renderCpi(data) { var c=data&&data.cpi,index=finite(c&&c.index),yoy=finite(c&&c.yoy);$('cpi-index-value').textContent=index?c.index.toFixed(2):'Unavailable';$('cpi-yoy-value').textContent=yoy?c.yoy.toFixed(2)+'%':'Unavailable';$('cpi-period').textContent=monthLabel(c&&c.period);$('cpi-classification').textContent='All-India Combined · Base '+(clean(c&&c.baseYear)||'unavailable');setState('cpi-index-state',index?'available':'unavailable');setState('cpi-yoy-state',yoy?'available':'unavailable');setMeta('cpi-index-meta',c&&c.provenance,c&&c.source);setMeta('cpi-yoy-meta',c&&c.provenance,c&&c.source);setMeta('cpi-section-meta',c&&c.provenance,c&&c.source);var rows=projectionRows(c&&c.projection,'cpi');lineChart('cpi-chart',rows,false);table('cpi-table-wrap',rows);setState('cpi-chart-state',rows.length?'available':'unavailable'); }
+  function renderCommentary(data) { var c=data&&data.commentary,paras=c&&Array.isArray(c.paragraphs)?c.paragraphs.map(clean).filter(Boolean):[],body=$('commentary-body');clear(body);if(paras.length){paras.forEach(function(value){var p=document.createElement('p');p.textContent=value;body.appendChild(p);});setState('commentary-state','available');}else{var p=document.createElement('p');p.className='unavailable';p.textContent='Commentary unavailable.';body.appendChild(p);setState('commentary-state','unavailable');}setMeta('commentary-meta',c&&c.provenance,c&&c.source); }
+  function render(data) { currentData=data&&typeof data==='object'?data:{};try{renderPolicy(currentData);}catch(_){setState('policy-state','unavailable');}try{renderStance(currentData);}catch(_){setState('stance-state','unavailable');}try{renderGrowth(currentData);}catch(_){setState('gdp-chart-state','unavailable');}try{renderCpi(currentData);}catch(_){setState('cpi-chart-state','unavailable');}try{renderCommentary(currentData);}catch(_){setState('commentary-state','unavailable');} }
+  function redraw() { if(currentData){renderPolicy(currentData);renderGrowth(currentData);renderCpi(currentData);} }
+  var timer; if ('ResizeObserver' in window) new ResizeObserver(function(){clearTimeout(timer);timer=setTimeout(redraw,80);}).observe(document.body);
 
   fetch('rbi-data.json', { cache: 'no-cache' })
-    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function (j) { data = j; render(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll); })
-    .catch(function (e) { if (window.console) console.warn('[rbi] could not load rbi-data.json:', e.message); });
+    .then(function(response){if(!response.ok)throw new Error('Data request failed');return response.json();})
+    .then(function(data){render(data);$('load-status').textContent='RBI policy data loaded.';})
+    .catch(function(){render({});$('load-status').textContent='RBI policy data is unavailable.';});
 
-  (mq.addEventListener ? mq.addEventListener('change', drawAll) : mq.addListener(drawAll));
-  setInterval(function () { if (data && !document.hidden) render(); }, 60000);      // the "next meeting" and the 1-year window roll over on their own
+  window.__rbiTrackerTest={render:render,officialUrl:officialUrl,projectionRows:projectionRows};
 })();
 </script>
 </body>
