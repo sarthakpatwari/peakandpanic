@@ -17,17 +17,22 @@
       --text: #F2F7F5;
       --muted: #A7BBB3;
       --border: #21483C;
+      --glass-1: rgba(4,18,15,.78);
+      --glass-2: rgba(7,23,19,.62);
+      --glass-border: rgba(110,231,183,.22);
+      --glass-highlight: rgba(210,255,238,.07);
+      --shadow: 0 18px 48px rgba(0,0,0,.30);
+      --radius-card: 16px;
       --gutter: clamp(20px, calc(80 * var(--u)), 96px);
     }
     *, *::before, *::after { box-sizing: border-box; }
     html { color-scheme: dark; scroll-behavior: smooth; }
     body {
       margin: 0;
-      min-width: 320px;
-      overflow-x: hidden;
-      background: var(--page-bg);
+      min-width: 0;
+      background: radial-gradient(circle at 82% 14%, rgba(16,185,129,.07), transparent 28rem), radial-gradient(circle at 15% 68%, rgba(16,185,129,.035), transparent 32rem), var(--page-bg);
       color: var(--text);
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
@@ -48,28 +53,25 @@
     .page { container-type: inline-size; width: 100%; min-height: 100vh; }
     .site-header {
       min-height: max(76px, calc(88 * var(--u)));
-      padding: 0 var(--gutter);
+      padding: 12px var(--gutter);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 24px;
       border-bottom: 1px solid rgba(33,72,60,.34);
-      background: #000;
+      background: rgba(0,0,0,.76);
+      backdrop-filter: blur(14px) saturate(115%);
+      -webkit-backdrop-filter: blur(14px) saturate(115%);
     }
-    .brand {
-      min-width: 180px;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-    }
-    .brand img { width: clamp(180px, calc(240 * var(--u)), 240px); height: auto; }
+    .brand { --logo-art-width: 240px; position: relative; display: block; flex: 0 0 auto; width: calc(var(--logo-art-width) + 16px); height: 52px; min-height: 44px; }
+    .brand img { position: absolute; left: 50%; top: 50%; width: calc(var(--logo-art-width) * 1.1772358); max-width: none; height: auto; transform: translate(-50%,-50%); pointer-events: none; }
     .primary-nav { display: flex; align-items: center; gap: clamp(12px, calc(32 * var(--u)), 40px); }
     .primary-nav a {
       min-height: 44px;
       display: inline-flex;
       align-items: center;
       font-size: clamp(14px, calc(16 * var(--u)), 18px);
-      font-weight: 700;
+      font-weight: 600;
       white-space: nowrap;
     }
     .primary-nav a:hover { color: var(--highlight); }
@@ -87,7 +89,9 @@
       margin: 0 0 8px;
       color: var(--muted);
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
     h1, h2, h3, .macro-value { font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif; }
     h1 {
@@ -121,9 +125,11 @@
       display: flex;
       flex-direction: column;
       border: 1px solid rgba(110,231,183,.20);
-      border-radius: 12px;
-      background: rgba(4,18,15,.72);
-      box-shadow: inset 0 1px 0 rgba(110,231,183,.04), 0 18px 44px rgba(0,0,0,.22);
+      border-radius: var(--radius-card);
+      background: linear-gradient(145deg, var(--glass-1), rgba(4,18,15,.56));
+      box-shadow: var(--shadow), inset 0 1px var(--glass-highlight);
+      backdrop-filter: blur(14px) saturate(112%);
+      -webkit-backdrop-filter: blur(14px) saturate(112%);
     }
     a.tracker-card { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
     a.tracker-card:hover, a.tracker-card:focus-visible {
@@ -163,12 +169,16 @@
       margin-top: auto;
       padding-top: 24px;
       display: grid;
-      gap: 5px;
+      grid-template-columns: minmax(0,1fr);
+      gap: 0;
+      border-top: 1px solid rgba(110,231,183,.13);
       color: var(--muted);
       font-size: 12px;
       line-height: 1.45;
     }
-    .card-meta strong { color: var(--text); font-weight: 600; }
+    .card-meta > span { min-width: 0; padding: 9px 0; display: flex; flex-direction: column; gap: 4px; overflow-wrap: anywhere; }
+    .card-meta > span + span { border-top: 1px solid rgba(110,231,183,.08); }
+    .card-meta strong { color: rgba(167,187,179,.68); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
     .card-action {
       min-height: 44px;
       margin: 18px -4px -10px;
@@ -200,7 +210,7 @@
     }
     @media (max-width: 700px) {
       .site-header { padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
-      .brand img { width: 180px; }
+      .brand { --logo-art-width: 180px; height: 44px; }
       .primary-nav { width: 100%; justify-content: space-between; }
       .intro { min-height: 0; padding-top: 34px; padding-bottom: 38px; }
       .tracker-grid { grid-template-columns: 1fr; }
@@ -245,26 +255,26 @@
           <div class="card-top"><h3 class="tracker-name">RBI Policy Tracker</h3><span class="availability" data-field="availability">Unavailable</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
           <p class="macro-description" data-field="description">Policy data is currently unavailable.</p>
-          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+          <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
           <span class="card-action">View RBI policy tracker <span aria-hidden="true">→</span></span>
         </a>
         <article class="tracker-card" data-macro="inflation" data-state="unavailable">
           <div class="card-top"><h3 class="tracker-name">Inflation Tracker</h3><span class="availability" data-field="availability">Coming soon</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
           <p class="macro-description" data-field="description">Inflation data is currently unavailable.</p>
-          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+          <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
         </article>
         <article class="tracker-card" data-macro="growth" data-state="unavailable">
           <div class="card-top"><h3 class="tracker-name">Growth Tracker</h3><span class="availability" data-field="availability">Coming soon</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
           <p class="macro-description" data-field="description">Growth data is currently unavailable.</p>
-          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+          <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
         </article>
         <article class="tracker-card" data-macro="fiscal" data-state="unavailable">
           <div class="card-top"><h3 class="tracker-name">Fiscal &amp; Government</h3><span class="availability" data-field="availability">Coming soon</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
           <p class="macro-description" data-field="description">Fiscal data is currently unavailable.</p>
-          <div class="card-meta"><span><strong>Source:</strong> <span data-field="source">Source unavailable</span></span><span data-field="updated">Update time unavailable</span></div>
+          <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
         </article>
       </div>
     </section>
@@ -350,8 +360,6 @@
     }
     function setSource(card, source) {
       var sourceNode = card.querySelector('[data-field="source"]');
-      var sourceLabel = sourceNode.parentElement.querySelector('strong');
-      sourceLabel.hidden = !source;
       sourceNode.textContent = source || 'Source unavailable';
     }
     function setUnavailable(card, key) {
@@ -390,7 +398,7 @@
       card.querySelector('[data-field="description"]').textContent = lines.length ? lines.join(' · ') : 'Reporting period unavailable';
       setSource(card, source);
       card.querySelector('[data-field="updated"]').textContent = updatedDate === null ? 'Update time unavailable' : 'Updated ' + formatDate(updatedDate);
-      card.querySelector('[data-field="availability"]').textContent = key === 'repo' ? 'Detailed tracker' : 'Available';
+      card.querySelector('[data-field="availability"]').textContent = key === 'repo' ? 'Detailed tracker' : 'Latest indicator';
       return true;
     }
     function renderDataset(payload) {

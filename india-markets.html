@@ -19,6 +19,13 @@
       --border: #21483C;
       --negative: #FDB9B9;
       --neutral: #C8D9D2;
+      --glass-1: rgba(4,18,15,.78);
+      --glass-2: rgba(7,23,19,.62);
+      --glass-border: rgba(110,231,183,.22);
+      --glass-highlight: rgba(210,255,238,.07);
+      --shadow: 0 18px 48px rgba(0,0,0,.30);
+      --radius-card: 16px;
+      --radius-small: 10px;
       --gutter: clamp(20px, calc(80 * var(--u)), 96px);
       --section-space: clamp(48px, calc(64 * var(--u)), 72px);
     }
@@ -27,9 +34,9 @@
     html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
     body {
       min-width: 0;
-      background: var(--page-bg);
+      background: radial-gradient(circle at 82% 12%, rgba(16,185,129,.07), transparent 28rem), radial-gradient(circle at 12% 60%, rgba(16,185,129,.035), transparent 34rem), var(--page-bg);
       color: var(--text);
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
@@ -48,7 +55,10 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 12px 24px;
-      background: #000;
+      border-bottom: 1px solid rgba(110,231,183,.12);
+      background: rgba(0,0,0,.76);
+      backdrop-filter: blur(14px) saturate(115%);
+      -webkit-backdrop-filter: blur(14px) saturate(115%);
     }
     .nav__logo {
       --logo-art-width: 240px;
@@ -98,7 +108,6 @@
       font: 600 clamp(14px, calc(15 * var(--u)), 15px)/1.4 'Inter', system-ui, sans-serif;
       letter-spacing: .01em;
     }
-    .eyebrow::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
     .intro h1 {
       max-width: 20ch;
       font-size: clamp(36px, calc(50 * var(--u)), 56px);
@@ -128,9 +137,10 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(7,23,19,.72);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      background: var(--glass-2);
+      box-shadow: inset 0 1px var(--glass-highlight), 0 12px 30px rgba(0,0,0,.2);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
@@ -183,9 +193,9 @@
       flex-direction: column;
       gap: 10px;
       border: 1px solid rgba(110,231,183,.22);
-      border-radius: 12px;
-      background: rgba(4,18,15,.72);
-      box-shadow: 0 8px 24px rgba(0,0,0,.24);
+      border-radius: var(--radius-card);
+      background: linear-gradient(145deg, var(--glass-1), rgba(4,18,15,.58));
+      box-shadow: var(--shadow), inset 0 1px var(--glass-highlight);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
@@ -257,8 +267,11 @@
       flex-direction: column;
       gap: 12px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(7,23,19,.66);
+      border-radius: var(--radius-card);
+      background: linear-gradient(145deg, var(--glass-2), rgba(4,18,15,.48));
+      box-shadow: 0 14px 36px rgba(0,0,0,.24), inset 0 1px var(--glass-highlight);
+      backdrop-filter: blur(12px) saturate(110%);
+      -webkit-backdrop-filter: blur(12px) saturate(110%);
     }
     a.intel-card { min-height: 44px; transition: border-color .2s ease, transform .2s ease; }
     a.intel-card:hover, a.intel-card:focus-visible { border-color: rgba(110,231,183,.58); transform: translateY(-2px); }
@@ -287,7 +300,8 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: center;
-      background: var(--surface);
+      border-block: 1px solid rgba(110,231,183,.14);
+      background: linear-gradient(145deg, rgba(7,23,19,.88), rgba(4,18,15,.66));
     }
     .research img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: contain; object-position: right center; }
     .research::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(7,23,19,.99), rgba(7,23,19,.92) 50%, rgba(7,23,19,.15)); }
@@ -423,12 +437,12 @@
         <p>Move from the daily market print to the forces shaping India’s economy and capital markets.</p>
       </div>
       <div class="intel-grid">
-        <a class="intel-card intel-card--primary" href="indian-macros.html" aria-label="Indian Macros — available">
+        <a class="intel-card intel-card--primary" href="indian-macros.html" aria-label="Indian Macros detailed tracker">
           <img src="images/pp-india-macro-emerald.svg" width="360" height="176" alt="Conceptual illustration for Indian macroeconomic analysis" />
           <div class="intel-copy">
             <h3>Indian Macros</h3>
             <p>Track monetary policy, inflation, growth and fiscal conditions shaping India’s economy.</p>
-            <span class="availability availability--ready">Available</span>
+            <span class="availability availability--ready">Detailed tracker</span>
           </div>
         </a>
         <article class="intel-card" aria-label="Sector Pulse — coming soon">

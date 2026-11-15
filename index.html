@@ -6,7 +6,7 @@
   <title>Peak and Panic</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -20,6 +20,14 @@
       --highlight: #6EE7B7;
       --border: #21483C;
       --glow: rgba(16, 185, 129, 0.16);
+      --glass-1: rgba(4, 18, 15, 0.78);
+      --glass-2: rgba(7, 23, 19, 0.62);
+      --glass-border: rgba(110, 231, 183, 0.22);
+      --glass-highlight: rgba(210, 255, 238, 0.07);
+      --shadow: 0 18px 48px rgba(0,0,0,.30);
+      --radius-card: 16px;
+      --radius-small: 10px;
+      --transition: .2s ease;
       --gutter: clamp(20px, calc(80 * var(--u)), 96px);
       --row-space: clamp(40px, calc(64 * var(--u)), 80px);
     }
@@ -27,8 +35,8 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      background: var(--page-bg);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at 78% 12%, rgba(16,185,129,.07), transparent 27rem), radial-gradient(circle at 16% 48%, rgba(16,185,129,.035), transparent 34rem), var(--page-bg);
       color: var(--white);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
@@ -38,15 +46,17 @@
     a { color: inherit; text-decoration: none; }
     a:focus-visible, button:focus-visible { outline: 2px solid var(--highlight); outline-offset: 4px; }
     h1, h2, h3 { font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif; line-height: 1.15; }
-    .m-header, .m-price, .m-chg, .m-unit, .m-time, .m-panel-title {
-      font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
-    }
+    .m-header, .m-unit, .m-time, .m-panel-title { font-family: 'Inter', system-ui, sans-serif; }
+    .m-price, .m-chg { font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 
     /* Header: shared gutters and full-size keyboard/touch targets. */
     .nav {
       min-height: max(76px, calc(88 * var(--u)));
       padding: 12px var(--gutter);
-      background: var(--nav-bg);
+      border-bottom: 1px solid rgba(110,231,183,.12);
+      background: rgba(0,0,0,.76);
+      backdrop-filter: blur(14px) saturate(115%);
+      -webkit-backdrop-filter: blur(14px) saturate(115%);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -83,23 +93,23 @@
       font-weight: 600;
     }
     .nav__link:hover, .footer a:hover { color: var(--highlight); }
-    .btn-signin, .btn-explore {
+    .btn-explore {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 44px;
       padding: 9px clamp(16px, calc(24 * var(--u)), 28px);
       border: 1px solid var(--accent);
-      border-radius: 2px;
-      background: var(--accent);
+      border-radius: var(--radius-small);
+      background: linear-gradient(180deg, rgba(110,231,183,.96), rgba(16,185,129,.9));
       color: #071713;
       font: 700 clamp(14px, calc(16 * var(--u)), 18px) / 1.4 'Inter', system-ui, sans-serif;
       text-align: center;
       cursor: pointer;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      box-shadow: inset 0 1px rgba(255,255,255,.16), 0 8px 24px rgba(16,185,129,.12);
+      transition: background-color var(--transition), border-color var(--transition), transform var(--transition);
     }
-    .btn-signin:hover, .btn-signin:focus-visible,
-    .btn-explore:hover, .btn-explore:focus-visible { background: var(--highlight); border-color: var(--highlight); }
+    .btn-explore:hover, .btn-explore:focus-visible { background: var(--highlight); border-color: var(--highlight); transform: translateY(-1px); }
 
     /* Headline remains above the map; only decoration is positioned absolutely. */
     .hero-wrap { position: relative; }
@@ -135,7 +145,7 @@
       padding: 8px 10px;
       border: 1px solid rgba(110,231,183,0.22);
       border-radius: 12px;
-      background: rgba(4,18,15,0.72);
+      background: var(--glass-1);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       box-shadow: 0 6px 18px rgba(0,0,0,0.24);
@@ -259,6 +269,13 @@
       align-items: center;
       gap: clamp(24px, calc(48 * var(--u)), 64px);
       margin: var(--row-space) var(--gutter) 0;
+      padding: clamp(18px, calc(26 * var(--u)), 32px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      background: linear-gradient(145deg, rgba(7,23,19,.70), rgba(4,18,15,.48));
+      box-shadow: var(--shadow), inset 0 1px var(--glass-highlight);
+      backdrop-filter: blur(14px) saturate(112%);
+      -webkit-backdrop-filter: blur(14px) saturate(112%);
     }
     .offer--2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
     .offer--2 .offer__link { grid-column: 2; grid-row: 1; }
@@ -266,7 +283,7 @@
     .offer__copy { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
     .offer h3 { font-size: clamp(28px, calc(40 * var(--u)), 44px); font-weight: 700; letter-spacing: -0.02em; }
     .offer p { font-size: clamp(16px, calc(18 * var(--u)), 20px); font-weight: 400; line-height: 1.6; color: var(--muted); }
-    .offer__img, .offer__link { display: block; min-width: 0; border: 1px solid var(--border); border-radius: 2px; }
+    .offer__img, .offer__link { display: block; min-width: 0; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background: rgba(0,0,0,.2); }
     .offer img { width: 100%; height: auto; transition: transform 0.2s ease, box-shadow 0.2s ease; }
     .offer__img:hover img, .offer__img:focus-visible img,
     .offer__link:hover img, .offer__link:focus-visible img { transform: scale(1.02); box-shadow: 0 0 calc(18 * var(--u)) var(--glow); }
@@ -281,7 +298,8 @@
       min-height: calc(480 * var(--u));
       margin-top: var(--row-space);
       padding: clamp(40px, calc(64 * var(--u)), 80px) var(--gutter);
-      background: #071713;
+      border-block: 1px solid rgba(110,231,183,.14);
+      background: linear-gradient(145deg, rgba(7,23,19,.86), rgba(4,18,15,.66));
     }
     .research__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: right center; z-index: -2; }
     .research::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(7,23,19,0.98), rgba(7,23,19,0.92) 48%, rgba(7,23,19,0.12)); }
@@ -329,7 +347,6 @@
     <nav class="nav__links">
       <a class="nav__link" href="#offerings" id="scroll-offerings">Our Offerings</a>
       <a class="nav__link" href="#about">About Us</a>
-      <a class="btn-signin" href="#">Sign in</a>
     </nav>
   </header>
 
