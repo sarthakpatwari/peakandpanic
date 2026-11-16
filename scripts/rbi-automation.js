@@ -13,6 +13,8 @@ const URLS = Object.freeze({
   rbiNotifications: 'https://rbi.org.in/scripts/FS_Notification.aspx?fn=2752',
   mospiReleases: 'https://www.mospi.gov.in/api/latest-release/get-web-latest-release-list',
   cpi: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100',
+  cpiRural: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=1&division_code=0&limit=100',
+  cpiUrban: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=2&division_code=0&limit=100',
   gdpQuarterly: 'https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100',
   gdpAnnual: 'https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100'
 });
@@ -270,22 +272,35 @@ function findAnnualGdpRelease(releases, year) {
   return found;
 }
 
-function parseCpi(payload, releases, fetchedAt) {
+function parseCpiRows(payload, sector) {
   if (!payload || !Array.isArray(payload.data)) throw new Error('MoSPI CPI response is malformed');
-  const rows = payload.data.filter(r => r.state === 'All India' && r.sector === 'Combined' && r.division === 'CPI (General)').map(r => {
+  const rows = payload.data.filter(r => r.state === 'All India' && r.sector === sector && r.division === 'CPI (General)').map(r => {
     const month = MONTH[String(r.month).toLowerCase()], year = +r.year;
     return { year, month, period: isoDate(year, month, 1).slice(0,7), index:+r.index, yoy:+r.inflation };
-  }).filter(r => r.month && finite(r.index) && finite(r.yoy)).sort((a,b) => a.period.localeCompare(b.period));
+  }).filter(r => r.month && finite(r.index) && finite(r.yoy) && r.index >= 50 && r.index <= 300 && r.yoy >= -10 && r.yoy <= 30)
+    .sort((a,b) => a.period.localeCompare(b.period));
+  const periods = new Set();
+  rows.forEach(row => { if (periods.has(row.period)) throw new Error('MoSPI CPI response contains duplicate '+sector+' periods'); periods.add(row.period); });
+  return rows;
+}
+
+function releaseForCpiPeriod(releases, period) {
+  const parts = String(period).split('-'), year = +parts[0], month = +parts[1];
+  if (!year || month < 1 || month > 12) return null;
+  const monthName = new Intl.DateTimeFormat('en', { month:'long', timeZone:'UTC' }).format(new Date(period + '-01T00:00:00Z'));
+  try { return findRelease(releases, 'cpi', monthName + ' ' + year); } catch (_) { return null; }
+}
+
+function parseCpi(payload, releases, fetchedAt, optionalSectors) {
+  const rows = parseCpiRows(payload, 'Combined');
   const latest = rows[rows.length - 1];
   if (!latest || latest.index < 50 || latest.index > 300 || latest.yoy < -10 || latest.yoy > 30) throw new Error('MoSPI CPI values are missing or implausible');
-  const monthName = new Intl.DateTimeFormat('en', { month:'long', timeZone:'UTC' }).format(new Date(latest.period + '-01T00:00:00Z'));
-  const release = findRelease(releases, 'cpi', monthName + ' ' + latest.year);
+  const release = releaseForCpiPeriod(releases, latest.period);
+  if (!release) throw new Error('Latest MoSPI CPI release metadata is unavailable');
   const quarter = new Map();
   rows.forEach(r => {
     const q = r.month <= 3 ? 4 : Math.ceil((r.month - 3) / 3), fy = r.month <= 3 ? r.year : r.year + 1, label='Q'+q+' FY'+String(fy).slice(-2);
-    const monthName = new Intl.DateTimeFormat('en', { month:'long', timeZone:'UTC' }).format(new Date(r.period + '-01T00:00:00Z'));
-    let releaseMeta = null;
-    try { releaseMeta = findRelease(releases, 'cpi', monthName + ' ' + r.year); } catch (_) {}
+    const releaseMeta = releaseForCpiPeriod(releases, r.period);
     if(!quarter.has(label))quarter.set(label,[]);
     quarter.get(label).push(Object.assign({}, r, { releaseMeta }));
   });
@@ -313,7 +328,32 @@ function parseCpi(payload, releases, fetchedAt) {
       }
     };
   }).filter(Boolean).slice(-4);
-  return { index:latest.index, yoy:latest.yoy, period:latest.period, baseYear:'2024=100', projection:{actuals}, provenance:provenance(URLS.cpi, release.publishedAt, fetchedAt, { publicationUrl:release.sourceUrl }) };
+  const monthly = rows.map(row => {
+    const releaseMeta = releaseForCpiPeriod(releases, row.period);
+    if (!releaseMeta) return null;
+    return {
+      period:row.period,index:row.index,yoy:row.yoy,geography:'All India',sector:'Combined',measure:'CPI (General)',
+      baseYear:'2024=100',provenanceStatus:'verified',
+      provenance:provenance(URLS.cpi,releaseMeta.publishedAt,fetchedAt,{publicationUrl:releaseMeta.sourceUrl})
+    };
+  }).filter(Boolean).slice(-12);
+  if (!monthly.length || monthly[monthly.length-1].period !== latest.period) throw new Error('Verified monthly CPI history is unavailable');
+  const sectors = {};
+  [['rural','Rural',URLS.cpiRural],['urban','Urban',URLS.cpiUrban]].forEach(([key,label,url]) => {
+    const sectorPayload=optionalSectors&&optionalSectors[key];
+    if (!sectorPayload) return;
+    const sectorRows=parseCpiRows(sectorPayload,label),point=sectorRows[sectorRows.length-1];
+    if (!point) return;
+    const sectorRelease=releaseForCpiPeriod(releases,point.period);
+    if (!sectorRelease) return;
+    sectors[key]={period:point.period,index:point.index,yoy:point.yoy,geography:'All India',sector:label,measure:'CPI (General)',baseYear:'2024=100',provenanceStatus:'verified',provenance:provenance(url,sectorRelease.publishedAt,fetchedAt,{publicationUrl:sectorRelease.sourceUrl})};
+  });
+  return {
+    index:latest.index,yoy:latest.yoy,period:latest.period,baseYear:'2024=100',
+    monthly,sectors,projection:{actuals},
+    methodology:{headline:'All India Combined CPI (General)',yoy:'year-on-year percentage change reported by MoSPI',quarterlyAverage:'arithmetic mean of three monthly All India Combined CPI YoY observations'},
+    provenance:provenance(URLS.cpi,release.publishedAt,fetchedAt,{publicationUrl:release.sourceUrl})
+  };
 }
 
 function parseGdp(quarterPayload, annualPayload, releases, fetchedAt) {
@@ -371,7 +411,12 @@ function mergeProjection(oldProjection, actuals, estimates, kind) {
   const actualMap=new Map();
   actuals.forEach(x=>{validatePoint(x,kind);actualMap.set(x.label,x);});
   const estimateMap=new Map();
-  estimates.forEach(x=>{validatePoint(x,kind);if(!actualMap.has(x.label))estimateMap.set(x.label,x);});
+  estimates.forEach(x=>{
+    validatePoint(x,kind);
+    const matchingActual=actualMap.get(x.label);
+    const completedActual=matchingActual&&(kind!=='CPI'||matchingActual.kind!=='derived-quarterly-average'||matchingActual.partial===false);
+    if(!completedActual)estimateMap.set(x.label,x);
+  });
   return {actuals:[...actualMap.values()].sort((a,b)=>quarterKey(a.label)-quarterKey(b.label)).slice(-8),estimates:[...estimateMap.values()].sort((a,b)=>quarterKey(a.label)-quarterKey(b.label))};
 }
 function quarterKey(label){const m=String(label).match(/^Q([1-4]) FY(\d{2})$/);return m?+m[2]*10+(+m[1]):Number.MAX_SAFE_INTEGER;}
@@ -436,6 +481,8 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
   if(cpi.ok){
     rejectRegression(next.cpi,cpi.value,'CPI');
     const cpiRaw=clone(cpi.value);cpiRaw.source='MoSPI CPI API (All India Combined)';
+    cpiRaw.sectors=cpiRaw.sectors||{};
+    ['rural','urban'].forEach(key=>{if(!cpiRaw.sectors[key]&&next.cpi&&next.cpi.sectors&&next.cpi.sectors[key])cpiRaw.sectors[key]=clone(next.cpi.sectors[key]);});
     const estimates=policy.ok?policy.value.resolution.cpiProjections.map(x=>Object.assign({},x,{kind:'projection',provenance:policy.value.resolution.provenance})):(next.cpi&&next.cpi.projection&&next.cpi.projection.estimates||[]);
     cpiRaw.projection=mergeProjection(next.cpi&&next.cpi.projection,cpiRaw.projection.actuals,estimates,'CPI');
     next.cpi=retainTimestamp(next.cpi,cpiRaw);
@@ -462,11 +509,16 @@ function validateDataset(data, nowIso) {
   if(!STANCES.includes(data.stance.current)||!validIsoDate(data.stance.since))throw new Error('Invalid stance');
   if(!(data.mpc.meetings||[]).length||data.mpc.meetings.some(x=>!validIsoDate(x.announce)))throw new Error('Invalid MPC schedule');
   if(!finite(data.cpi.index)||data.cpi.index<50||data.cpi.index>300||!finite(data.cpi.yoy)||data.cpi.yoy< -10||data.cpi.yoy>30||!/^\d{4}-\d{2}$/.test(data.cpi.period)||data.cpi.baseYear!=='2024=100')throw new Error('Invalid CPI actual');
+  if(!Array.isArray(data.cpi.monthly)||!data.cpi.monthly.length)throw new Error('CPI monthly history is missing');
+  let priorPeriod='';
+  data.cpi.monthly.forEach(point=>{if(!point||!/^\d{4}-\d{2}$/.test(point.period)||point.period<=priorPeriod||!finite(point.index)||point.index<50||point.index>300||!finite(point.yoy)||point.yoy< -10||point.yoy>30||point.baseYear!=='2024=100'||point.sector!=='Combined'||point.geography!=='All India'||point.provenanceStatus!=='verified'||!point.provenance||point.provenance.sourceUrl!==URLS.cpi||!validIsoDate(point.provenance.publishedAt))throw new Error('Invalid CPI monthly observation');priorPeriod=point.period;});
+  if(data.cpi.monthly[data.cpi.monthly.length-1].period!==data.cpi.period)throw new Error('CPI monthly history does not include the current observation');
+  Object.entries(data.cpi.sectors||{}).forEach(([key,point])=>{const expected=key==='rural'?['Rural',URLS.cpiRural]:key==='urban'?['Urban',URLS.cpiUrban]:null;if(!expected||!point||!/^\d{4}-\d{2}$/.test(point.period)||!finite(point.index)||point.index<50||point.index>300||!finite(point.yoy)||point.yoy< -10||point.yoy>30||point.baseYear!=='2024=100'||point.geography!=='All India'||point.sector!==expected[0]||point.measure!=='CPI (General)'||point.provenanceStatus!=='verified'||!point.provenance||point.provenance.sourceUrl!==expected[1]||!validIsoDate(point.provenance.publishedAt))throw new Error('Invalid CPI sector observation');});
   if(data.gdp.unit!=='₹ lakh crore'||!data.gdp.fy||!finite(data.gdp.fy.value)||data.gdp.fy.value<=0||!finite(data.gdp.fy.growth)||data.gdp.fy.growth< -20||data.gdp.fy.growth>30||!data.gdp.quarter||!finite(data.gdp.quarter.value)||data.gdp.quarter.value<=0||!finite(data.gdp.quarter.growth)||data.gdp.quarter.growth< -20||data.gdp.quarter.growth>30)throw new Error('Invalid GDP actual');
   if(Date.parse(data.cpi.period+'-01T00:00:00Z')>Date.parse(nowIso)||Date.parse(data.repo.history[data.repo.history.length-1].date+'T00:00:00Z')>Date.parse(nowIso))throw new Error('Future-dated actual');
   ['repo','stance','mpc','gdp','cpi','commentary'].forEach(k=>{const p=data[k].provenance;if(!p||!/^https:\/\//.test(p.sourceUrl)||!validIsoDate(p.publishedAt)||!validIsoTime(p.fetchedAt))throw new Error(k+' provenance is incomplete');if(Date.parse(p.publishedAt+'T00:00:00Z')>Date.parse(nowIso))throw new Error(k+' publication is future-dated');});
   [data.gdp.fy,data.gdp.quarter].forEach((point,index)=>{const p=point.provenance;if(!p||!/^https:\/\//.test(p.sourceUrl)||!validIsoDate(p.publishedAt))throw new Error('GDP '+(index?'quarterly':'annual')+' provenance is incomplete');});
-  [...(data.gdp.projection.estimates||[]),...(data.cpi.projection.estimates||[])].forEach(point=>{if(point.kind!=='projection'||!point.provenance||!/^https:\/\//.test(point.provenance.sourceUrl)||!validIsoDate(point.provenance.publishedAt))throw new Error('Projection provenance is incomplete');});
+  [...(data.gdp.projection.estimates||[]),...(data.cpi.projection.estimates||[])].forEach(point=>{if(point.kind!=='projection'||!point.provenance||!/^https:\/\/(?:www\.)?rbi\.org\.in\//i.test(point.provenance.sourceUrl)||!validIsoDate(point.provenance.publishedAt))throw new Error('Projection provenance is incomplete');});
   (data.gdp.projection.actuals||[]).forEach(point=>{if(point.provenanceStatus!=='verified'||point.kind!=='actual'||point.classification!=='constant-price real GDP'||!point.baseYear||!point.series||!point.frequency||!point.revisionStatus||!point.provenance||!validIsoDate(point.provenance.publishedAt))throw new Error('Verified GDP actual provenance is incomplete');});
   (data.cpi.projection.actuals||[]).forEach(point=>{const d=point.derivation;if(point.kind!=='derived-quarterly-average'||point.provenanceStatus!=='derived'||!d||d.method!=='arithmetic mean of monthly All India Combined CPI YoY observations'||d.formula!=='sum(monthly YoY values) / observation count'||d.sourceUrl!==URLS.cpi||d.expectedObservationCount!==3||!Array.isArray(d.observations)||d.observations.length!==d.observationCount||!Array.isArray(d.releases)||d.releases.length!==d.observationCount||(!point.partial&&d.observationCount!==3))throw new Error('CPI actual derivation metadata is incomplete');});
   return true;
@@ -548,14 +600,14 @@ async function fetchPolicyData(homeHtml,pages,fetchedAt,notifications){
 }
 async function fetchSources(nowIso) {
   const fetchedAt=nowIso;
-  const [home,policyPages,notifications,releasesText,cpiText,gdpQText,gdpAText]=await Promise.all([
+  const [home,policyPages,notifications,releasesText,cpiText,cpiRuralText,cpiUrbanText,gdpQText,gdpAText]=await Promise.all([
     request(URLS.rbiHome,{accept:'text/html'}),fetchPolicyArchivePages(fetchedAt),fetchRepoNotifications(fetchedAt),
     request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}),
-    request(URLS.cpi,{accept:'application/json'}),request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'})
+    request(URLS.cpi,{accept:'application/json'}),request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'}),request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'})
   ]);
   const policyData=await fetchPolicyData(home,policyPages,fetchedAt,notifications);
   const releases=parseReleaseList(JSON.parse(releasesText));
-  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt)};
+  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt,{rural:JSON.parse(cpiRuralText),urban:JSON.parse(cpiUrbanText)}),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt)};
 }
 
 async function fetchSourceOutcomes(nowIso) {
@@ -567,7 +619,7 @@ async function fetchSourceOutcomes(nowIso) {
     policy:(async()=>{const [home,pages,notificationResult]=await Promise.all([homePromise,policyPagesPromise,notificationsPromise.then(value=>({ok:true,value}),error=>({ok:false,error}))]);return fetchPolicyData(home,pages,fetchedAt,notificationResult.ok?notificationResult.value:[]);})(),
     notifications:notificationsPromise,
     schedule:(async()=>{const pages=await policyPagesPromise;return parseSchedule(pages[pages.length-1].html,URLS.rbiPolicy,fetchedAt);})(),
-    cpi:(async()=>{const [text,releases]=await Promise.all([request(URLS.cpi,{accept:'application/json'}),releasesPromise]);return parseCpi(JSON.parse(text),releases,fetchedAt);})(),
+    cpi:(async()=>{const [text,releases,sectorResults]=await Promise.all([request(URLS.cpi,{accept:'application/json'}),releasesPromise,Promise.allSettled([request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'})])]);const optional={};if(sectorResults[0].status==='fulfilled')optional.rural=JSON.parse(sectorResults[0].value);if(sectorResults[1].status==='fulfilled')optional.urban=JSON.parse(sectorResults[1].value);return parseCpi(JSON.parse(text),releases,fetchedAt,optional);})(),
     gdp:(async()=>{const [q,a,releases]=await Promise.all([request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),releasesPromise]);return parseGdp(JSON.parse(q),JSON.parse(a),releases,fetchedAt);})()
   };
   const names=Object.keys(tasks),settled=await Promise.allSettled(names.map(name=>tasks[name])),out={};

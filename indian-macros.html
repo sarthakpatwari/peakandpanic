@@ -258,12 +258,13 @@
           <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
           <span class="card-action">View RBI policy tracker <span aria-hidden="true">→</span></span>
         </a>
-        <article class="tracker-card" data-macro="inflation" data-state="unavailable">
+        <a class="tracker-card" data-macro="inflation" data-state="unavailable" href="inflation-tracker.html" aria-label="Inflation Tracker. Open detailed tracker.">
           <div class="card-top"><h3 class="tracker-name">Inflation Tracker</h3><span class="availability" data-field="availability">Coming soon</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
           <p class="macro-description" data-field="description">Inflation data is currently unavailable.</p>
           <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
-        </article>
+          <span class="card-action">View inflation tracker <span aria-hidden="true">→</span></span>
+        </a>
         <article class="tracker-card" data-macro="growth" data-state="unavailable">
           <div class="card-top"><h3 class="tracker-name">Growth Tracker</h3><span class="availability" data-field="availability">Coming soon</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
@@ -398,7 +399,7 @@
       card.querySelector('[data-field="description"]').textContent = lines.length ? lines.join(' · ') : 'Reporting period unavailable';
       setSource(card, source);
       card.querySelector('[data-field="updated"]').textContent = updatedDate === null ? 'Update time unavailable' : 'Updated ' + formatDate(updatedDate);
-      card.querySelector('[data-field="availability"]').textContent = key === 'repo' ? 'Detailed tracker' : 'Latest indicator';
+      card.querySelector('[data-field="availability"]').textContent = key === 'repo' || key === 'inflation' ? 'Detailed tracker' : 'Latest indicator';
       return true;
     }
     function renderDataset(payload) {

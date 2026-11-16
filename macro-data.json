@@ -10,14 +10,14 @@
       "updatedAt": "2026-10-07"
     },
     "inflation": {
-      "value": "5.54%",
+      "value": "6.09%",
       "lines": [
         "CPI, YoY",
         "All India Combined",
-        "2026-09"
+        "2026-10"
       ],
       "source": "MoSPI CPI API",
-      "updatedAt": "2026-10-12"
+      "updatedAt": "2026-11-12"
     },
     "growth": {
       "value": "7.82%",
