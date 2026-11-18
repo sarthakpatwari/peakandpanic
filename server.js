@@ -20,20 +20,37 @@ let cache = { at: 0, data: null };
 async function getQuote(symbol) {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=5m&range=1d`;
   const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-  const r = (await res.json()).chart.result[0];
+  if (!res.ok) throw new Error(`Quote provider returned HTTP ${res.status} for ${symbol}`);
+  const payload = await res.json();
+  const r = payload && payload.chart && payload.chart.result && payload.chart.result[0];
+  if (!r || !r.meta || !r.indicators || !r.indicators.quote || !r.indicators.quote[0]) {
+    throw new Error(`Quote provider returned an invalid response for ${symbol}`);
+  }
   const meta = r.meta;
   const series = (r.indicators.quote[0].close || []).filter(v => v != null);
   const price = meta.regularMarketPrice;
   const prev = meta.chartPreviousClose ?? meta.previousClose;
+  if (![price, prev, meta.regularMarketTime].every(Number.isFinite) || prev === 0) {
+    throw new Error(`Quote provider returned invalid values for ${symbol}`);
+  }
   return { price, change: price - prev, pct: ((price - prev) / prev) * 100, time: meta.regularMarketTime, series };
 }
 
 async function getQuotes() {
   if (cache.data && Date.now() - cache.at < 30000) return cache.data;   // cache for 30 seconds
-  const out = {};
-  for (const [key, sym] of Object.entries(SYMBOLS)) out[key] = await getQuote(sym);
-  cache = { at: Date.now(), data: out };
-  return out;
+  const data = {};
+  const providerErrors = {};
+  for (const [key, sym] of Object.entries(SYMBOLS)) {
+    try {
+      data[key] = await getQuote(sym);
+    } catch (error) {
+      data[key] = null;
+      providerErrors[key] = 'Provider quote unavailable';
+    }
+  }
+  const payload = { data, providerErrors, timestamp: Date.now() };
+  cache = { at: Date.now(), data: payload };
+  return payload;
 }
 
 http.createServer(async (req, res) => {
@@ -51,8 +68,9 @@ http.createServer(async (req, res) => {
   }
   if (req.url.startsWith('/api/quotes')) {
     try {
+      const quotes = await getQuotes();
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(await getQuotes()));
+      res.end(JSON.stringify(quotes));
     } catch (e) {
       res.writeHead(502, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'quotes unavailable' }));
@@ -79,6 +97,8 @@ function syncMospiData() {
   });
 }
 
-// Initial sync immediately on server launch, then repeat every 6 hours
-syncMospiData();
-setInterval(syncMospiData, 6 * 60 * 60 * 1000);
+// Local preview is read-only by default. Automatic data updates require explicit opt-in.
+if (process.env.PEAK_PANIC_ENABLE_AUTO_UPDATES === '1') {
+  syncMospiData();
+  setInterval(syncMospiData, 6 * 60 * 60 * 1000);
+}
