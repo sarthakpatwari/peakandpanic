@@ -1,5 +1,29 @@
 {
-  "updatedAt": "2026-11-18T11:44:53.362Z",
+  "updatedAt": "2026-11-19T13:32:17.943Z",
+  "releaseSchedules": {
+    "inflation": {
+      "indicator": "All India Consumer Price Index (CPI)",
+      "releaseTitle": "All India Consumer Price Index (CPI)",
+      "nextReleaseDate": "2026-12-12",
+      "sourceUrl": "https://www.mospi.gov.in/uploads/documents/releaseCalender/1793948871564-ARC%202026-27%20updated%20till%20October%202026.pdf",
+      "verifiedAt": "2026-11-19T13:32:17.943Z",
+      "provenanceStatus": "verified-official-schedule",
+      "matchingBasis": "exact CPI calendar title",
+      "sourcePublishedAt": "2026-11-06"
+    },
+    "growth": {
+      "indicator": "Gross Domestic Product (GDP)",
+      "releaseTitle": "Quarterly Estimates of GDP for Q2, FY 2026-27",
+      "nextReleaseDate": "2026-11-30",
+      "sourceUrl": "https://www.mospi.gov.in/uploads/documents/releaseCalender/1793948871564-ARC%202026-27%20updated%20till%20October%202026.pdf",
+      "verifiedAt": "2026-11-19T13:32:17.943Z",
+      "provenanceStatus": "verified-official-schedule",
+      "matchingBasis": "GDP title keyword and release classification",
+      "sourcePublishedAt": "2026-11-06",
+      "releaseType": "quarterly GDP",
+      "reportingPeriod": "Q2 FY2026-27"
+    }
+  },
   "repo": {
     "history": [
       {

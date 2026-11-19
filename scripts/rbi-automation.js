@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const zlib = require('zlib');
 const { constants } = require('crypto');
 
 const UA = 'PeakAndPanicDataBot/2.0 (+https://github.com/sarthakpatwari/peakandpanic)';
@@ -12,6 +13,8 @@ const URLS = Object.freeze({
   rbiPolicy: 'https://rbi.org.in/scripts/Annualpolicy.aspx',
   rbiNotifications: 'https://rbi.org.in/scripts/FS_Notification.aspx?fn=2752',
   mospiReleases: 'https://www.mospi.gov.in/api/latest-release/get-web-latest-release-list',
+  mospiCalendarLatest: 'https://www.mospi.gov.in/api/documents/get-latest-release-calender',
+  mospiCalendarPage: 'https://www.mospi.gov.in/release-calendar',
   cpi: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100',
   cpiRural: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=1&division_code=0&limit=100',
   cpiUrban: 'https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=2&division_code=0&limit=100',
@@ -23,7 +26,7 @@ const STANCES = ['neutral', 'accommodative', 'withdrawal_of_accommodation', 'cal
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function isoDate(y, m, d) { return String(y).padStart(4,'0') + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'); }
-function validIsoDate(v) { return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v + 'T00:00:00Z')); }
+function validIsoDate(v) { if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;const [y,m,d]=v.split('-').map(Number),date=new Date(Date.UTC(y,m-1,d));return date.getUTCFullYear()===y&&date.getUTCMonth()===m-1&&date.getUTCDate()===d; }
 function validIsoTime(v) { return typeof v === 'string' && !Number.isNaN(Date.parse(v)); }
 function finite(v) { return typeof v === 'number' && Number.isFinite(v); }
 function tidy(v) { return String(v == null ? '' : v).replace(/\s+/g, ' ').trim(); }
@@ -40,6 +43,79 @@ function parseNamedDate(raw) {
 function provenance(sourceUrl, publishedAt, fetchedAt, extra) {
   if (!/^https:\/\//.test(sourceUrl) || !validIsoDate(publishedAt) || !validIsoTime(fetchedAt)) throw new Error('Missing or invalid source provenance');
   return Object.assign({ sourceUrl, publishedAt, fetchedAt, verifiedAt: fetchedAt }, extra || {});
+}
+
+function unicodeFromHex(hex){
+  if(!hex||hex.length%4)return '';
+  let out='';
+  for(let i=0;i<hex.length;i+=4){
+    const first=parseInt(hex.slice(i,i+4),16);
+    if(first>=0xD800&&first<=0xDBFF&&i+8<=hex.length){const second=parseInt(hex.slice(i+4,i+8),16);if(second>=0xDC00&&second<=0xDFFF){out+=String.fromCodePoint(0x10000+(first-0xD800)*0x400+second-0xDC00);i+=4;continue;}}
+    out+=String.fromCharCode(first);
+  }
+  return out;
+}
+function pdfCMap(text){
+  const map=new Map();
+  for(const block of String(text).matchAll(/beginbfchar([\s\S]*?)endbfchar/g))for(const pair of block[1].matchAll(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g))map.set(pair[1].toUpperCase(),unicodeFromHex(pair[2]));
+  for(const block of String(text).matchAll(/beginbfrange([\s\S]*?)endbfrange/g)){
+    for(const row of block[1].split(/\r?\n/)){
+      const sequential=row.match(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/);
+      const listed=row.match(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*\[([^\]]+)\]/);
+      if(sequential){const start=parseInt(sequential[1],16),end=parseInt(sequential[2],16),base=parseInt(sequential[3],16),width=sequential[1].length,destWidth=sequential[3].length;for(let code=start;code<=end;code++)map.set(code.toString(16).padStart(width,'0').toUpperCase(),unicodeFromHex((base+code-start).toString(16).padStart(destWidth,'0')));}
+      else if(listed){const start=parseInt(listed[1],16),end=parseInt(listed[2],16),width=listed[1].length,values=[...listed[3].matchAll(/<([0-9A-Fa-f]+)>/g)].map(x=>x[1]);for(let code=start;code<=end&&code-start<values.length;code++)map.set(code.toString(16).padStart(width,'0').toUpperCase(),unicodeFromHex(values[code-start]));}
+    }
+  }
+  return map;
+}
+function pdfDecodeHex(hex,map){
+  const widths=[...new Set([...map.keys()].map(key=>key.length))].sort((a,b)=>b-a);let out='',position=0;
+  while(position<hex.length){let matched=false;for(const width of widths){const key=hex.slice(position,position+width).toUpperCase();if(map.has(key)){out+=map.get(key);position+=width;matched=true;break;}}if(!matched)position+=2;}
+  return out;
+}
+function extractPdfText(buffer){
+  if(!Buffer.isBuffer(buffer)||buffer.length<8||buffer.subarray(0,5).toString('ascii')!=='%PDF-')throw new Error('MoSPI calendar is not a PDF');
+  const source=buffer.toString('latin1'),objects=new Map();
+  for(const match of source.matchAll(/(?:^|\r?\n)(\d+)\s+\d+\s+obj\b([\s\S]*?)endobj/g)){const id=+match[1],body=match[2],marker=body.indexOf('stream');let stream=null;if(marker>=0){let start=marker+6;if(body[start]==='\r')start++;if(body[start]==='\n')start++;let end=body.lastIndexOf('endstream'),raw=Buffer.from(body.slice(start,end),'latin1');while(raw.length&&(raw[raw.length-1]===10||raw[raw.length-1]===13))raw=raw.subarray(0,-1);try{stream=/\/FlateDecode/.test(body.slice(0,marker))?zlib.inflateSync(raw):raw;}catch(_){stream=null;}}objects.set(id,{body,stream});}
+  const cmaps=new Map(),fonts=new Map();
+  objects.forEach((object,id)=>{if(object.stream){const text=object.stream.toString('latin1');if(/begincmap/.test(text)){const map=pdfCMap(text);if(map.size)cmaps.set(id,map);}}});
+  objects.forEach((object,id)=>{const match=object.body.match(/\/ToUnicode\s+(\d+)\s+\d+\s+R/);if(match&&cmaps.has(+match[1]))fonts.set(id,cmaps.get(+match[1]));});
+  const aliases=new Map();
+  objects.forEach(object=>{for(const match of object.body.matchAll(/\/(F\d+)\s+(\d+)\s+\d+\s+R/g)){const map=fonts.get(+match[2]);if(map){if(!aliases.has(match[1]))aliases.set(match[1],[]);if(!aliases.get(match[1]).includes(map))aliases.get(match[1]).push(map);}}});
+  const lines=[];
+  objects.forEach(object=>{if(!object.stream)return;const content=object.stream.toString('latin1');if(!/\bBT\b/.test(content)||!/(?:Tj|TJ)\b/.test(content))return;let font=null;for(const token of content.matchAll(/\/(F\d+)\s+[\d.]+\s+Tf|\[([\s\S]*?)\]\s*TJ|<([0-9A-Fa-f]+)>\s*Tj|\(([^)]*)\)\s*Tj|\bET\b/g)){if(token[1]){font=token[1];continue}if(token[0]==='ET'){lines.push('\n');continue}const encoded=token[2]?[...token[2].matchAll(/<([0-9A-Fa-f]+)>/g)].map(x=>x[1]).join(''):token[3];if(encoded){const choices=(aliases.get(font)||[]).map(map=>pdfDecodeHex(encoded,map));const decoded=choices.sort((a,b)=>(b.match(/[A-Za-z0-9]/g)||[]).length-(a.match(/[A-Za-z0-9]/g)||[]).length)[0];if(decoded)lines.push(decoded+' ');}else if(token[4])lines.push(token[4]+' ');}});
+  const text=tidy(lines.join(' ').replace(/\s*\n\s*/g,'\n'));
+  if(text.length<200||!/Advance Release Calendar/i.test(text))throw new Error('MoSPI calendar text could not be verified');
+  return text;
+}
+function parseCalendarDocumentMeta(payload){
+  const data=payload&&payload.data;
+  if(!data||data.filemime!=='application/pdf'||!/^uploads\/documents\/releaseCalender\/[A-Za-z0-9%_.+() -]+\.pdf$/i.test(data.url||''))throw new Error('Invalid MoSPI calendar document metadata');
+  const sourceUrl=new URL(data.url,URLS.mospiCalendarPage).href;
+  if(!/^https:\/\/(?:www\.)?mospi\.gov\.in\//i.test(sourceUrl))throw new Error('Calendar document is not on MoSPI');
+  const publishedAt=validIsoTime(data.created_at)?data.created_at.slice(0,10):null;
+  return {sourceUrl,publishedAt};
+}
+function parseReleaseSchedules(text,meta,fetchedAt,nowIso){
+  if(!meta||!/^https:\/\/(?:www\.)?mospi\.gov\.in\//i.test(meta.sourceUrl||'')||!validIsoTime(fetchedAt))throw new Error('Invalid calendar provenance');
+  const normalized=tidy(text).replace(/[ᵗˢⁿʰ]/g,'').replace(/(\d)\s+(st|nd|rd|th)\b/gi,'$1$2');
+  const rows=[],monthPattern='Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?';
+  const headers=[...normalized.matchAll(new RegExp('(?:^|\\s)(\\d{1,2})\\s+('+monthPattern+')\\s+(20\\d{2})(?=\\s)','gi'))].filter(match=>+match[1]>=1&&+match[1]<=12);
+  headers.forEach((header,index)=>{
+    const month=MONTH[header[2].toLowerCase()],year=+header[3],start=header.index+header[0].length,end=index+1<headers.length?headers[index+1].index:normalized.length,segment=normalized.slice(start,end);
+    const entryPattern=new RegExp('(\\d{1,2})(?:st|nd|rd|th)\\s+('+monthPattern+')\\s+([\\s\\S]*?)(?=(?:\\d{1,2})(?:st|nd|rd|th)\\s+(?:'+monthPattern+')\\s+|Advance Release Calendar|$)','gi');
+    for(const entry of segment.matchAll(entryPattern)){if(MONTH[entry[2].toLowerCase()]!==month)continue;const title=tidy(entry[3]).replace(/\s+(?:Released on|https?:).*$/i,'');if(title)rows.push({date:isoDate(year,month,+entry[1]),title});}
+  });
+  function select(kind,matcher){
+    if(rows.some(row=>!validIsoDate(row.date)))throw new Error('Invalid calendar date');
+    const matches=rows.filter(row=>row.date>nowIso.slice(0,10)&&matcher.test(row.title));
+    if(!matches.length)return null;matches.sort((a,b)=>a.date.localeCompare(b.date));const firstDate=matches[0].date,same=matches.filter(row=>row.date===firstDate);if(same.length!==1)throw new Error('Ambiguous or duplicate '+kind+' schedule matches');
+    const row=same[0],record={indicator:kind==='inflation'?'All India Consumer Price Index (CPI)':'Gross Domestic Product (GDP)',releaseTitle:row.title,nextReleaseDate:row.date,sourceUrl:meta.sourceUrl,verifiedAt:fetchedAt,provenanceStatus:'verified-official-schedule',matchingBasis:kind==='inflation'?'exact CPI calendar title':'GDP title keyword and release classification'};
+    if(meta.publishedAt)record.sourcePublishedAt=meta.publishedAt;
+    if(kind==='growth'){const quarter=row.title.match(/Quarterly Estimates of GDP for (Q[1-4]),?\s*FY\s*(\d{4}-\d{2})/i),annual=/Advance Estimates|Provisional Estimates|Revised Estimates|Final Estimates/i.test(row.title),annualPeriod=row.title.match(/(?:GDP for|Estimates of GDP for)\s*FY\s*(\d{4}-\d{2})/i);record.releaseType=quarter&&annual?'combined national-accounts release':quarter?'quarterly GDP':'annual GDP';if(quarter&&!annual)record.reportingPeriod=quarter[1].toUpperCase()+' FY'+quarter[2];else if(annualPeriod&&!quarter)record.reportingPeriod='FY'+annualPeriod[1];}
+    return record;
+  }
+  return {inflation:select('inflation',/\bAll India Consumer Price Index\s*\(CPI\)/i),growth:select('growth',/\bGDP\b|Gross Domestic Product/i)};
 }
 
 function parseCurrentRates(html) {
@@ -457,6 +533,22 @@ function mergeProjection(oldProjection, actuals, estimates, kind) {
 function quarterKey(label){const m=String(label).match(/^Q([1-4]) FY(\d{2})$/);return m?+m[2]*10+(+m[1]):Number.MAX_SAFE_INTEGER;}
 function sameObservation(a,b){const strip=x=>JSON.parse(JSON.stringify(x,(key,value)=>(key==='fetchedAt'||key==='verifiedAt')?undefined:value));return JSON.stringify(strip(a))===JSON.stringify(strip(b));}
 function retainTimestamp(oldSection,newSection){return sameObservation(oldSection,newSection)&&oldSection&&oldSection.provenance?clone(oldSection):newSection;}
+function validReleaseSchedule(record,kind,nowIso){
+  if(!record)return false;
+  const official=/^https:\/\/(?:www\.)?mospi\.gov\.in\//i.test(record.sourceUrl||''),future=validIsoDate(record.nextReleaseDate)&&record.nextReleaseDate>nowIso.slice(0,10),identity=kind==='inflation'?record.indicator==='All India Consumer Price Index (CPI)':record.indicator==='Gross Domestic Product (GDP)';
+  if(!official||!future||!identity||!tidy(record.releaseTitle)||!validIsoTime(record.verifiedAt)||record.provenanceStatus!=='verified-official-schedule'||!tidy(record.matchingBasis))return false;
+  if(record.sourcePublishedAt&&(!validIsoDate(record.sourcePublishedAt)||record.sourcePublishedAt>nowIso.slice(0,10)))return false;
+  if(kind==='growth'&&!['quarterly GDP','annual GDP','combined national-accounts release'].includes(record.releaseType))return false;
+  return !record.reportingPeriod||(kind==='growth'&&/^(?:Q[1-4] FY\d{4}-\d{2}|FY\d{4}-\d{2})$/.test(record.reportingPeriod));
+}
+function mergeReleaseSchedule(oldRecord,outcome,kind,nowIso){
+  const oldValid=validReleaseSchedule(oldRecord,kind,nowIso);
+  if(!outcome||!outcome.ok)return oldValid?clone(oldRecord):null;
+  if(outcome.value==null)return null;
+  if(!validReleaseSchedule(outcome.value,kind,nowIso))throw new Error('Invalid '+kind+' release schedule');
+  if(oldValid&&sameObservation(oldRecord,outcome.value))return clone(oldRecord);
+  return clone(outcome.value);
+}
 
 function sanitizeStoredData(stored) {
   const clean=clone(stored);
@@ -466,6 +558,7 @@ function sanitizeStoredData(stored) {
   if(clean.gdp&&clean.gdp.projection&&Array.isArray(clean.gdp.projection.actuals))clean.gdp.projection.actuals=clean.gdp.projection.actuals.filter(point=>point&&point.kind==='actual'&&point.provenanceStatus==='verified'&&point.provenance&&point.provenance.sourceUrl);
   if(clean.gdp&&clean.gdp.projection&&Array.isArray(clean.gdp.projection.estimates))clean.gdp.projection.estimates=clean.gdp.projection.estimates.filter(point=>point&&point.kind==='projection'&&point.provenance&&point.provenance.sourceUrl);
   if(clean.cpi&&clean.cpi.projection&&Array.isArray(clean.cpi.projection.actuals))clean.cpi.projection.actuals=clean.cpi.projection.actuals.filter(point=>point&&point.kind==='derived-quarterly-average'&&point.provenanceStatus==='derived'&&point.derivation&&point.derivation.sourceUrl===URLS.cpi);
+  clean.releaseSchedules=clean.releaseSchedules&&typeof clean.releaseSchedules==='object'?clean.releaseSchedules:{};
   return clean;
 }
 
@@ -475,7 +568,9 @@ function buildCandidate(stored, sources, fetchedAt) {
     policy:{ok:true,value:{currentRate:sources.currentRate,resolution:sources.resolution,repoHistory:sources.repoHistory}},
     schedule:{ok:true,value:sources.schedule},
     gdp:{ok:true,value:sources.gdp},
-    cpi:{ok:true,value:sources.cpi}
+    cpi:{ok:true,value:sources.cpi},
+    inflationSchedule:sources.releaseSchedules?{ok:true,value:sources.releaseSchedules.inflation||null}:{ok:false,error:'not supplied'},
+    growthSchedule:sources.releaseSchedules?{ok:true,value:sources.releaseSchedules.growth||null}:{ok:false,error:'not supplied'}
   },fetchedAt);
 }
 
@@ -523,6 +618,11 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
     cpiRaw.projection=mergeProjection(next.cpi&&next.cpi.projection,cpiRaw.projection.actuals,estimates,'CPI');
     next.cpi=retainTimestamp(next.cpi,cpiRaw);
   }
+  next.releaseSchedules=next.releaseSchedules||{};
+  const inflationSchedule=mergeReleaseSchedule(next.releaseSchedules.inflation,outcomes&&outcomes.inflationSchedule,'inflation',fetchedAt);
+  const growthSchedule=mergeReleaseSchedule(next.releaseSchedules.growth,outcomes&&outcomes.growthSchedule,'growth',fetchedAt);
+  if(inflationSchedule)next.releaseSchedules.inflation=inflationSchedule;else delete next.releaseSchedules.inflation;
+  if(growthSchedule)next.releaseSchedules.growth=growthSchedule;else delete next.releaseSchedules.growth;
   next.schemaVersion=3;
   validateDataset(next,fetchedAt);
   const changed=JSON.stringify(next)!==JSON.stringify(stored);
@@ -583,6 +683,9 @@ function validateDataset(data, nowIso) {
   [...(data.gdp.projection.estimates||[]),...(data.cpi.projection.estimates||[])].forEach(point=>{if(point.kind!=='projection'||!point.provenance||!/^https:\/\/(?:www\.)?rbi\.org\.in\//i.test(point.provenance.sourceUrl)||!validIsoDate(point.provenance.publishedAt))throw new Error('Projection provenance is incomplete');});
   (data.gdp.projection.actuals||[]).forEach(point=>{if(point.provenanceStatus!=='verified'||point.kind!=='actual'||point.classification!=='constant-price real GDP'||!point.baseYear||!point.series||!point.frequency||!point.revisionStatus||!point.provenance||!validIsoDate(point.provenance.publishedAt))throw new Error('Verified GDP actual provenance is incomplete');});
   (data.cpi.projection.actuals||[]).forEach(point=>{const d=point.derivation;if(point.kind!=='derived-quarterly-average'||point.provenanceStatus!=='derived'||!d||d.method!=='arithmetic mean of monthly All India Combined CPI YoY observations'||d.formula!=='sum(monthly YoY values) / observation count'||d.sourceUrl!==URLS.cpi||d.expectedObservationCount!==3||!Array.isArray(d.observations)||d.observations.length!==d.observationCount||!Array.isArray(d.releases)||d.releases.length!==d.observationCount||(!point.partial&&d.observationCount!==3))throw new Error('CPI actual derivation metadata is incomplete');});
+  const schedules=data.releaseSchedules||{};
+  if(schedules.inflation&&!validReleaseSchedule(schedules.inflation,'inflation',nowIso))throw new Error('Inflation release schedule is invalid or expired');
+  if(schedules.growth&&!validReleaseSchedule(schedules.growth,'growth',nowIso))throw new Error('Growth release schedule is invalid or expired');
   return true;
 }
 
@@ -612,14 +715,20 @@ function atomicWriteMany(entries, hooks) {
 }
 
 async function request(url, options) {
-  const parsed=new URL(url),body=options&&options.body||null,max=5*1024*1024;
+  const parsed=new URL(url),body=options&&options.body||null,max=options&&options.maxBytes||5*1024*1024;
   return new Promise((resolve,reject)=>{
     const req=https.request({protocol:parsed.protocol,hostname:parsed.hostname,port:parsed.port||443,path:parsed.pathname+parsed.search,method:(options&&options.method)||(body?'POST':'GET'),headers:Object.assign({'User-Agent':UA,'Accept':options&&options.accept||'*/*'},body?{'Content-Type':options&&options.contentType||'application/json','Content-Length':Buffer.byteLength(body)}:{},options&&options.headers||{}),secureOptions:parsed.hostname==='api.mospi.gov.in'?constants.SSL_OP_LEGACY_SERVER_CONNECT:undefined,timeout:30000},res=>{
       if(res.statusCode>=300&&res.statusCode<400&&res.headers.location){res.resume();return resolve(request(new URL(res.headers.location,url).toString(),options));}
       let size=0,chunks=[];res.on('data',d=>{size+=d.length;if(size>max){req.destroy(new Error('response exceeds 5 MB'));return;}chunks.push(d);});
-      res.on('end',()=>{const text=Buffer.concat(chunks).toString('utf8');if(res.statusCode<200||res.statusCode>=300)return reject(new Error('HTTP '+res.statusCode+' from '+url));resolve(options&&options.returnResponse?{text,headers:res.headers,statusCode:res.statusCode}:text);});
+      res.on('end',()=>{const buffer=Buffer.concat(chunks),value=options&&options.binary?buffer:buffer.toString('utf8');if(res.statusCode<200||res.statusCode>=300)return reject(new Error('HTTP '+res.statusCode+' from '+url));resolve(options&&options.returnResponse?{text:value,headers:res.headers,statusCode:res.statusCode}:value);});
     });req.on('timeout',()=>req.destroy(new Error('timeout from '+url)));req.on('error',reject);if(body)req.write(body);req.end();
   });
+}
+
+async function fetchReleaseSchedules(fetchedAt){
+  const meta=parseCalendarDocumentMeta(JSON.parse(await request(URLS.mospiCalendarLatest,{accept:'application/json',maxBytes:256*1024})));
+  const pdf=await request(meta.sourceUrl,{accept:'application/pdf',binary:true,maxBytes:2*1024*1024});
+  return parseReleaseSchedules(extractPdfText(pdf),meta,fetchedAt,fetchedAt);
 }
 
 function decodeHtmlAttribute(value){return String(value||'').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&#(d+);/g,(_,n)=>String.fromCharCode(Number(n)));}
@@ -662,14 +771,14 @@ async function fetchPolicyData(homeHtml,pages,fetchedAt,notifications){
 }
 async function fetchSources(nowIso) {
   const fetchedAt=nowIso;
-  const [home,policyPages,notifications,releasesText,cpiText,cpiRuralText,cpiUrbanText,gdpQText,gdpAText]=await Promise.all([
+  const [home,policyPages,notifications,releasesText,cpiText,cpiRuralText,cpiUrbanText,gdpQText,gdpAText,releaseSchedules]=await Promise.all([
     request(URLS.rbiHome,{accept:'text/html'}),fetchPolicyArchivePages(fetchedAt),fetchRepoNotifications(fetchedAt),
     request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}),
-    request(URLS.cpi,{accept:'application/json'}),request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'}),request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'})
+    request(URLS.cpi,{accept:'application/json'}),request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'}),request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),fetchReleaseSchedules(fetchedAt)
   ]);
   const policyData=await fetchPolicyData(home,policyPages,fetchedAt,notifications);
   const releases=parseReleaseList(JSON.parse(releasesText));
-  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt,{rural:JSON.parse(cpiRuralText),urban:JSON.parse(cpiUrbanText)}),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt)};
+  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt,{rural:JSON.parse(cpiRuralText),urban:JSON.parse(cpiUrbanText)}),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt),releaseSchedules};
 }
 
 async function fetchSourceOutcomes(nowIso) {
@@ -677,12 +786,15 @@ async function fetchSourceOutcomes(nowIso) {
   const homePromise=request(URLS.rbiHome,{accept:'text/html'}),policyPagesPromise=fetchPolicyArchivePages(fetchedAt);
   const notificationsPromise=fetchRepoNotifications(fetchedAt);
   const releasesPromise=request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}).then(text=>parseReleaseList(JSON.parse(text)));
+  const releaseSchedulesPromise=fetchReleaseSchedules(fetchedAt);
   const tasks={
     policy:(async()=>{const [home,pages,notificationResult]=await Promise.all([homePromise,policyPagesPromise,notificationsPromise.then(value=>({ok:true,value}),error=>({ok:false,error}))]);return fetchPolicyData(home,pages,fetchedAt,notificationResult.ok?notificationResult.value:[]);})(),
     notifications:notificationsPromise,
     schedule:(async()=>{const pages=await policyPagesPromise;return parseSchedule(pages[pages.length-1].html,URLS.rbiPolicy,fetchedAt);})(),
     cpi:(async()=>{const [text,releases,sectorResults]=await Promise.all([request(URLS.cpi,{accept:'application/json'}),releasesPromise,Promise.allSettled([request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'})])]);const optional={};if(sectorResults[0].status==='fulfilled')optional.rural=JSON.parse(sectorResults[0].value);if(sectorResults[1].status==='fulfilled')optional.urban=JSON.parse(sectorResults[1].value);return parseCpi(JSON.parse(text),releases,fetchedAt,optional);})(),
-    gdp:(async()=>{const [q,a,releases]=await Promise.all([request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),releasesPromise]);return parseGdp(JSON.parse(q),JSON.parse(a),releases,fetchedAt);})()
+    gdp:(async()=>{const [q,a,releases]=await Promise.all([request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),releasesPromise]);return parseGdp(JSON.parse(q),JSON.parse(a),releases,fetchedAt);})(),
+    inflationSchedule:releaseSchedulesPromise.then(value=>value.inflation),
+    growthSchedule:releaseSchedulesPromise.then(value=>value.growth)
   };
   const names=Object.keys(tasks),settled=await Promise.allSettled(names.map(name=>tasks[name])),out={};
   names.forEach((name,index)=>{const item=settled[index];out[name]=item.status==='fulfilled'?{ok:true,value:item.value}:{ok:false,error:conciseError(item.reason)};});
@@ -690,4 +802,4 @@ async function fetchSourceOutcomes(nowIso) {
 }
 function conciseError(error){return tidy(error&&error.message||error||'unknown error').slice(0,300);}
 
-module.exports={URLS,textOf,parseCurrentRates,parsePolicyLinks,parsePolicyIndex,parseRepoDecision,parseLafNotificationLinks,parseLafNotification,reconcileRepoNotifications,reconstructRepoHistory,parseResolution,parseSchedule,parseReleaseList,findRelease,findGdpRelease,parseCpi,parseGdp,mergeProjection,buildCandidate,buildMergedCandidate,validateDataset,macroFromCandidate,atomicWriteMany,fetchSources,fetchSourceOutcomes,request,archiveForm,fetchPolicyArchivePages,fetchRepoNotifications,fetchPolicyData};
+module.exports={URLS,textOf,parseCurrentRates,parsePolicyLinks,parsePolicyIndex,parseRepoDecision,parseLafNotificationLinks,parseLafNotification,reconcileRepoNotifications,reconstructRepoHistory,parseResolution,parseSchedule,parseReleaseList,findRelease,findGdpRelease,parseCpi,parseGdp,parseCalendarDocumentMeta,parseReleaseSchedules,extractPdfText,validReleaseSchedule,mergeReleaseSchedule,mergeProjection,buildCandidate,buildMergedCandidate,validateDataset,macroFromCandidate,atomicWriteMany,fetchSources,fetchSourceOutcomes,fetchReleaseSchedules,request,archiveForm,fetchPolicyArchivePages,fetchRepoNotifications,fetchPolicyData};
