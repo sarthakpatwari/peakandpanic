@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T13:32:17.943Z",
+  "updatedAt": "2026-11-19T22:18:14.506Z",
   "releaseSchedules": {
     "inflation": {
       "indicator": "All India Consumer Price Index (CPI)",
@@ -635,24 +635,8 @@
     "yoy": 6.09,
     "period": "2026-10",
     "baseYear": "2024=100",
+    "series": "Current",
     "monthly": [
-      {
-        "period": "2025-12",
-        "index": 104.1,
-        "yoy": 0,
-        "geography": "All India",
-        "sector": "Combined",
-        "measure": "CPI (General)",
-        "baseYear": "2024=100",
-        "provenanceStatus": "verified",
-        "provenance": {
-          "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
-          "publishedAt": "2026-01-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
-          "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1768213461321_53cd35fd-1bbc-4b43-b92d-8fb67474ee74_Press_Release_of_CPI_for_December_2025.pdf"
-        }
-      },
       {
         "period": "2026-01",
         "index": 104.45,
@@ -661,12 +645,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-02-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1770891893893_6b458c0a-c327-4fef-a554-41131ea67273_Press_Relase_of_CPI_for_Jan26.pdf"
         }
       },
@@ -678,12 +663,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-03-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1773310539387_714ce3b5-4644-4aef-b2e3-64433640a9c3_Press_Release_of_CPI_February_2026.pdf"
         }
       },
@@ -695,12 +681,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-04-13",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1776075408775_60ad93d0-aedc-405b-864a-d1e965e7ba40_Press_Release_of_CPI_March_2026.pdf"
         }
       },
@@ -712,12 +699,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-05-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/PressRelease/CPI%20Press%20Release%20of%20April%202026.pdf"
         }
       },
@@ -729,12 +717,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-06-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1781259853555_04875571-19f2-4830-9cad-3a1bfd5992e1_Press_Release_of_CPI_for_May_2026.pdf"
         }
       },
@@ -746,12 +735,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-07-13",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1783937698596_1013f1a1-3400-41aa-b4f4-5bbff10db7b7_Press_Release_of_CPI_for_June_2026.pdf"
         }
       },
@@ -763,12 +753,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-08-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1786529680747_3113661d-1a2b-4b9a-af06-b340193ef9a0_Press_Release_CPI_July_2026.pdf"
         }
       },
@@ -780,12 +771,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-09-14",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1789381904344_6c792dcf-8a9f-4fca-93d3-99d833bdb358_Press_Release_of_CPI_for_August_2026.pdf"
         }
       },
@@ -797,12 +789,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-10-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1791800601071_643518af-5320-4e52-b78c-75c92b83885b_Press_Release_for_the_month_of_September,_2026.pdf"
         }
       },
@@ -814,12 +807,13 @@
         "sector": "Combined",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
           "publishedAt": "2026-11-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1794478693814_7c90e80f-9e64-4aa4-b44a-1dc727b0fed9_Press_Release_of_CPI_for_October_2026_.pdf"
         }
       }
@@ -833,12 +827,13 @@
         "sector": "Rural",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=1&division_code=0&limit=100",
           "publishedAt": "2026-11-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1794478693814_7c90e80f-9e64-4aa4-b44a-1dc727b0fed9_Press_Release_of_CPI_for_October_2026_.pdf"
         }
       },
@@ -850,12 +845,13 @@
         "sector": "Urban",
         "measure": "CPI (General)",
         "baseYear": "2024=100",
+        "series": "Current",
         "provenanceStatus": "verified",
         "provenance": {
           "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=2&division_code=0&limit=100",
           "publishedAt": "2026-11-12",
-          "fetchedAt": "2026-11-16T07:54:30.349Z",
-          "verifiedAt": "2026-11-16T07:54:30.349Z",
+          "fetchedAt": "2026-11-19T22:18:14.506Z",
+          "verifiedAt": "2026-11-19T22:18:14.506Z",
           "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1794478693814_7c90e80f-9e64-4aa4-b44a-1dc727b0fed9_Press_Release_of_CPI_for_October_2026_.pdf"
         }
       }
@@ -889,6 +885,7 @@
             ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
             "baseYear": "2024=100",
+            "series": "Current",
             "releases": [
               {
                 "period": "2026-01",
@@ -935,6 +932,7 @@
             ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
             "baseYear": "2024=100",
+            "series": "Current",
             "releases": [
               {
                 "period": "2026-04",
@@ -981,6 +979,7 @@
             ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
             "baseYear": "2024=100",
+            "series": "Current",
             "releases": [
               {
                 "period": "2026-07",
@@ -1019,6 +1018,7 @@
             ],
             "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
             "baseYear": "2024=100",
+            "series": "Current",
             "releases": [
               {
                 "period": "2026-10",
@@ -1037,8 +1037,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-16T07:54:30.349Z",
-            "verifiedAt": "2026-11-16T07:54:30.349Z"
+            "fetchedAt": "2026-11-19T22:18:14.506Z",
+            "verifiedAt": "2026-11-19T22:18:14.506Z"
           }
         },
         {
@@ -1048,8 +1048,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-16T07:54:30.349Z",
-            "verifiedAt": "2026-11-16T07:54:30.349Z"
+            "fetchedAt": "2026-11-19T22:18:14.506Z",
+            "verifiedAt": "2026-11-19T22:18:14.506Z"
           }
         },
         {
@@ -1059,8 +1059,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-16T07:54:30.349Z",
-            "verifiedAt": "2026-11-16T07:54:30.349Z"
+            "fetchedAt": "2026-11-19T22:18:14.506Z",
+            "verifiedAt": "2026-11-19T22:18:14.506Z"
           }
         }
       ]
@@ -1068,13 +1068,15 @@
     "methodology": {
       "headline": "All India Combined CPI (General)",
       "yoy": "year-on-year percentage change reported by MoSPI",
-      "quarterlyAverage": "arithmetic mean of three monthly All India Combined CPI YoY observations"
+      "quarterlyAverage": "arithmetic mean of three monthly All India Combined CPI YoY observations",
+      "seriesStart": "2026-01",
+      "compatibility": "Earlier CPI base-year observations are not mixed with the 2024=100 series"
     },
     "provenance": {
       "sourceUrl": "https://api.mospi.gov.in/api/cpi/getCPIData?base_year=2024&series=Current&state_code=1&sector_code=3&division_code=0&limit=100",
       "publishedAt": "2026-11-12",
-      "fetchedAt": "2026-11-16T07:54:30.349Z",
-      "verifiedAt": "2026-11-16T07:54:30.349Z",
+      "fetchedAt": "2026-11-19T22:18:14.506Z",
+      "verifiedAt": "2026-11-19T22:18:14.506Z",
       "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1794478693814_7c90e80f-9e64-4aa4-b44a-1dc727b0fed9_Press_Release_of_CPI_for_October_2026_.pdf"
     },
     "source": "MoSPI CPI API (All India Combined)"
