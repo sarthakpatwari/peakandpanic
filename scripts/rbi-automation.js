@@ -360,12 +360,18 @@ function parseGdp(quarterPayload, annualPayload, releases, fetchedAt) {
   const qRows = quarterPayload && Array.isArray(quarterPayload.data) ? quarterPayload.data : null;
   const aRows = annualPayload && Array.isArray(annualPayload.data) ? annualPayload.data : null;
   if (!qRows || !aRows) throw new Error('MoSPI GDP response is malformed');
-  const q = qRows.filter(r => r.indicator === 'Gross Domestic Product' && r.quarter && finite(+r.constant_price)).map(r => ({
-    year:r.year, quarter:r.quarter, value:+r.constant_price, baseYear:r.base_year, series:r.series,
+  const qSource=qRows.filter(r=>r.indicator==='Gross Domestic Product');
+  const aSource=aRows.filter(r=>r.indicator==='Gross Domestic Product');
+  if(!qSource.length||!aSource.length)throw new Error('MoSPI GDP indicator is missing');
+  if(qSource.some(r=>!/^\d{4}-\d{2}$/.test(r.year)||!/^Q[1-4]$/.test(r.quarter)||r.base_year!=='2022-23'||r.series!=='Current'||r.frequency!=='Quarterly'||r.unit!=='₹ Crore'||!finite(+r.constant_price)||!finite(+r.current_price)||+r.constant_price<=0||+r.current_price<=0))throw new Error('MoSPI quarterly GDP classification is invalid');
+  if(aSource.some(r=>!/^\d{4}-\d{2}$/.test(r.year)||r.quarter!==null||r.base_year!=='2022-23'||r.series!=='Current'||r.frequency!=='Annual'||r.unit!=='₹ Crore'||!finite(+r.constant_price)||!finite(+r.current_price)||+r.constant_price<=0||+r.current_price<=0))throw new Error('MoSPI annual GDP classification is invalid');
+  if(new Set(qSource.map(r=>r.year+'|'+r.quarter)).size!==qSource.length||new Set(aSource.map(r=>r.year)).size!==aSource.length)throw new Error('MoSPI GDP response contains duplicate periods');
+  const q = qSource.map(r => ({
+    year:r.year, quarter:r.quarter, value:+r.constant_price, nominalValue:+r.current_price, baseYear:r.base_year, series:r.series,
     frequency:r.frequency, revisionStatus:tidy(r.revision)||'Not stated by API', unit:r.unit
   })).sort(comparePeriod);
-  const a = aRows.filter(r => r.indicator === 'Gross Domestic Product' && finite(+r.constant_price)).map(r => ({
-    year:r.year, value:+r.constant_price, baseYear:r.base_year, series:r.series,
+  const a = aSource.map(r => ({
+    year:r.year, value:+r.constant_price, nominalValue:+r.current_price, baseYear:r.base_year, series:r.series,
     frequency:r.frequency, revisionStatus:tidy(r.revision)||'Not stated by API', unit:r.unit
   })).sort((x,y)=>x.year.localeCompare(y.year));
   if (q.length < 2 || a.length < 2) throw new Error('MoSPI GDP observations are incomplete');
@@ -379,24 +385,53 @@ function parseGdp(quarterPayload, annualPayload, releases, fetchedAt) {
   const annualRelease=findAnnualGdpRelease(releases,latestA.year);
   const quarterProvenance=provenance(URLS.gdpQuarterly,release.publishedAt,fetchedAt,{publicationUrl:release.sourceUrl,releaseTitle:release.title});
   const annualProvenance=provenance(URLS.gdpAnnual,annualRelease.publishedAt,fetchedAt,{publicationUrl:annualRelease.sourceUrl,releaseTitle:annualRelease.title});
-  const actuals=q.map(row=>{
+  const makeGrowth=(current,prior)=>({
+    value:+((current/prior-1)*100).toFixed(2),unrounded:(current/prior-1)*100,
+    formula:'(current period / comparable previous period - 1) × 100',currentValue:current,previousValue:prior,
+    rawUnit:'₹ Crore',displayedUnit:'%'
+  });
+  const quarterlyHistory=q.map(row=>{
     const prior=[...q].reverse().find(item=>item.quarter===row.quarter&&item.year<row.year);
     if(!prior)return null;
     let pointRelease;
     try{pointRelease=findGdpRelease(releases,row.quarter,row.year);}catch(_){return null;}
-    const pointGrowth=+((row.value/prior.value-1)*100).toFixed(2);
-    if(pointGrowth < -20 || pointGrowth > 30)return null;
+    const realGrowth=makeGrowth(row.value,prior.value),nominalGrowth=makeGrowth(row.nominalValue,prior.nominalValue);
+    if(realGrowth.value < -20 || realGrowth.value > 30 || nominalGrowth.value < -20 || nominalGrowth.value > 40)return null;
     return {
-      label:row.quarter+' FY'+row.year.slice(-2),value:pointGrowth,kind:'actual',provenanceStatus:'verified',
-      classification:'constant-price real GDP',baseYear:row.baseYear,series:row.series,frequency:row.frequency,
-      revisionStatus:row.revisionStatus,unit:row.unit,publicationDate:pointRelease.publishedAt,
+      label:row.quarter+' FY'+row.year.slice(-2),referencePeriod:row.quarter+' FY'+row.year,
+      indicatorName:'Gross Domestic Product',indicatorCode:5,kind:'actual',provenanceStatus:'verified',
+      baseYear:row.baseYear,series:row.series,frequency:row.frequency,revisionStatus:row.revisionStatus,
+      realLevel:+(row.value/100000).toFixed(2),nominalLevel:+(row.nominalValue/100000).toFixed(2),
+      previousYearRealLevel:+(prior.value/100000).toFixed(2),previousYearNominalLevel:+(prior.nominalValue/100000).toFixed(2),
+      rawRealLevel:row.value,rawNominalLevel:row.nominalValue,rawUnit:row.unit,displayedUnit:'₹ lakh crore',
+      realPriceBasis:'Constant prices',nominalPriceBasis:'Current prices',realGrowth,nominalGrowth,
+      publicationDate:pointRelease.publishedAt,
       provenance:provenance(URLS.gdpQuarterly,pointRelease.publishedAt,fetchedAt,{publicationUrl:pointRelease.sourceUrl,releaseTitle:pointRelease.title})
     };
   }).filter(Boolean).slice(-8);
+  const annualHistory=a.map((row,index)=>{
+    if(!index)return null;
+    const prior=a[index-1],realGrowth=makeGrowth(row.value,prior.value),nominalGrowth=makeGrowth(row.nominalValue,prior.nominalValue);
+    if(realGrowth.value < -20 || realGrowth.value > 30 || nominalGrowth.value < -20 || nominalGrowth.value > 40)return null;
+    return {
+      label:'FY'+row.year,referencePeriod:'FY'+row.year,indicatorName:'Gross Domestic Product',indicatorCode:5,
+      kind:'actual',provenanceStatus:'verified',baseYear:row.baseYear,series:row.series,frequency:row.frequency,
+      revisionStatus:row.revisionStatus,realLevel:+(row.value/100000).toFixed(2),nominalLevel:+(row.nominalValue/100000).toFixed(2),
+      previousYearRealLevel:+(prior.value/100000).toFixed(2),previousYearNominalLevel:+(prior.nominalValue/100000).toFixed(2),
+      rawRealLevel:row.value,rawNominalLevel:row.nominalValue,rawUnit:row.unit,displayedUnit:'₹ lakh crore',
+      realPriceBasis:'Constant prices',nominalPriceBasis:'Current prices',realGrowth,nominalGrowth,
+      publicationDate:annualRelease.publishedAt,provenance:annualProvenance
+    };
+  }).filter(Boolean).slice(-8);
+  const actuals=quarterlyHistory.map(point=>({
+    label:point.label,value:point.realGrowth.value,kind:'actual',provenanceStatus:'verified',
+    classification:'constant-price real GDP',baseYear:point.baseYear,series:point.series,frequency:point.frequency,
+    revisionStatus:point.revisionStatus,unit:point.rawUnit,publicationDate:point.publicationDate,provenance:point.provenance
+  }));
   return {
-    fy:{label:'FY'+latestA.year,value:+(latestA.value/100000).toFixed(2),decimals:2,growth:annualGrowth,classification:'constant-price real GDP',baseYear:latestA.baseYear,series:latestA.series,frequency:latestA.frequency,revisionStatus:latestA.revisionStatus,provenance:annualProvenance},
-    quarter:{label:latestQ.quarter+' FY'+latestQ.year,value:+(latestQ.value/100000).toFixed(2),decimals:2,growth,classification:'constant-price real GDP',baseYear:latestQ.baseYear,series:latestQ.series,frequency:latestQ.frequency,revisionStatus:latestQ.revisionStatus,provenance:quarterProvenance},
-    unit:'₹ lakh crore',projection:{actuals},
+    fy:{label:'FY'+latestA.year,value:+(latestA.value/100000).toFixed(2),nominalValue:+(latestA.nominalValue/100000).toFixed(2),previousValue:+(previousA.value/100000).toFixed(2),decimals:2,growth:annualGrowth,classification:'constant-price real GDP',baseYear:latestA.baseYear,series:latestA.series,frequency:latestA.frequency,revisionStatus:latestA.revisionStatus,provenance:annualProvenance},
+    quarter:{label:latestQ.quarter+' FY'+latestQ.year,value:+(latestQ.value/100000).toFixed(2),nominalValue:+(latestQ.nominalValue/100000).toFixed(2),previousYearValue:+(previousQ.value/100000).toFixed(2),decimals:2,growth,classification:'constant-price real GDP',baseYear:latestQ.baseYear,series:latestQ.series,frequency:latestQ.frequency,revisionStatus:latestQ.revisionStatus,provenance:quarterProvenance},
+    unit:'₹ lakh crore',quarterlyHistory,annualHistory,projection:{actuals},
     provenance:quarterProvenance
   };
 }
@@ -473,6 +508,7 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
 
   if(gdp.ok){
     rejectRegression(next.gdp,gdp.value,'GDP');
+    rejectGrowthRevisionRegression(next.gdp,gdp.value);
     const gdpRaw=clone(gdp.value);gdpRaw.source='MoSPI National Accounts Statistics';
     const estimates=policy.ok?policy.value.resolution.gdpProjections.map(x=>Object.assign({},x,{kind:'projection',provenance:policy.value.resolution.provenance})):(next.gdp&&next.gdp.projection&&next.gdp.projection.estimates||[]);
     gdpRaw.projection=mergeProjection(next.gdp&&next.gdp.projection,gdpRaw.projection.actuals,estimates,'GDP');
@@ -494,9 +530,33 @@ function buildMergedCandidate(stored, outcomes, fetchedAt) {
   return {changed,data:next};
 }
 function rejectRegression(oldSection,newSection,label){const oldDate=oldSection&&oldSection.provenance&&oldSection.provenance.publishedAt,newDate=newSection&&newSection.provenance&&newSection.provenance.publishedAt;if(validIsoDate(oldDate)&&validIsoDate(newDate)&&newDate<oldDate)throw new Error(label+' publication regression');}
+function revisionRank(value){const text=String(value||'').toLowerCase();if(text.includes('final'))return 6;if(text.includes('second revised'))return 5;if(text.includes('first revised'))return 4;if(text.includes('provisional'))return 3;if(text.includes('second advance'))return 2;if(text.includes('first advance'))return 1;return 0;}
+function rejectGrowthRevisionRegression(oldSection,newSection){
+  ['quarterlyHistory','annualHistory'].forEach(key=>{
+    const oldMap=new Map(((oldSection&&oldSection[key])||[]).map(point=>[point.referencePeriod,point]));
+    ((newSection&&newSection[key])||[]).forEach(point=>{const previous=oldMap.get(point.referencePeriod);if(previous&&revisionRank(point.revisionStatus)<revisionRank(previous.revisionStatus))throw new Error('GDP revision regression for '+point.referencePeriod);});
+  });
+}
 function dedupeHistory(history){
   const map=new Map();history.forEach(x=>{if(!validIsoDate(x.date)||!finite(x.rate)||x.rate<2||x.rate>10)throw new Error('Invalid repo history');const key=x.date+'|'+x.rate;if(!map.has(key))map.set(key,x);});
   return [...map.values()].sort((a,b)=>a.date.localeCompare(b.date));
+}
+function validateGrowthHistory(points,frequency){
+  if(!Array.isArray(points)||!points.length)throw new Error('GDP '+frequency.toLowerCase()+' history is missing');
+  const seen=new Set();let previousKey=-1;
+  points.forEach(point=>{
+    const periodOk=frequency==='Quarterly'?/^Q[1-4] FY\d{4}-\d{2}$/.test(point.referencePeriod):/^FY\d{4}-\d{2}$/.test(point.referencePeriod);
+    const key=frequency==='Quarterly'?quarterKey(point.label):+point.referencePeriod.slice(2,6)*10;
+    if(!periodOk||seen.has(point.referencePeriod)||key<=previousKey)throw new Error('GDP '+frequency.toLowerCase()+' periods are invalid or duplicated');
+    seen.add(point.referencePeriod);previousKey=key;
+    const real=point.realGrowth,nominal=point.nominalGrowth;
+    if(point.indicatorName!=='Gross Domestic Product'||point.indicatorCode!==5||point.kind!=='actual'||point.provenanceStatus!=='verified'||point.baseYear!=='2022-23'||point.series!=='Current'||point.frequency!==frequency||!point.revisionStatus||point.rawUnit!=='₹ Crore'||point.displayedUnit!=='₹ lakh crore'||point.realPriceBasis!=='Constant prices'||point.nominalPriceBasis!=='Current prices')throw new Error('GDP '+frequency.toLowerCase()+' classification is invalid');
+    if(!finite(point.realLevel)||point.realLevel<=0||!finite(point.nominalLevel)||point.nominalLevel<=0||!finite(point.previousYearRealLevel)||point.previousYearRealLevel<=0||!finite(point.previousYearNominalLevel)||point.previousYearNominalLevel<=0||!finite(point.rawRealLevel)||point.rawRealLevel<=0||!finite(point.rawNominalLevel)||point.rawNominalLevel<=0)throw new Error('GDP '+frequency.toLowerCase()+' level is invalid');
+    [real,nominal].forEach(calculation=>{if(!calculation||!finite(calculation.value)||!finite(calculation.unrounded)||!finite(calculation.currentValue)||calculation.currentValue<=0||!finite(calculation.previousValue)||calculation.previousValue<=0||calculation.formula!=='(current period / comparable previous period - 1) × 100'||calculation.rawUnit!=='₹ Crore'||calculation.displayedUnit!=='%'||Math.abs(calculation.unrounded-(calculation.currentValue/calculation.previousValue-1)*100)>1e-9||calculation.value!==+calculation.unrounded.toFixed(2))throw new Error('GDP growth calculation metadata is invalid');});
+    if(point.realLevel!==+(point.rawRealLevel/100000).toFixed(2)||point.nominalLevel!==+(point.rawNominalLevel/100000).toFixed(2)||point.previousYearRealLevel!==+(real.previousValue/100000).toFixed(2)||point.previousYearNominalLevel!==+(nominal.previousValue/100000).toFixed(2)||real.currentValue!==point.rawRealLevel||nominal.currentValue!==point.rawNominalLevel)throw new Error('GDP unit conversion or comparable level is invalid');
+    if(real.value < -20||real.value>30||nominal.value < -20||nominal.value>40)throw new Error('GDP growth rate is implausible');
+    const p=point.provenance;if(!validIsoDate(point.publicationDate)||!p||p.sourceUrl!==(frequency==='Quarterly'?URLS.gdpQuarterly:URLS.gdpAnnual)||!validIsoDate(p.publishedAt)||!/^https:\/\/(?:www\.)?mospi\.gov\.in\//i.test(p.publicationUrl||''))throw new Error('GDP observation provenance is incomplete');
+  });
 }
 function validateDataset(data, nowIso) {
   if(!data||!data.repo||!data.stance||!data.mpc||!data.gdp||!data.cpi||!data.commentary)throw new Error('Candidate dataset is incomplete');
@@ -514,7 +574,9 @@ function validateDataset(data, nowIso) {
   data.cpi.monthly.forEach(point=>{if(!point||!/^\d{4}-\d{2}$/.test(point.period)||point.period<=priorPeriod||!finite(point.index)||point.index<50||point.index>300||!finite(point.yoy)||point.yoy< -10||point.yoy>30||point.baseYear!=='2024=100'||point.sector!=='Combined'||point.geography!=='All India'||point.provenanceStatus!=='verified'||!point.provenance||point.provenance.sourceUrl!==URLS.cpi||!validIsoDate(point.provenance.publishedAt))throw new Error('Invalid CPI monthly observation');priorPeriod=point.period;});
   if(data.cpi.monthly[data.cpi.monthly.length-1].period!==data.cpi.period)throw new Error('CPI monthly history does not include the current observation');
   Object.entries(data.cpi.sectors||{}).forEach(([key,point])=>{const expected=key==='rural'?['Rural',URLS.cpiRural]:key==='urban'?['Urban',URLS.cpiUrban]:null;if(!expected||!point||!/^\d{4}-\d{2}$/.test(point.period)||!finite(point.index)||point.index<50||point.index>300||!finite(point.yoy)||point.yoy< -10||point.yoy>30||point.baseYear!=='2024=100'||point.geography!=='All India'||point.sector!==expected[0]||point.measure!=='CPI (General)'||point.provenanceStatus!=='verified'||!point.provenance||point.provenance.sourceUrl!==expected[1]||!validIsoDate(point.provenance.publishedAt))throw new Error('Invalid CPI sector observation');});
-  if(data.gdp.unit!=='₹ lakh crore'||!data.gdp.fy||!finite(data.gdp.fy.value)||data.gdp.fy.value<=0||!finite(data.gdp.fy.growth)||data.gdp.fy.growth< -20||data.gdp.fy.growth>30||!data.gdp.quarter||!finite(data.gdp.quarter.value)||data.gdp.quarter.value<=0||!finite(data.gdp.quarter.growth)||data.gdp.quarter.growth< -20||data.gdp.quarter.growth>30)throw new Error('Invalid GDP actual');
+  if(data.gdp.unit!=='₹ lakh crore'||!data.gdp.fy||!finite(data.gdp.fy.value)||data.gdp.fy.value<=0||!finite(data.gdp.fy.nominalValue)||data.gdp.fy.nominalValue<=0||!finite(data.gdp.fy.previousValue)||data.gdp.fy.previousValue<=0||!finite(data.gdp.fy.growth)||data.gdp.fy.growth< -20||data.gdp.fy.growth>30||!data.gdp.quarter||!finite(data.gdp.quarter.value)||data.gdp.quarter.value<=0||!finite(data.gdp.quarter.nominalValue)||data.gdp.quarter.nominalValue<=0||!finite(data.gdp.quarter.previousYearValue)||data.gdp.quarter.previousYearValue<=0||!finite(data.gdp.quarter.growth)||data.gdp.quarter.growth< -20||data.gdp.quarter.growth>30)throw new Error('Invalid GDP actual');
+  validateGrowthHistory(data.gdp.quarterlyHistory,'Quarterly');
+  validateGrowthHistory(data.gdp.annualHistory,'Annual');
   if(Date.parse(data.cpi.period+'-01T00:00:00Z')>Date.parse(nowIso)||Date.parse(data.repo.history[data.repo.history.length-1].date+'T00:00:00Z')>Date.parse(nowIso))throw new Error('Future-dated actual');
   ['repo','stance','mpc','gdp','cpi','commentary'].forEach(k=>{const p=data[k].provenance;if(!p||!/^https:\/\//.test(p.sourceUrl)||!validIsoDate(p.publishedAt)||!validIsoTime(p.fetchedAt))throw new Error(k+' provenance is incomplete');if(Date.parse(p.publishedAt+'T00:00:00Z')>Date.parse(nowIso))throw new Error(k+' publication is future-dated');});
   [data.gdp.fy,data.gdp.quarter].forEach((point,index)=>{const p=point.provenance;if(!p||!/^https:\/\//.test(p.sourceUrl)||!validIsoDate(p.publishedAt))throw new Error('GDP '+(index?'quarterly':'annual')+' provenance is incomplete');});

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-16T07:54:30.349Z",
+  "updatedAt": "2026-11-18T11:44:53.362Z",
   "repo": {
     "history": [
       {
@@ -215,6 +215,8 @@
     "fy": {
       "label": "FY2025-26",
       "value": 324.7,
+      "nominalValue": 345.37,
+      "previousValue": 301.15,
       "decimals": 2,
       "growth": 7.82,
       "classification": "constant-price real GDP",
@@ -225,8 +227,8 @@
       "provenance": {
         "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100",
         "publishedAt": "2026-06-05",
-        "fetchedAt": "2026-11-09T12:11:23.633Z",
-        "verifiedAt": "2026-11-09T12:11:23.633Z",
+        "fetchedAt": "2026-11-18T11:44:53.362Z",
+        "verifiedAt": "2026-11-18T11:44:53.362Z",
         "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
         "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
       }
@@ -234,6 +236,8 @@
     "quarter": {
       "label": "Q1 FY2026-27",
       "value": 81.36,
+      "nominalValue": 88.27,
+      "previousYearValue": 75.46,
       "decimals": 2,
       "growth": 7.82,
       "classification": "constant-price real GDP",
@@ -244,13 +248,262 @@
       "provenance": {
         "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
         "publishedAt": "2026-09-02",
-        "fetchedAt": "2026-11-09T12:11:23.633Z",
-        "verifiedAt": "2026-11-09T12:11:23.633Z",
+        "fetchedAt": "2026-11-18T11:44:53.362Z",
+        "verifiedAt": "2026-11-18T11:44:53.362Z",
         "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
         "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
       }
     },
     "unit": "₹ lakh crore",
+    "quarterlyHistory": [
+      {
+        "label": "Q4 FY26",
+        "referencePeriod": "Q4 FY2025-26",
+        "indicatorName": "Gross Domestic Product",
+        "indicatorCode": 5,
+        "kind": "actual",
+        "provenanceStatus": "verified",
+        "baseYear": "2022-23",
+        "series": "Current",
+        "frequency": "Quarterly",
+        "revisionStatus": "Not stated by API",
+        "realLevel": 88.8,
+        "nominalLevel": 94.67,
+        "previousYearRealLevel": 81.8,
+        "previousYearNominalLevel": 86.73,
+        "rawRealLevel": 8880334,
+        "rawNominalLevel": 9467047,
+        "rawUnit": "₹ Crore",
+        "displayedUnit": "₹ lakh crore",
+        "realPriceBasis": "Constant prices",
+        "nominalPriceBasis": "Current prices",
+        "realGrowth": {
+          "value": 8.56,
+          "unrounded": 8.556059455677856,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 8880334,
+          "previousValue": 8180413,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "nominalGrowth": {
+          "value": 9.16,
+          "unrounded": 9.157718687646387,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 9467047,
+          "previousValue": 8672815,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "publicationDate": "2026-06-05",
+        "provenance": {
+          "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
+          "publishedAt": "2026-06-05",
+          "fetchedAt": "2026-11-18T11:44:53.362Z",
+          "verifiedAt": "2026-11-18T11:44:53.362Z",
+          "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+          "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
+        }
+      },
+      {
+        "label": "Q1 FY27",
+        "referencePeriod": "Q1 FY2026-27",
+        "indicatorName": "Gross Domestic Product",
+        "indicatorCode": 5,
+        "kind": "actual",
+        "provenanceStatus": "verified",
+        "baseYear": "2022-23",
+        "series": "Current",
+        "frequency": "Quarterly",
+        "revisionStatus": "Not stated by API",
+        "realLevel": 81.36,
+        "nominalLevel": 88.27,
+        "previousYearRealLevel": 75.46,
+        "previousYearNominalLevel": 80,
+        "rawRealLevel": 8136153,
+        "rawNominalLevel": 8826871,
+        "rawUnit": "₹ Crore",
+        "displayedUnit": "₹ lakh crore",
+        "realPriceBasis": "Constant prices",
+        "nominalPriceBasis": "Current prices",
+        "realGrowth": {
+          "value": 7.82,
+          "unrounded": 7.817453218362025,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 8136153,
+          "previousValue": 7546230,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "nominalGrowth": {
+          "value": 10.33,
+          "unrounded": 10.333239502251956,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 8826871,
+          "previousValue": 8000192,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "publicationDate": "2026-09-02",
+        "provenance": {
+          "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
+          "publishedAt": "2026-09-02",
+          "fetchedAt": "2026-11-18T11:44:53.362Z",
+          "verifiedAt": "2026-11-18T11:44:53.362Z",
+          "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
+          "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
+        }
+      }
+    ],
+    "annualHistory": [
+      {
+        "label": "FY2023-24",
+        "referencePeriod": "FY2023-24",
+        "indicatorName": "Gross Domestic Product",
+        "indicatorCode": 5,
+        "kind": "actual",
+        "provenanceStatus": "verified",
+        "baseYear": "2022-23",
+        "series": "Current",
+        "frequency": "Annual",
+        "revisionStatus": "Final Estimates",
+        "realLevel": 280.94,
+        "nominalLevel": 290.73,
+        "previousYearRealLevel": 261.77,
+        "previousYearNominalLevel": 261.77,
+        "rawRealLevel": 28094358,
+        "rawNominalLevel": 29073287,
+        "rawUnit": "₹ Crore",
+        "displayedUnit": "₹ lakh crore",
+        "realPriceBasis": "Constant prices",
+        "nominalPriceBasis": "Current prices",
+        "realGrowth": {
+          "value": 7.32,
+          "unrounded": 7.324586189227711,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 28094358,
+          "previousValue": 26177001,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "nominalGrowth": {
+          "value": 11.06,
+          "unrounded": 11.064239176978298,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 29073287,
+          "previousValue": 26177001,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "publicationDate": "2026-06-05",
+        "provenance": {
+          "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100",
+          "publishedAt": "2026-06-05",
+          "fetchedAt": "2026-11-18T11:44:53.362Z",
+          "verifiedAt": "2026-11-18T11:44:53.362Z",
+          "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+          "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
+        }
+      },
+      {
+        "label": "FY2024-25",
+        "referencePeriod": "FY2024-25",
+        "indicatorName": "Gross Domestic Product",
+        "indicatorCode": 5,
+        "kind": "actual",
+        "provenanceStatus": "verified",
+        "baseYear": "2022-23",
+        "series": "Current",
+        "frequency": "Annual",
+        "revisionStatus": "First Revised Estimates",
+        "realLevel": 301.15,
+        "nominalLevel": 317.99,
+        "previousYearRealLevel": 280.94,
+        "previousYearNominalLevel": 290.73,
+        "rawRealLevel": 30115428,
+        "rawNominalLevel": 31798524,
+        "rawUnit": "₹ Crore",
+        "displayedUnit": "₹ lakh crore",
+        "realPriceBasis": "Constant prices",
+        "nominalPriceBasis": "Current prices",
+        "realGrowth": {
+          "value": 7.19,
+          "unrounded": 7.193864333899347,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 30115428,
+          "previousValue": 28094358,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "nominalGrowth": {
+          "value": 9.37,
+          "unrounded": 9.373680382269821,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 31798524,
+          "previousValue": 29073287,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "publicationDate": "2026-06-05",
+        "provenance": {
+          "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100",
+          "publishedAt": "2026-06-05",
+          "fetchedAt": "2026-11-18T11:44:53.362Z",
+          "verifiedAt": "2026-11-18T11:44:53.362Z",
+          "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+          "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
+        }
+      },
+      {
+        "label": "FY2025-26",
+        "referencePeriod": "FY2025-26",
+        "indicatorName": "Gross Domestic Product",
+        "indicatorCode": 5,
+        "kind": "actual",
+        "provenanceStatus": "verified",
+        "baseYear": "2022-23",
+        "series": "Current",
+        "frequency": "Annual",
+        "revisionStatus": "Provisional Estimates",
+        "realLevel": 324.7,
+        "nominalLevel": 345.37,
+        "previousYearRealLevel": 301.15,
+        "previousYearNominalLevel": 317.99,
+        "rawRealLevel": 32470100,
+        "rawNominalLevel": 34536796,
+        "rawUnit": "₹ Crore",
+        "displayedUnit": "₹ lakh crore",
+        "realPriceBasis": "Constant prices",
+        "nominalPriceBasis": "Current prices",
+        "realGrowth": {
+          "value": 7.82,
+          "unrounded": 7.81882296343257,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 32470100,
+          "previousValue": 30115428,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "nominalGrowth": {
+          "value": 8.61,
+          "unrounded": 8.611317934128015,
+          "formula": "(current period / comparable previous period - 1) × 100",
+          "currentValue": 34536796,
+          "previousValue": 31798524,
+          "rawUnit": "₹ Crore",
+          "displayedUnit": "%"
+        },
+        "publicationDate": "2026-06-05",
+        "provenance": {
+          "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=1&indicator_code=5&limit=100",
+          "publishedAt": "2026-06-05",
+          "fetchedAt": "2026-11-18T11:44:53.362Z",
+          "verifiedAt": "2026-11-18T11:44:53.362Z",
+          "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+          "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
+        }
+      }
+    ],
     "projection": {
       "actuals": [
         {
@@ -268,8 +521,8 @@
           "provenance": {
             "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
             "publishedAt": "2026-06-05",
-            "fetchedAt": "2026-11-09T12:11:23.633Z",
-            "verifiedAt": "2026-11-09T12:11:23.633Z",
+            "fetchedAt": "2026-11-18T11:44:53.362Z",
+            "verifiedAt": "2026-11-18T11:44:53.362Z",
             "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
             "releaseTitle": "Press Note on Provisional Estimates of Annual GDP FY 2025-26 and Quarterly Estimates of GDP for Q4 of FY 2025-26"
           }
@@ -289,8 +542,8 @@
           "provenance": {
             "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
             "publishedAt": "2026-09-02",
-            "fetchedAt": "2026-11-09T12:11:23.633Z",
-            "verifiedAt": "2026-11-09T12:11:23.633Z",
+            "fetchedAt": "2026-11-18T11:44:53.362Z",
+            "verifiedAt": "2026-11-18T11:44:53.362Z",
             "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
             "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
           }
@@ -304,8 +557,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T12:11:23.633Z",
-            "verifiedAt": "2026-11-09T12:11:23.633Z"
+            "fetchedAt": "2026-11-18T11:44:53.362Z",
+            "verifiedAt": "2026-11-18T11:44:53.362Z"
           }
         },
         {
@@ -315,8 +568,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T12:11:23.633Z",
-            "verifiedAt": "2026-11-09T12:11:23.633Z"
+            "fetchedAt": "2026-11-18T11:44:53.362Z",
+            "verifiedAt": "2026-11-18T11:44:53.362Z"
           }
         },
         {
@@ -326,8 +579,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T12:11:23.633Z",
-            "verifiedAt": "2026-11-09T12:11:23.633Z"
+            "fetchedAt": "2026-11-18T11:44:53.362Z",
+            "verifiedAt": "2026-11-18T11:44:53.362Z"
           }
         },
         {
@@ -337,8 +590,8 @@
           "provenance": {
             "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
             "publishedAt": "2026-10-07",
-            "fetchedAt": "2026-11-09T12:11:23.633Z",
-            "verifiedAt": "2026-11-09T12:11:23.633Z"
+            "fetchedAt": "2026-11-18T11:44:53.362Z",
+            "verifiedAt": "2026-11-18T11:44:53.362Z"
           }
         }
       ]
@@ -346,8 +599,8 @@
     "provenance": {
       "sourceUrl": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=2&indicator_code=5&limit=100",
       "publishedAt": "2026-09-02",
-      "fetchedAt": "2026-11-09T12:11:23.633Z",
-      "verifiedAt": "2026-11-09T12:11:23.633Z",
+      "fetchedAt": "2026-11-18T11:44:53.362Z",
+      "verifiedAt": "2026-11-18T11:44:53.362Z",
       "publicationUrl": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788359345406_054ae876-9661-4bf2-b16c-29736e5f72e9_Press_Release_Page___Press_Information_Bureau.pdf",
       "releaseTitle": "Press Release on additional information related to GDP estimates received after release of Q1 Estimates of FY 2026-27"
     },
