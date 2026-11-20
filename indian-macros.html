@@ -272,12 +272,13 @@
           <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
           <span class="card-action">View growth tracker <span aria-hidden="true">→</span></span>
         </a>
-        <article class="tracker-card" data-macro="fiscal" data-state="unavailable">
+        <a class="tracker-card" data-macro="fiscal" data-state="unavailable" href="fiscal-tracker.html" aria-label="Fiscal and Government Tracker. Open detailed tracker.">
           <div class="card-top"><h3 class="tracker-name">Fiscal &amp; Government</h3><span class="availability" data-field="availability">Coming soon</span></div>
           <p class="macro-value" data-field="value">Unavailable</p>
           <p class="macro-description" data-field="description">Fiscal data is currently unavailable.</p>
           <div class="card-meta"><span><strong>Official source</strong><span data-field="source">Source unavailable</span></span><span><strong>Updated</strong><span data-field="updated">Update time unavailable</span></span></div>
-        </article>
+          <span class="card-action">View fiscal tracker <span aria-hidden="true">→</span></span>
+        </a>
       </div>
     </section>
   </main>
@@ -372,23 +373,12 @@
       card.querySelector('[data-field="updated"]').textContent = 'Update time unavailable';
       card.querySelector('[data-field="availability"]').textContent = 'Unavailable';
     }
-    function setFiscalComingSoon(card) {
-      card.dataset.state = 'unavailable';
-      card.querySelector('[data-field="value"]').textContent = 'Coming soon';
-      card.querySelector('[data-field="description"]').textContent = '';
-      setSource(card, null);
-      card.querySelector('[data-field="updated"]').textContent = 'Update time unavailable';
-      card.querySelector('[data-field="availability"]').textContent = 'Coming soon';
-    }
     function renderItem(key, item) {
       var card = document.querySelector('[data-macro="' + key + '"]');
       if (!card) return null;
-      if (key === 'fiscal') {
-        setFiscalComingSoon(card);
-        return true;
-      }
       var value = item && cleanString(item.value);
-      if (!value || !/^-?\d+(?:\.\d+)?%$/.test(value)) {
+      var validValue = key === 'fiscal' ? /^₹\d+(?:\.\d+)? lakh crore$/.test(value || '') : /^-?\d+(?:\.\d+)?%$/.test(value || '');
+      if (!validValue) {
         setUnavailable(card, key);
         return null;
       }
@@ -400,7 +390,7 @@
       card.querySelector('[data-field="description"]').textContent = lines.length ? lines.join(' · ') : 'Reporting period unavailable';
       setSource(card, source);
       card.querySelector('[data-field="updated"]').textContent = updatedDate === null ? 'Update time unavailable' : 'Updated ' + formatDate(updatedDate);
-      card.querySelector('[data-field="availability"]').textContent = key === 'repo' || key === 'inflation' || key === 'growth' ? 'Detailed tracker' : 'Latest indicator';
+      card.querySelector('[data-field="availability"]').textContent = 'Detailed tracker';
       return true;
     }
     function renderDataset(payload) {

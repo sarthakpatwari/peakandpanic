@@ -4,9 +4,11 @@
 const fs = require('fs');
 const path = require('path');
 const automation = require('./rbi-automation');
+const fiscalAutomation = require('./fiscal-automation');
 
 const RBI_FILE = process.env.RBI_DATA_FILE || path.join(__dirname, '..', 'rbi-data.json');
 const MACRO_FILE = process.env.MACRO_DATA_FILE || path.join(__dirname, '..', 'macro-data.json');
+const FISCAL_FILE = process.env.FISCAL_DATA_FILE || path.join(__dirname, '..', 'fiscal-data.json');
 
 function readJson(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -17,6 +19,7 @@ async function main(options) {
   const now = options && options.now || new Date().toISOString();
   const stored = readJson(RBI_FILE);
   const macro = readJson(MACRO_FILE);
+  const fiscalStored = fs.existsSync(FISCAL_FILE) ? readJson(FISCAL_FILE) : null;
   let outcomes;
   try {
     if(options&&options.outcomes)outcomes=options.outcomes;
@@ -26,29 +29,38 @@ async function main(options) {
     throw new Error('official-sources/request-or-parse: ' + error.message + '; last-known-good retained');
   }
 
-  let result, nextMacro;
+  let result, nextMacro, fiscalResult;
   try {
+    const fiscalOutcomes=options&&options.fiscalOutcomes||await fiscalAutomation.fetchOutcomes(now);
     result = automation.buildMergedCandidate(stored, outcomes, now);
+    fiscalResult = fiscalAutomation.mergeStored(fiscalStored, fiscalOutcomes, now);
+    const fiscalOutput = fiscalResult.changed || !fiscalStored ? fiscalResult.data : fiscalStored;
+    fiscalResult.data = fiscalOutput;
     nextMacro = automation.macroFromCandidate(macro, result.data);
+    nextMacro.items.fiscal=fiscalAutomation.macroItem(fiscalOutput);
     automation.validateDataset(result.data, now);
+    fiscalAutomation.validateDataset(fiscalResult.data, now);
   } catch (error) {
     throw new Error('candidate/validation: ' + error.message + '; last-known-good retained');
   }
 
   const rbiText = JSON.stringify(result.data, null, 2) + '\n';
   const macroText = JSON.stringify(nextMacro, null, 2) + '\n';
+  const fiscalText = JSON.stringify(fiscalResult.data, null, 2) + '\n';
   const rbiChanged = rbiText !== fs.readFileSync(RBI_FILE, 'utf8');
   const macroChanged = macroText !== fs.readFileSync(MACRO_FILE, 'utf8');
+  const fiscalChanged = !fs.existsSync(FISCAL_FILE) || fiscalText !== fs.readFileSync(FISCAL_FILE, 'utf8');
   if (options && options.dryRun) {
-    console.log('DRY RUN: rbi-data.json ' + (rbiChanged ? 'would change' : 'unchanged') + '; macro-data.json ' + (macroChanged ? 'would change' : 'unchanged'));
-    return { rbiChanged, macroChanged, data: result.data, macro: nextMacro, failures:sourceFailures(outcomes) };
+    console.log('DRY RUN: rbi-data.json ' + (rbiChanged ? 'would change' : 'unchanged') + '; macro-data.json ' + (macroChanged ? 'would change' : 'unchanged') + '; fiscal-data.json ' + (fiscalChanged ? 'would change' : 'unchanged'));
+    return { rbiChanged, macroChanged, fiscalChanged, data: result.data, fiscal:fiscalResult.data, macro: nextMacro, failures:sourceFailures(outcomes).concat(fiscalResult.failures) };
   }
   const written = automation.atomicWriteMany([
     { file:RBI_FILE, content:rbiText, changed:rbiChanged },
-    { file:MACRO_FILE, content:macroText, changed:macroChanged }
+    { file:MACRO_FILE, content:macroText, changed:macroChanged },
+    { file:FISCAL_FILE, content:fiscalText, changed:fiscalChanged }
   ]);
-  console.log(written ? 'Updated validated RBI/MoSPI data atomically per file.' : 'No source changes; generated files unchanged.');
-  return { rbiChanged, macroChanged, data: result.data, macro: nextMacro, failures:sourceFailures(outcomes) };
+  console.log(written ? 'Updated validated RBI/MoSPI/CGA data atomically per file.' : 'No source changes; generated files unchanged.');
+  return { rbiChanged, macroChanged, fiscalChanged, data: result.data, fiscal:fiscalResult.data, macro: nextMacro, failures:sourceFailures(outcomes).concat(fiscalResult.failures) };
 }
 
 function sourceFailures(outcomes){return Object.entries(outcomes).filter(([,result])=>!result.ok).map(([source,result])=>({source,stage:'request-or-parse',error:String(result.error||'unknown error').replace(/[\r\n]+/g,' ').slice(0,300),lastKnownGoodRetained:true}));}

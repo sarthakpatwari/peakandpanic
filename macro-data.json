@@ -29,14 +29,16 @@
       "updatedAt": "2026-09-02"
     },
     "fiscal": {
-      "value": null,
+      "value": "₹7.14 lakh crore",
       "lines": [
-        "Source unavailable",
-        "Update time unavailable"
+        "Fiscal deficit",
+        "42.1% of Budget Estimate",
+        "Apr–Sep FY2026-27",
+        "Provisional actual"
       ],
-      "source": null,
-      "updatedAt": null,
-      "status": "coming-soon"
+      "source": "Controller General of Accounts",
+      "updatedAt": "2026-10-30",
+      "status": "available"
     }
   }
 }

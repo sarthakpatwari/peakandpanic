@@ -28,8 +28,10 @@ jobs:
         with:
           node-version: 22
       - name: Run deterministic updater tests
-        run: node scripts/update-rbi.test.js
-      - name: Fetch, merge and validate official RBI and MoSPI data
+        run: |
+          node scripts/update-rbi.test.js
+          node scripts/update-fiscal.test.js
+      - name: Fetch, merge and validate official RBI, MoSPI and CGA data
         id: update
         continue-on-error: true
         run: node scripts/update-rbi.js
@@ -37,7 +39,7 @@ jobs:
         id: allowlist
         if: always()
         run: |
-          unexpected="$(git status --porcelain --untracked-files=all | grep -vE '^( M|M |A |\?\?) (rbi-data|macro-data)\.json$' || true)"
+          unexpected="$(git status --porcelain --untracked-files=all | grep -vE '^( M|M |A |\?\?) (rbi-data|macro-data|fiscal-data)\.json$' || true)"
           if [ -n "$unexpected" ]; then
             echo "Unexpected files changed:"
             echo "$unexpected"
@@ -46,11 +48,11 @@ jobs:
       - name: Save validated generated data if changed
         if: always() && steps.allowlist.outcome == 'success'
         run: |
-          if [ -n "$(git status --porcelain -- rbi-data.json macro-data.json)" ]; then
+          if [ -n "$(git status --porcelain -- rbi-data.json macro-data.json fiscal-data.json)" ]; then
             git config user.name "peak-and-panic-bot"
             git config user.email "actions@users.noreply.github.com"
-            git add -- rbi-data.json macro-data.json
-            git commit -m "data: refresh official RBI and MoSPI indicators"
+            git add -- rbi-data.json macro-data.json fiscal-data.json
+            git commit -m "data: refresh official RBI, MoSPI and CGA indicators"
             git push
           else
             echo "Validated official data is unchanged"
