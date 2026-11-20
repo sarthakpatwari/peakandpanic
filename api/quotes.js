@@ -1,3 +1,7 @@
+import quoteProvider from '../quote-provider.cjs';
+
+const { collectQuotes } = quoteProvider;
+
 const SYMBOLS = { 
   // Indian Markets
   nifty50: '^NSEI', 
@@ -11,38 +15,10 @@ const SYMBOLS = {
   gold: 'GC=F'
 };
 
-async function getQuote(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=5m&range=1d`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-  if (!res.ok) throw new Error(`Fetch failed for ${symbol}`);
-  const r = (await res.json()).chart.result[0];
-  const meta = r.meta;
-  const series = (r.indicators.quote[0].close || []).filter(v => v != null);
-  const price = meta.regularMarketPrice;
-  const prev = meta.chartPreviousClose ?? meta.previousClose;
-  return { 
-    price, 
-    change: price - prev, 
-    pct: ((price - prev) / prev) * 100, 
-    time: meta.regularMarketTime, 
-    series 
-  };
-}
-
 export default async function handler(req, res) {
   try {
-    const out = {};
-    const providerErrors = {};
-    for (const [key, sym] of Object.entries(SYMBOLS)) {
-      try {
-        out[key] = await getQuote(sym);
-      } catch (err) {
-        // Keep failures isolated and do not expose raw provider errors.
-        out[key] = null;
-        providerErrors[key] = 'Provider quote unavailable';
-      }
-    }
-    const payload = { data: out, timestamp: Date.now() };
+    const { data, providerErrors } = await collectQuotes(SYMBOLS);
+    const payload = { data, timestamp: Date.now() };
     if (Object.keys(providerErrors).length) payload.providerErrors = providerErrors;
     res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=30');
     res.status(200).json(payload);

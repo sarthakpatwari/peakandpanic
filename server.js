@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { collectQuotes } = require('./quote-provider.cjs');
 
 const SYMBOLS = { 
   nifty50: '^NSEI', 
@@ -17,37 +18,9 @@ const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascrip
 
 let cache = { at: 0, data: null };
 
-async function getQuote(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=5m&range=1d`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-  if (!res.ok) throw new Error(`Quote provider returned HTTP ${res.status} for ${symbol}`);
-  const payload = await res.json();
-  const r = payload && payload.chart && payload.chart.result && payload.chart.result[0];
-  if (!r || !r.meta || !r.indicators || !r.indicators.quote || !r.indicators.quote[0]) {
-    throw new Error(`Quote provider returned an invalid response for ${symbol}`);
-  }
-  const meta = r.meta;
-  const series = (r.indicators.quote[0].close || []).filter(v => v != null);
-  const price = meta.regularMarketPrice;
-  const prev = meta.chartPreviousClose ?? meta.previousClose;
-  if (![price, prev, meta.regularMarketTime].every(Number.isFinite) || prev === 0) {
-    throw new Error(`Quote provider returned invalid values for ${symbol}`);
-  }
-  return { price, change: price - prev, pct: ((price - prev) / prev) * 100, time: meta.regularMarketTime, series };
-}
-
 async function getQuotes() {
   if (cache.data && Date.now() - cache.at < 30000) return cache.data;   // cache for 30 seconds
-  const data = {};
-  const providerErrors = {};
-  for (const [key, sym] of Object.entries(SYMBOLS)) {
-    try {
-      data[key] = await getQuote(sym);
-    } catch (error) {
-      data[key] = null;
-      providerErrors[key] = 'Provider quote unavailable';
-    }
-  }
+  const { data, providerErrors } = await collectQuotes(SYMBOLS);
   const payload = { data, providerErrors, timestamp: Date.now() };
   cache = { at: Date.now(), data: payload };
   return payload;
