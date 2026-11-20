@@ -21,13 +21,15 @@
       .table-wrap td::before{content:attr(data-label);color:rgba(167,187,179,.62);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
       .table-wrap td:last-child{border-bottom:0}
     }
+    .nav{min-height:max(76px,calc(88 * var(--u)));padding:12px clamp(20px,calc(80 * var(--u)),96px);border-bottom:1px solid rgba(110,231,183,.12);background:rgba(0,0,0,.76);backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 24px}.nav__logo{--logo-art-width:240px;position:relative;display:block;flex:0 0 auto;width:calc(var(--logo-art-width) + 16px);height:52px;min-height:44px;overflow:visible}.nav__logo img{position:absolute;left:50%;top:50%;width:calc(var(--logo-art-width) * 1.1772358);max-width:none;height:auto;transform:translate(-50%,-50%);pointer-events:none}.nav__links{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(12px,calc(32 * var(--u)),40px)}.nav__link{display:inline-flex;align-items:center;min-height:44px;font-size:clamp(14px,calc(16 * var(--u)),18px);font-weight:600}.nav__link:hover{color:var(--mint)}
+    @media(max-width:800px){.nav__logo{--logo-art-width:180px;height:44px}}@media(max-width:600px){.nav__links{width:100%;justify-content:space-between;gap:8px}}
   </style>
 </head>
 <body>
 <div class="page">
-  <header class="site-header">
-    <a class="brand" href="index.html" aria-label="Peak and Panic home"><img src="images/04-horizontal-emerald.png" alt="Peak and Panic" /></a>
-    <nav class="primary-nav" aria-label="Primary navigation"><a href="index.html#offerings">Our Offerings</a><a href="index.html#about">About Us</a></nav>
+  <header class="nav">
+    <a class="nav__logo" href="index.html" aria-label="Peak and Panic home"><img src="images/04-horizontal-emerald.png" width="2172" height="724" alt="Peak and Panic" /></a>
+    <nav class="nav__links" aria-label="Primary navigation"><a class="nav__link" href="index.html#offerings">Our Offerings</a><a class="nav__link" href="index.html#about">About Us</a></nav>
   </header>
   <main>
     <section class="hero" aria-labelledby="page-title"><div class="hero-copy"><p class="eyebrow">Inflation Tracker</p><h1 id="page-title">See where India’s inflation pressure is moving.</h1><p>Track officially published Indian consumer inflation, derived quarterly averages and the RBI’s forward outlook—without mixing actuals with projections.</p></div></section>
