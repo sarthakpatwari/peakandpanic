@@ -32,16 +32,20 @@ async function getQuote(symbol) {
 export default async function handler(req, res) {
   try {
     const out = {};
+    const providerErrors = {};
     for (const [key, sym] of Object.entries(SYMBOLS)) {
       try {
         out[key] = await getQuote(sym);
       } catch (err) {
-        // Individual fallback retention
+        // Keep failures isolated and do not expose raw provider errors.
         out[key] = null;
+        providerErrors[key] = 'Provider quote unavailable';
       }
     }
-    res.setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30');
-    res.status(200).json({ data: out, timestamp: Date.now() });
+    const payload = { data: out, timestamp: Date.now() };
+    if (Object.keys(providerErrors).length) payload.providerErrors = providerErrors;
+    res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=30');
+    res.status(200).json(payload);
   } catch (e) {
     res.status(502).json({ error: 'quotes unavailable' });
   }
