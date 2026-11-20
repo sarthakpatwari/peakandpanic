@@ -127,7 +127,7 @@
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-areas: 'map' 'note' 'status';
+      grid-template-areas: 'map' 'status';
       grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       padding-bottom: clamp(16px, calc(24 * var(--u)), 32px);
@@ -221,10 +221,9 @@
     .m-benchmark-row[data-state='stale'] .m-meta { padding-right: 38px; }
     .m-benchmark-row[data-state='demo'] .m-badge { display: none; }
     .m-benchmarks[data-shared-data='true'] .m-benchmark-row .m-data { display: none; }
-    .map-scroll-hint { display: none; }
     @media (min-width: 1024px) and (max-width: 1199px) { .m-benchmarks { width: 224px; } }
     @media (max-width: 1023px) {
-      .hero-image { grid-template-areas: 'map' 'note' 'cards' 'status'; }
+      .hero-image { grid-template-areas: 'map' 'cards' 'status'; }
       .market-nodes-container {
         grid-area: cards; display: flex; align-items: flex-start; gap: 12px; margin-inline: var(--gutter);
         padding: 8px 6px; overflow-x: auto; overscroll-behavior-x: contain;
@@ -235,9 +234,7 @@
       .m-benchmarks { width: 264px; }
       .m-group .m-node { width: 220px; }
       .m-benchmarks .m-benchmark-row { position: relative; width: 100%; flex: initial; scroll-snap-align: none; }
-      .map-scroll-hint { display: inline; }
     }
-    .artwork-note { grid-area: note; margin-inline: var(--gutter); font-size: 12px; color: var(--muted); }
     .demo-notice { margin-inline: var(--gutter); padding: 8px 12px; border: 1px solid var(--accent); color: var(--highlight); background: #071713; font-size: 14px; font-weight: 700; }
     .market-status-bar {
       grid-area: status;
@@ -387,7 +384,6 @@
         <div class="market-nodes-container" id="nodes-container" tabindex="0" role="region" aria-label="Market snapshots. Scroll horizontally to compare markets on smaller screens."></div>
 
         <!-- System Status Bar -->
-        <div class="artwork-note">Illustrative artwork — not live market data. <span class="map-scroll-hint">Scroll the market cards to compare markets.</span></div>
         <div class="market-status-bar" role="status" aria-live="polite" data-state="unavailable">
           <span class="status-dot"></span>
           <span id="market-data-timestamp">Market data unavailable</span>
