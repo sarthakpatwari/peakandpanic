@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-22T19:43:24.734Z",
+  "updatedAt": "2026-11-23T07:41:25.602Z",
   "releaseSchedules": {
     "inflation": {
       "indicator": "All India Consumer Price Index (CPI)",
@@ -37,16 +37,34 @@
         "provenance": {
           "sourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60176",
           "publishedAt": "2025-04-09",
-          "fetchedAt": "2026-11-22T19:43:24.734Z",
-          "verifiedAt": "2026-11-22T19:43:24.734Z",
+          "fetchedAt": "2026-11-23T07:41:25.602Z",
+          "verifiedAt": "2026-11-23T07:41:25.602Z",
           "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) April 7 to 9, 2025",
           "releaseIdentifier": "Press Release: 2025-2026/61"
         },
         "effectiveDate": "2025-04-09",
         "effectiveDateBasis": "explicit-immediate-effect",
-        "effectiveDateSourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60176",
-        "effectiveDateSourceType": "RBI MPC resolution",
-        "releaseIdentifier": "Press Release: 2025-2026/61"
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12831&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification",
+        "releaseIdentifier": "Press Release: 2025-2026/61",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12831&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2025-04-09",
+          "previousRate": 6.25,
+          "newRate": 6,
+          "direction": "reduce",
+          "rbiCircularNumber": "RBI/2025-26/22",
+          "departmentCircularNumber": "FMOD.MAOG.No.151/01.01.001/2025-26",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12831&fn=2752&Mode=0",
+            "publishedAt": "2025-04-09",
+            "fetchedAt": "2026-11-23T07:41:25.602Z",
+            "verifiedAt": "2026-11-23T07:41:25.602Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        }
       },
       {
         "date": "2025-06-06",
@@ -59,16 +77,34 @@
         "provenance": {
           "sourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60604",
           "publishedAt": "2025-06-06",
-          "fetchedAt": "2026-11-22T19:43:24.734Z",
-          "verifiedAt": "2026-11-22T19:43:24.734Z",
+          "fetchedAt": "2026-11-23T07:41:25.602Z",
+          "verifiedAt": "2026-11-23T07:41:25.602Z",
           "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) June 4 to 6, 2025",
           "releaseIdentifier": "Press Release: 2025-2026/489"
         },
         "effectiveDate": "2025-06-06",
         "effectiveDateBasis": "explicit-immediate-effect",
-        "effectiveDateSourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60604",
-        "effectiveDateSourceType": "RBI MPC resolution",
-        "releaseIdentifier": "Press Release: 2025-2026/489"
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12854&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification",
+        "releaseIdentifier": "Press Release: 2025-2026/489",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12854&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2025-06-06",
+          "previousRate": 6,
+          "newRate": 5.5,
+          "direction": "reduce",
+          "rbiCircularNumber": "RBI/2025-26/42",
+          "departmentCircularNumber": "FMOD.MAOG.No.152/01.01.001/2025-26",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=12854&fn=2752&Mode=0",
+            "publishedAt": "2025-06-06",
+            "fetchedAt": "2026-11-23T07:41:25.602Z",
+            "verifiedAt": "2026-11-23T07:41:25.602Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        }
       },
       {
         "date": "2025-12-05",
@@ -81,12 +117,34 @@
         "provenance": {
           "sourceUrl": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=61749",
           "publishedAt": "2025-12-05",
-          "fetchedAt": "2026-11-22T19:43:24.734Z",
-          "verifiedAt": "2026-11-22T19:43:24.734Z",
+          "fetchedAt": "2026-11-23T07:41:25.602Z",
+          "verifiedAt": "2026-11-23T07:41:25.602Z",
           "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) December 3 to 5, 2025",
           "releaseIdentifier": "Press Release: 2025-2026/1633"
         },
-        "releaseIdentifier": "Press Release: 2025-2026/1633"
+        "releaseIdentifier": "Press Release: 2025-2026/1633",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13206&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2025-12-05",
+          "previousRate": 5.5,
+          "newRate": 5.25,
+          "direction": "reduce",
+          "rbiCircularNumber": "RBI/2025-26/132",
+          "departmentCircularNumber": "FMOD.MAOG.No.153/01.01.001/2025-26",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13206&fn=2752&Mode=0",
+            "publishedAt": "2025-12-05",
+            "fetchedAt": "2026-11-23T07:41:25.602Z",
+            "verifiedAt": "2026-11-23T07:41:25.602Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        },
+        "effectiveDate": "2025-12-05",
+        "effectiveDateBasis": "explicit-immediate-effect",
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13206&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification"
       },
       {
         "date": "2026-10-07",
@@ -99,20 +157,42 @@
         "provenance": {
           "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
           "publishedAt": "2026-10-07",
-          "fetchedAt": "2026-11-22T19:43:24.734Z",
-          "verifiedAt": "2026-11-22T19:43:24.734Z",
+          "fetchedAt": "2026-11-23T07:41:25.602Z",
+          "verifiedAt": "2026-11-23T07:41:25.602Z",
           "sourceTitle": "Resolution of the Monetary Policy Committee (MPC) October 5 to 7, 2026",
           "releaseIdentifier": "Press Release: 2026-2027/1264"
         },
-        "releaseIdentifier": "Press Release: 2026-2027/1264"
+        "releaseIdentifier": "Press Release: 2026-2027/1264",
+        "lafNotification": {
+          "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13727&fn=2752&Mode=0",
+          "title": "Liquidity Adjustment Facility - Change in rates",
+          "notificationDate": "2026-10-07",
+          "previousRate": 5.25,
+          "newRate": 5.5,
+          "direction": "increase",
+          "rbiCircularNumber": "RBI/2026-27/282",
+          "departmentCircularNumber": "FMOD.MAOG.No.154/01.01.001/2026-27",
+          "department": "Financial Markets Operation Department",
+          "provenance": {
+            "sourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13727&fn=2752&Mode=0",
+            "publishedAt": "2026-10-07",
+            "fetchedAt": "2026-11-23T07:41:25.602Z",
+            "verifiedAt": "2026-11-23T07:41:25.602Z",
+            "sourceTitle": "Liquidity Adjustment Facility - Change in rates"
+          }
+        },
+        "effectiveDate": "2026-10-07",
+        "effectiveDateBasis": "explicit-immediate-effect",
+        "effectiveDateSourceUrl": "https://rbi.org.in/scripts/FS_Notification.aspx?Id=13727&fn=2752&Mode=0",
+        "effectiveDateSourceType": "RBI LAF notification"
       }
     ],
     "source": "RBI MPC resolution",
     "provenance": {
       "sourceUrl": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
       "publishedAt": "2026-10-07",
-      "fetchedAt": "2026-11-22T19:43:24.734Z",
-      "verifiedAt": "2026-11-22T19:43:24.734Z"
+      "fetchedAt": "2026-11-23T07:41:25.602Z",
+      "verifiedAt": "2026-11-23T07:41:25.602Z"
     }
   },
   "mpc": {
