@@ -1,0 +1,44 @@
+{
+  "items": {
+    "repo": {
+      "value": "5.50%",
+      "lines": [
+        "Policy repo rate",
+        "Effective 2026-10-07"
+      ],
+      "source": "RBI MPC resolution",
+      "updatedAt": "2026-10-07"
+    },
+    "inflation": {
+      "value": "6.09%",
+      "lines": [
+        "CPI, YoY",
+        "All India Combined",
+        "2026-10"
+      ],
+      "source": "MoSPI CPI API",
+      "updatedAt": "2026-11-12"
+    },
+    "growth": {
+      "value": "7.82%",
+      "lines": [
+        "Real GDP growth, YoY",
+        "Q1 FY2026-27"
+      ],
+      "source": "MoSPI National Accounts Statistics",
+      "updatedAt": "2026-09-02"
+    },
+    "fiscal": {
+      "value": "₹7.14 lakh crore",
+      "lines": [
+        "Fiscal deficit",
+        "42.1% of Budget Estimate",
+        "Apr–Sep FY2026-27",
+        "Provisional actual"
+      ],
+      "source": "Controller General of Accounts",
+      "updatedAt": "2026-10-30",
+      "status": "available"
+    }
+  }
+}
