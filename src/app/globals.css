@@ -382,6 +382,7 @@ canvas#particles {
   color: var(--muted);
   font-size: 12px;
 }
+.demo-notice { grid-area: note; margin: 0 var(--gutter); padding: 8px 12px; border: 1px solid var(--accent); color: var(--highlight); background: #071713; font-size: 14px; font-weight: 700; }
 
 .status-dot {
   width: 6px;
@@ -729,6 +730,7 @@ canvas#particles {
 
 .pair {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 16px;
   align-items: flex-end;
@@ -1765,4 +1767,63 @@ a.intel-card:focus-visible {
   100% {
     transform: rotate(360deg) translate(50%, 50%);
   }
+}
+
+/* Final responsive constraints shared by every App Router page. */
+.page, main, section, article { min-width: 0; }
+.fiscal-hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr); gap: 40px; align-items: center; }
+.fiscal-progress { position: relative; width: 100%; height: 54px; min-width: 0; overflow: hidden; border-radius: 16px; user-select: none; }
+.fiscal-progress__canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.fiscal-progress__labels { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; pointer-events: none; color: #fff; font-size: 18px; font-weight: 700; }
+.fiscal-progress__label { display: flex; align-items: center; justify-content: center; text-align: center; letter-spacing: .02em; text-shadow: 0 2px 4px rgba(0,0,0,.85); }
+@media (max-width: 900px) {
+  .intro-inner, .fiscal-hero-grid, .policy-grid, .stance-card, .reading-grid { grid-template-columns: minmax(0, 1fr); }
+  .intro-art { width: min(100%, 520px); }
+  .annual-grid, .comparison-grid, .outlook-grid, .quarter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stance-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .intro { padding-block: 40px; }
+  .intro-inner { gap: 24px; }
+  .intro-art { justify-self: start; }
+  .hero h1, .intro h1 { overflow-wrap: anywhere; }
+  .release-block, .annual-grid, .comparison-grid, .outlook-grid, .quarter-grid, .actual-grid { grid-template-columns: minmax(0, 1fr); }
+  .classification-item { grid-template-columns: minmax(0, 1fr); gap: 8px; align-items: start; }
+  .decision-grid { grid-template-columns: minmax(0, 1fr); }
+  .date-card + .date-card { margin-top: 18px; padding-left: 0; border-left: 0; border-top: 1px solid var(--border); }
+  .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+  .chart-table, .table-wrap table { width: max-content; min-width: 100%; }
+  .fiscal-hero-grid { gap: 28px; }
+  .fiscal-hero-grid > * { min-width: 0; max-width: 100%; }
+  .fiscal-hero-grid aside * { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+  .fiscal-hero-grid aside > div { flex-wrap: wrap; }
+  .pair { align-items: flex-start; flex-direction: column; }
+  .fiscal-hero-metrics { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .fiscal-hero-metrics > div { min-width: 0; text-align: left !important; }
+}
+
+@media (max-width: 700px) {
+  .hero-image { grid-template-areas: "map" "nodes" "note" "status"; }
+  .map-scroll { overflow: hidden; }
+  .market-nodes-container {
+    grid-area: nodes;
+    position: relative;
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    padding: 2px var(--gutter) 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+  }
+  .market-nodes-container > *, .m-group, .m-node, .m-benchmarks {
+    position: relative !important;
+    inset: auto !important;
+    flex: 0 0 208px;
+    scroll-snap-align: start;
+  }
+  .m-group { display: contents; }
+  .m-group .m-node { flex: 0 0 208px; }
+  .m-node--primary { width: 220px; }
+  .m-benchmarks { flex-basis: 244px; }
 }

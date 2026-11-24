@@ -9,7 +9,7 @@ const offerings = [
 export default function Offerings() {
   return <><h2 className="section-title" id="offerings">Four ways to understand Markets</h2><p className="offerings-caption">Section artwork is illustrative and does not show live market data.</p>
     {offerings.map((item, index) => <section key={item.title} className={`offer ${index === 1 ? "offer--2" : `offer--${index + 1}`}`}>
-      <Link href={item.href} className={index === 1 ? "offer__link" : "offer__img"} aria-label={item.title}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={item.image} alt={item.alt} /></Link>
+      <Link href={item.href} className={index === 1 ? "offer__link" : "offer__img"} aria-label={item.title}><img src={item.image} alt={item.alt} /></Link>
       <div className="offer__copy"><h3>{item.title}</h3><p>{item.description}</p></div>
     </section>)}
   </>;

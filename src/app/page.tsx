@@ -5,7 +5,9 @@ import HeroMarkets from "@/components/home/HeroMarkets";
 import Offerings from "@/components/home/Offerings";
 import ResearchBanner from "@/components/home/ResearchBanner";
 
-export default function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ demo?: string | string[] }> }) {
+  const params = await searchParams;
+  const demo = Object.prototype.hasOwnProperty.call(params, "demo");
   return (
     <div className="page">
       <Header />
@@ -22,7 +24,7 @@ export default function HomePage() {
               Global economics, Indian markets and fundamental research, built for investors who want to understand what&apos;s happening beneath the headlines.
             </p>
           </section>
-          <HeroMarkets />
+          <HeroMarkets demo={demo} />
         </div>
         <Offerings />
         <ResearchBanner />

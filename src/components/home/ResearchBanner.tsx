@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function ResearchBanner() {
   return (
     <section className="research">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="research__bg" src="/images/pp-research-banner-emerald.webp" alt="" />
       <div className="research__copy">
         <h2>Numbers into<br />Conviction</h2>

@@ -35,7 +35,7 @@ export default function FiscalTrackerPage() {
       <main>
         {/* Hero Section */}
         <section className="section" style={{ borderBottom: "1px solid rgba(33,72,60,.38)" }}>
-          <div className="wrap" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.08fr) minmax(330px, .92fr)", gap: "40px", alignItems: "center" }}>
+          <div className="wrap fiscal-hero-grid">
             <div>
               <span className="eyebrow">Fiscal &amp; Government Tracker</span>
               <h1 style={{ fontSize: "clamp(40px, 5vw, 68px)", margin: "12px 0 20px" }}>
@@ -67,7 +67,7 @@ export default function FiscalTrackerPage() {
   {reconciles ? <GlowingWaveProgress leftPercent={receiptsPct} rightPercent={deficitPct} /> : <div className="market-chart-empty">Fiscal data unavailable</div>}
 
   {/* Metrics Below Bar */}
-  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px" }}>
+  <div className="fiscal-hero-metrics" style={{ display: "flex", justifyContent: "space-between", marginTop: "16px" }}>
     <div>
       <span className="label" style={{ fontSize: "11px", color: "var(--muted)" }}>
         NON-DEBT RECEIPTS

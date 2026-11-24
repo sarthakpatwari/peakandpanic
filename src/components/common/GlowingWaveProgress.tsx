@@ -298,21 +298,21 @@ export default function GlowingWaveProgress({
     return (
         <div
             ref={containerRef}
-            className={`relative w-full h-[54px] rounded-2xl select-none ${className}`}
+            className={`fiscal-progress ${className}`}
         >
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
+            <canvas ref={canvasRef} className="fiscal-progress__canvas" />
 
             {/* Percentage Numbers */}
-            <div className="absolute inset-0 flex items-center justify-between pointer-events-none font-bold text-lg text-white">
+            <div className="fiscal-progress__labels">
                 <div
                     style={{ width: `${normalizedLeft}%` }}
-                    className="flex items-center justify-center text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] tracking-wide"
+                    className="fiscal-progress__label"
                 >
                     {leftLabel ?? `${Math.round(leftPercent)}%`}
                 </div>
                 <div
                     style={{ width: `${100 - normalizedLeft}%` }}
-                    className="flex items-center justify-center text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] tracking-wide"
+                    className="fiscal-progress__label"
                 >
                     {rightLabel ?? `${Math.round(rightPercent)}%`}
                 </div>
