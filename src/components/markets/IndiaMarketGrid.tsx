@@ -12,6 +12,7 @@ const MARKETS = [
 ] as const;
 
 type QuoteMap = Record<string, Quote | null>;
+type Direction = "positive" | "negative" | "neutral" | "unavailable";
 const validQuote = (value: unknown): value is Quote => {
   const quote = value as Quote;
   return Boolean(quote) && [quote.price, quote.previousClose, quote.change, quote.pct, quote.time].every(Number.isFinite)
@@ -69,11 +70,14 @@ export default function IndiaMarketGrid() {
     </section>
     <div className="market-grid market-grid--balanced">
       {MARKETS.map((market) => {
-        const quote = quotes[market.id]; const isValid = validQuote(quote); const positive = isValid && quote.change >= 0;
-        return <article className="market-card market-card--equal" key={market.id} aria-label={`${market.name}: ${isValid ? `${quote.price}, ${quote.pct}%` : "market data unavailable"}`}>
+        const quote = quotes[market.id];
+        const isValid = validQuote(quote);
+        const direction: Direction = !isValid ? "unavailable" : quote.change > 0 ? "positive" : quote.change < 0 ? "negative" : "neutral";
+        const sign = direction === "positive" ? "+" : "";
+        return <article className={`market-card market-card--equal market-card--${direction}`} key={market.id} aria-label={`${market.name}: ${isValid ? `${quote.price}, ${quote.pct}%` : "market data unavailable"}`}>
           <div className="market-head"><span className="market-name">{market.name}</span><span className="card-session">{market.venue}</span></div>
           <div className="market-price">{isValid ? quote.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "Price unavailable"}</div>
-          <div className="change-row">{isValid ? <><span className={`market-change ${positive ? "positive" : "negative"}`}>{positive ? "+" : ""}{quote.change.toFixed(2)}</span><span className={`market-change ${positive ? "positive" : "negative"}`}>({positive ? "+" : ""}{quote.pct.toFixed(2)}%)</span></> : <span className="market-change">Market data unavailable</span>}</div>
+          <div className="change-row">{isValid ? <><span className={`market-change ${direction}`}>{sign}{quote.change.toFixed(2)}</span><span className={`market-change ${direction}`}>({sign}{quote.pct.toFixed(2)}%)</span></> : <span className="market-change">Market data unavailable</span>}</div>
           <div className="chart"><Sparkline values={isValid ? quote.series : []} /></div>
           <div className="market-meta"><time className="market-time" dateTime={isValid ? new Date(quote.time * 1000).toISOString() : undefined}>{isValid ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(quote.time * 1000)) : "Timestamp unavailable"}</time><span className="quote-badge">{stale[market.id] ? "Stale · last available" : isValid ? "Latest provider quote" : "Unavailable"}</span></div>
         </article>;
