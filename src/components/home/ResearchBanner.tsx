@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function ResearchBanner() {
   return (
     <section className="research">
@@ -9,9 +7,9 @@ export default function ResearchBanner() {
         <p>
           Fundamental research built around financial models, business analysis and valuation frameworks to understand what a company could be worth over the long term.
         </p>
-        <Link href="/indian-macros" className="btn-explore">
-          Explore Reports
-        </Link>
+        <button type="button" className="btn-explore btn-explore--disabled" disabled>
+          Reports coming soon
+        </button>
       </div>
     </section>
   );
