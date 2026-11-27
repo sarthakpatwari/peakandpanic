@@ -2,7 +2,8 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
-const displayDate = (value?: string) => value && /^\d{4}-\d{2}-\d{2}/.test(value) ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : value || "Unavailable";
+import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
+import { displayDate, displayTimestamp } from "@/lib/display-date";
 
 export default function GrowthTrackerPage() {
   const rbi = rbiJson;
@@ -22,7 +23,7 @@ export default function GrowthTrackerPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="hero" aria-labelledby="page-title">
+        <section className="hero tracker-hero" aria-labelledby="page-title">
           <div className="wrap">
             <div className="hero-copy">
               <span className="eyebrow">Growth Tracker</span>
@@ -52,7 +53,7 @@ export default function GrowthTrackerPage() {
                     <div className="prov-field">
                       <span className="prov-label">Official source</span>
                       <a href={latestQuarter.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="prov-value source-link">
-                        MoSPI GDP release ↗
+                        MoSPI GDP release <ExternalLinkIcon />
                       </a>
                     </div>
                     <div className="prov-field">
@@ -101,7 +102,7 @@ export default function GrowthTrackerPage() {
                   <div className="prov-field">
                     <span className="prov-label">Official source</span>
                     <a href={schedule.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="prov-value source-link">
-                      MoSPI release calendar ↗
+                      MoSPI release calendar <ExternalLinkIcon />
                     </a>
                   </div>
                 </div>
@@ -141,11 +142,11 @@ export default function GrowthTrackerPage() {
                           <td className="number">₹{q.realLevel?.toFixed(2)} tn</td>
                           <td className="number">₹{q.previousYearRealLevel?.toFixed(2)} tn</td>
                           <td>{q.revisionStatus}</td>
-                          <td>{q.provenance?.publishedAt || "Publication date unavailable"}</td>
-                          <td>{q.provenance?.verifiedAt || "Verification time unavailable"}</td>
+                          <td>{displayDate(q.provenance?.publishedAt, "Publication date unavailable")}</td>
+                          <td>{displayTimestamp(q.provenance?.verifiedAt, "Verification time unavailable")}</td>
                           <td>
                             <a href={q.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="source-link">
-                              MoSPI ↗
+                              MoSPI <ExternalLinkIcon />
                             </a>
                           </td>
                         </tr>
@@ -168,12 +169,12 @@ export default function GrowthTrackerPage() {
                   <h3>{item.referencePeriod}</h3>
                   <p className="figure">{Number.isFinite(item.realGrowth?.value) ? `${item.realGrowth.value.toFixed(2)}%` : "Unavailable"}</p>
                   <p className="card-copy">Real GDP · {Number.isFinite(item.realLevel) ? `₹${item.realLevel.toFixed(2)} lakh crore` : "level unavailable"}</p>
-                  <div className="provenance"><span>Published {item.provenance?.publishedAt || "date unavailable"}</span><span>Verified {item.provenance?.verifiedAt || "time unavailable"}</span><a className="source-link" href={item.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI source ↗</a></div>
+                  <div className="provenance"><span>Published {displayDate(item.provenance?.publishedAt, "date unavailable")}</span><span>Verified {displayTimestamp(item.provenance?.verifiedAt, "time unavailable")}</span><a className="source-link" href={item.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI source <ExternalLinkIcon /></a></div>
                 </article>)}
               </div>
               <div className="table-wrap annual-table-wrap">
                 <table><caption className="table-caption">Supplementary annual data table</caption><thead><tr><th>Fiscal year</th><th>Real growth</th><th>Real GDP</th><th>Revision</th><th>Published</th><th>Verified</th><th>Source</th></tr></thead>
-                  <tbody>{annual.map((item, idx) => <tr key={idx}><td>{item.referencePeriod}</td><td className="number">{Number.isFinite(item.realGrowth?.value) ? `${item.realGrowth.value.toFixed(2)}%` : "Unavailable"}</td><td className="number">{Number.isFinite(item.realLevel) ? `₹${item.realLevel.toFixed(2)} lakh crore` : "Unavailable"}</td><td>{item.revisionStatus || "Not stated by API"}</td><td>{item.provenance?.publishedAt || "Unavailable"}</td><td>{item.provenance?.verifiedAt || "Unavailable"}</td><td><a className="source-link" href={item.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI ↗</a></td></tr>)}</tbody>
+                  <tbody>{annual.map((item, idx) => <tr key={idx}><td>{item.referencePeriod}</td><td className="number">{Number.isFinite(item.realGrowth?.value) ? `${item.realGrowth.value.toFixed(2)}%` : "Unavailable"}</td><td className="number">{Number.isFinite(item.realLevel) ? `₹${item.realLevel.toFixed(2)} lakh crore` : "Unavailable"}</td><td>{item.revisionStatus || "Not stated by API"}</td><td>{displayDate(item.provenance?.publishedAt, "Unavailable")}</td><td>{displayTimestamp(item.provenance?.verifiedAt, "Unavailable")}</td><td><a className="source-link" href={item.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI <ExternalLinkIcon /></a></td></tr>)}</tbody>
                 </table>
               </div>
             </section>
@@ -217,7 +218,7 @@ export default function GrowthTrackerPage() {
                       <h3 style={{ marginTop: "10px" }}>{p.label}</h3>
                       <p className="figure">{p.value?.toFixed(2)}%</p>
                       <p className="card-copy">Forward-looking full-quarter real GDP growth projection.</p>
-                      <div className="provenance"><span>Published {p.provenance?.publishedAt || "date unavailable"}</span><span>Verified {p.provenance?.verifiedAt || "time unavailable"}</span><a className="source-link" href={p.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">RBI resolution ↗</a></div>
+                      <div className="provenance"><span>Published {displayDate(p.provenance?.publishedAt, "date unavailable")}</span><span>Verified {displayTimestamp(p.provenance?.verifiedAt, "time unavailable")}</span><a className="source-link" href={p.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">RBI resolution <ExternalLinkIcon /></a></div>
                     </article>
                   ))}
                 </div>

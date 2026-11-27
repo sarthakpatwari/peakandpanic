@@ -34,7 +34,7 @@
 }
 
 /* React market grid: equal cards, no featured instrument. */
-.market-grid--balanced { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 24px); }
+.market-grid--balanced { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 24px); align-items: start; }
 .market-card--equal { min-width: 0; min-height: clamp(320px, 27vw, 370px); display: flex; flex-direction: column; }
 .market-card--equal .chart { height: clamp(150px, 11vw, 175px); min-height: 0; flex: 0 0 auto; margin-block: 16px; }
 .market-card--equal .chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
@@ -44,10 +44,28 @@
 .market-card--neutral .chart polyline { stroke: #c8d9d2; }
 .market-chart-empty { display: grid; height: 100%; min-height: 0; place-items: center; color: var(--muted); font-size: 14px; }
 .market-card--equal .market-meta { margin-top: auto; }
+.market-card--unavailable { min-height: 250px; }
+.market-card--unavailable .chart { height: 68px; }
 @media (max-width: 700px) {
   .market-grid--balanced { grid-template-columns: 1fr; }
   .market-card--equal { min-height: 0; }
   .market-card--equal .chart { height: 130px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  a.tracker-card:hover,
+  a.tracker-card:focus-within,
+  a.intel-card:hover,
+  a.intel-card:focus-visible,
+  .btn-explore:hover {
+    transform: none;
+  }
 }
 
 *, *::before, *::after {
@@ -89,6 +107,16 @@ a {
 a:focus-visible, button:focus-visible {
   outline: 2px solid var(--highlight);
   outline-offset: 4px;
+}
+
+.external-link-icon {
+  flex: 0 0 auto;
+  margin-left: 6px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 h1, h2, h3 {
@@ -525,7 +553,7 @@ canvas#particles {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   min-height: calc(480 * var(--u));
-  margin-top: var(--row-space);
+  margin-top: clamp(var(--space-7), 4vw, var(--space-9));
   padding: clamp(40px, calc(64 * var(--u)), 80px) var(--gutter);
   border-block: 1px solid rgba(110, 231, 183, 0.14);
   background: linear-gradient(145deg, rgba(7, 23, 19, 0.86), rgba(4, 18, 15, 0.66));
@@ -706,6 +734,14 @@ canvas#particles {
   width: 100%;
 }
 
+.tracker-hero {
+  padding-block: clamp(var(--space-8), 4vw, var(--space-9));
+}
+
+.rbi-page > .section {
+  padding-block: clamp(var(--space-8), 4vw, 56px);
+}
+
 .section {
   padding: clamp(var(--space-10), 6vw, var(--space-11)) 0;
 }
@@ -738,6 +774,15 @@ canvas#particles {
   color: var(--muted);
   font-size: clamp(16px, 1.25vw, 18px);
   line-height: 1.6;
+}
+
+.commentary-copy,
+.outlook-note p,
+.reading-card p,
+.method-card li,
+.revision-note,
+.fiscal-method-copy {
+  max-width: 82ch;
 }
 
 .grid {
@@ -927,8 +972,11 @@ td {
   padding-block: clamp(24px, 2.1vw, 34px) clamp(64px, 5.85vw, 96px);
 }
 .macro-trackers .tracker-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(16px, 1.55vw, 24px);
+}
+@media (min-width: 1600px) {
+  .macro-trackers .tracker-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 .macro-trackers .tracker-card {
   min-height: 310px;
@@ -1477,7 +1525,7 @@ a.intel-card:focus-visible {
   padding-block: 0;
 }
 .content .section + .section {
-  margin-top: clamp(72px, 6vw, var(--space-12));
+  margin-top: clamp(var(--space-10), 5vw, var(--space-11));
 }
 .headline-card {
   padding: clamp(var(--space-6), 2.5vw, var(--space-8));

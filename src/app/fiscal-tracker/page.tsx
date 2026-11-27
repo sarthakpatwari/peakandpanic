@@ -1,6 +1,8 @@
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import GlowingWaveProgress from "@/components/common/GlowingWaveProgress";
+import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
+import { displayDate, displayTimestamp } from "@/lib/display-date";
 import fiscalJson from "../../../fiscal-data.json";
 function money(n: number) {
   return Number.isFinite(n) ? "₹" + new Intl.NumberFormat("en-IN").format(n) + " crore" : "Unavailable";
@@ -216,7 +218,7 @@ export default function FiscalTrackerPage() {
         <section className="section">
           <div className="wrap">
             <div className="section-head"><h2 className="section-title">Annual Budget context</h2><p>Only validated official estimate classes are shown. Revised Estimates and deficit-to-GDP remain unavailable unless safely parsed from the Budget document.</p></div>
-            <article className="glass"><div className="table-wrap"><table><caption className="sr-only">Annual Budget context</caption><thead><tr><th>Indicator</th><th>Budget Estimate</th><th>Revised Estimate</th><th>Deficit to GDP</th></tr></thead><tbody><tr><td>Fiscal deficit</td><td>{money(be)}</td><td>{d.annual?.revisedEstimates ? "Available in source" : "Unavailable"}</td><td>{d.annual?.deficitToGdp ? String(d.annual.deficitToGdp) : "Unavailable"}</td></tr></tbody></table></div><div className="provenance"><a className="source-link" href={actuals.fiscalDeficit?.source?.sourceUrl || "https://cga.nic.in"} target="_blank" rel="noopener noreferrer">Controller General of Accounts ↗</a><div className="meta">Published {actuals.fiscalDeficit?.source?.publicationDate || "date unavailable"} · Verified {actuals.fiscalDeficit?.verifiedAt || "time unavailable"}</div></div></article>
+            <article className="glass"><div className="table-wrap"><table><caption className="sr-only">Annual Budget context</caption><thead><tr><th>Indicator</th><th>Budget Estimate</th><th>Revised Estimate</th><th>Deficit to GDP</th></tr></thead><tbody><tr><td>Fiscal deficit</td><td>{money(be)}</td><td>{d.annual?.revisedEstimates ? "Available in source" : "Unavailable"}</td><td>{d.annual?.deficitToGdp ? String(d.annual.deficitToGdp) : "Unavailable"}</td></tr></tbody></table></div><div className="provenance"><a className="source-link" href={actuals.fiscalDeficit?.source?.sourceUrl || "https://cga.nic.in"} target="_blank" rel="noopener noreferrer">Controller General of Accounts <ExternalLinkIcon /></a><div className="meta">Published {displayDate(actuals.fiscalDeficit?.source?.publicationDate, "date unavailable")} · Verified {displayTimestamp(actuals.fiscalDeficit?.verifiedAt, "time unavailable")}</div></div></article>
           </div>
         </section>
 

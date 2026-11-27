@@ -2,7 +2,8 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
-const displayDate = (value?: string) => value && /^\d{4}-\d{2}-\d{2}/.test(value) ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : value || "Unavailable";
+import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
+import { displayDate, displayTimestamp } from "@/lib/display-date";
 const displayPeriod = (value?: string) => value && /^\d{4}-\d{2}$/.test(value) ? new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}-01T00:00:00Z`)) : value || "Unavailable";
 
 export default function InflationTrackerPage() {
@@ -25,7 +26,7 @@ export default function InflationTrackerPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="hero" aria-labelledby="page-title">
+        <section className="hero tracker-hero" aria-labelledby="page-title">
           <div className="wrap">
             <div className="hero-copy">
               <span className="eyebrow">Inflation Tracker</span>
@@ -59,7 +60,7 @@ export default function InflationTrackerPage() {
                     <div className="prov-field">
                       <span className="prov-label">Official source</span>
                       <a href={latestMonthly.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="prov-value source-link">
-                        MoSPI CPI release ↗
+                        MoSPI CPI release <ExternalLinkIcon />
                       </a>
                     </div>
                     <div className="prov-field">
@@ -100,7 +101,7 @@ export default function InflationTrackerPage() {
                   <div className="prov-field">
                     <span className="prov-label">Official source</span>
                     <a href={schedule.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="prov-value source-link">
-                      MoSPI release calendar ↗
+                      MoSPI release calendar <ExternalLinkIcon />
                     </a>
                   </div>
                 </div>
@@ -137,10 +138,10 @@ export default function InflationTrackerPage() {
                           <td className="number" style={{ color: "var(--highlight)" }}>{m.yoy?.toFixed(2)}%</td>
                           <td className="number">{m.index?.toFixed(2)}</td>
                           <td>{displayDate(m.provenance?.publishedAt)}</td>
-                          <td>{m.provenance?.verifiedAt || "Verification time unavailable"}</td>
+                          <td>{displayTimestamp(m.provenance?.verifiedAt, "Verification time unavailable")}</td>
                           <td>
                             <a href={m.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="source-link">
-                              MoSPI ↗
+                              MoSPI <ExternalLinkIcon />
                             </a>
                           </td>
                         </tr>
@@ -222,7 +223,7 @@ export default function InflationTrackerPage() {
                       <h3 style={{ marginTop: "10px" }}>{p.label}</h3>
                       <p className="figure">{p.value?.toFixed(2)}%</p>
                       <p className="card-copy">RBI’s projection for the full quarter; not an observed value.</p>
-                      <div className="provenance"><span>Published {p.provenance?.publishedAt || "date unavailable"}</span><span>Verified {p.provenance?.verifiedAt || "time unavailable"}</span><a className="source-link" href={p.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">RBI resolution ↗</a></div>
+                      <div className="provenance"><span>Published {displayDate(p.provenance?.publishedAt, "date unavailable")}</span><span>Verified {displayTimestamp(p.provenance?.verifiedAt, "time unavailable")}</span><a className="source-link" href={p.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">RBI resolution <ExternalLinkIcon /></a></div>
                     </article>
                   ))}
                 </div>

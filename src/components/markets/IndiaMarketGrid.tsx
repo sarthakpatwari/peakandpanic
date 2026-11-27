@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSessionState } from "@/lib/market-calendar";
 import type { Quote } from "@/lib/quotes";
+import { displayTimestamp } from "@/lib/display-date";
 
 const MARKETS = [
   { id: "nifty50", name: "NIFTY 50", venue: "NSE · Index" },
@@ -79,7 +80,7 @@ export default function IndiaMarketGrid() {
           <div className="market-price">{isValid ? quote.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "Price unavailable"}</div>
           <div className="change-row">{isValid ? <><span className={`market-change ${direction}`}>{sign}{quote.change.toFixed(2)}</span><span className={`market-change ${direction}`}>({sign}{quote.pct.toFixed(2)}%)</span></> : <span className="market-change">Market data unavailable</span>}</div>
           <div className="chart"><Sparkline values={isValid ? quote.series : []} /></div>
-          <div className="market-meta"><time className="market-time" dateTime={isValid ? new Date(quote.time * 1000).toISOString() : undefined}>{isValid ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(quote.time * 1000)) : "Timestamp unavailable"}</time><span className="quote-badge">{stale[market.id] ? "Stale · last available" : isValid ? "Latest provider quote" : "Unavailable"}</span></div>
+          <div className="market-meta"><time className="market-time" dateTime={isValid ? new Date(quote.time * 1000).toISOString() : undefined}>{isValid ? displayTimestamp(quote.time * 1000, "Timestamp unavailable") : "Timestamp unavailable"}</time><span className="quote-badge">{stale[market.id] ? "Stale · last available" : isValid ? "Latest provider quote" : "Unavailable"}</span></div>
         </article>;
       })}
     </div>

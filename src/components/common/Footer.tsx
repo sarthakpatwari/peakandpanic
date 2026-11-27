@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ExternalLinkIcon from "./ExternalLinkIcon";
 
 export default function Footer() {
   return (
@@ -12,7 +13,7 @@ export default function Footer() {
         rel="noopener noreferrer"
         className="f4"
       >
-        Instagram
+        Instagram <ExternalLinkIcon />
       </a>
       <div className="copy">© 2026 Peak and Panic</div>
     </footer>
