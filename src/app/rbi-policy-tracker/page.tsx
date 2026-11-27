@@ -1,6 +1,7 @@
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import rbiJson from "../../../rbi-data.json";
+import LineChart from "@/components/common/LineChart";
 
 const STANCE_NAMES: Record<string, string> = {
   hawkish: "Hawkish",
@@ -9,6 +10,8 @@ const STANCE_NAMES: Record<string, string> = {
   calibrated_tightening: "Calibrated tightening",
   withdrawal_of_accommodation: "Withdrawal of accommodation",
 };
+const displayDate = (value?: string) => value && /^\d{4}-\d{2}-\d{2}/.test(value) ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : value || "date unavailable";
+const displayVerified = (value?: string) => value ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(value)) : "time unavailable";
 
 export default function RbiPolicyTrackerPage() {
   const rbi = rbiJson;
@@ -18,6 +21,14 @@ export default function RbiPolicyTrackerPage() {
   const stanceLabel = STANCE_NAMES[stance.current] || "Neutral";
   const commentary = (rbi.commentary?.paragraphs || []) as string[];
   const mpcMeetings = (rbi.mpc?.meetings || []) as any[];
+  const nextMeeting = mpcMeetings.find((meeting) => meeting.announce > (latest?.decisionDate || latest?.date));
+  const gdp = rbi.gdp || {};
+  const gdpAnnual = ((gdp.annualHistory || []) as any[]).at(-1);
+  const gdpQuarter = ((gdp.quarterlyHistory || []) as any[]).at(-1);
+  const gdpOutlook = [...((gdp.projection?.actuals || []) as any[]), ...((gdp.projection?.estimates || []) as any[])];
+  const cpi = rbi.cpi || {};
+  const cpiMonthly = ((cpi.monthly || []) as any[]).at(-1);
+  const cpiOutlook = [...((cpi.projection?.actuals || []) as any[]), ...((cpi.projection?.estimates || []) as any[])];
 
   if (!latest || !Number.isFinite(latest.rate)) return <div className="page"><Header /><main><section className="intro"><div className="wrap"><div className="intro__copy"><span className="eyebrow">RBI Policy Tracker</span><h1>Policy data unavailable.</h1><p>The official dataset could not be validated. No fallback value is shown.</p></div></div></section></main><Footer /></div>;
 
@@ -55,13 +66,17 @@ export default function RbiPolicyTrackerPage() {
                 <div className="decision-grid">
                   <div className="date-card">
                     <span className="metric-label">Last decision</span>
-                    <strong>{latest.decisionDate || latest.date}</strong>
-                    <div className="meta" style={{ marginTop: "6px" }}>Official Resolution</div>
+                    <strong>{displayDate(latest.decisionDate || latest.date)}</strong>
+                    <a className="source-link" href={latest.resolutionUrl || rbi.repo?.provenance?.sourceUrl} target="_blank" rel="noopener noreferrer">RBI MPC resolution ↗</a>
+                    <div className="meta">Published {displayDate(latest.publicationDate || latest.provenance?.publishedAt)}</div>
+                    <div className="meta">Verified {displayVerified(latest.provenance?.verifiedAt)}</div>
                   </div>
                   <div className="date-card">
                     <span className="metric-label">Next scheduled decision</span>
-                    <strong>{mpcMeetings.find((meeting) => meeting.announce > latest.decisionDate)?.announce || "Schedule unavailable"}</strong>
-                    <div className="meta" style={{ marginTop: "6px" }}>RBI Schedule</div>
+                    <strong>{nextMeeting?.announce ? displayDate(nextMeeting.announce) : "Schedule unavailable"}</strong>
+                    <a className="source-link" href={rbi.mpc?.provenance?.sourceUrl || "https://rbi.org.in/scripts/Annualpolicy.aspx"} target="_blank" rel="noopener noreferrer">RBI annual MPC schedule ↗</a>
+                    <div className="meta">Schedule published {displayDate(rbi.mpc?.provenance?.publishedAt)}</div>
+                    <div className="meta">Verified {displayVerified(rbi.mpc?.provenance?.verifiedAt)}</div>
                   </div>
                 </div>
               </article>
@@ -71,9 +86,10 @@ export default function RbiPolicyTrackerPage() {
                 <div className="chart-top">
                   <div>
                     <p className="chart-kicker">Official RBI decisions</p>
-                    <h3>Repo-rate decisions · Recent path</h3>
+                    <h3>Repo-rate path · rolling 12 months</h3>
                   </div>
                 </div>
+                <LineChart label="Official RBI repo-rate decisions over the rolling twelve-month period" points={repoHistory.slice(-12).map((item) => ({ label: item.decisionDate || item.date, value: item.rate }))} />
                 <div className="table-wrap" style={{ marginTop: "12px" }}>
                   <table className="chart-table">
                     <thead>
@@ -134,6 +150,34 @@ export default function RbiPolicyTrackerPage() {
                 </ul>
               </div>
             </article>
+          </div>
+        </section>
+
+        <section className="section" aria-labelledby="growth-title">
+          <div className="wrap">
+            <div className="section-head"><h2 id="growth-title">Growth outlook</h2><p>Official MoSPI real-GDP actuals alongside projections published by RBI.</p></div>
+            <div className="actual-grid">
+              <article className="panel actual-card"><span className="type-badge">Actual</span><h3>Latest annual real GDP</h3><p className="value">{Number.isFinite(gdpAnnual?.realLevel) ? `₹${gdpAnnual.realLevel.toFixed(2)} lakh crore` : "Unavailable"}</p><p className="growth">{Number.isFinite(gdpAnnual?.realGrowth?.value) ? `${gdpAnnual.realGrowth.value.toFixed(2)}% growth` : "Growth unavailable"}</p><p className="period">{gdpAnnual?.referencePeriod || "Reporting period unavailable"}</p><div className="meta"><a className="source-link" href={gdpAnnual?.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI source ↗</a><span>Published {gdpAnnual?.provenance?.publishedAt || "date unavailable"}</span><span>Verified {gdpAnnual?.provenance?.verifiedAt || "time unavailable"}</span></div></article>
+              <article className="panel actual-card"><span className="type-badge">Actual</span><h3>Latest quarterly real GDP</h3><p className="value">{Number.isFinite(gdpQuarter?.realLevel) ? `₹${gdpQuarter.realLevel.toFixed(2)} lakh crore` : "Unavailable"}</p><p className="growth">{Number.isFinite(gdpQuarter?.realGrowth?.value) ? `${gdpQuarter.realGrowth.value.toFixed(2)}% growth` : "Growth unavailable"}</p><p className="period">{gdpQuarter?.referencePeriod || "Reporting period unavailable"}</p><div className="meta"><a className="source-link" href={gdpQuarter?.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI source ↗</a><span>Published {gdpQuarter?.provenance?.publishedAt || "date unavailable"}</span><span>Verified {gdpQuarter?.provenance?.verifiedAt || "time unavailable"}</span></div></article>
+            </div>
+            <div className="outlook-layout">
+              <article className="panel chart-panel"><div className="chart-top"><h3>RBI growth outlook</h3></div><LineChart label="Official MoSPI GDP actuals followed by RBI growth projections" points={gdpOutlook.map((item) => ({ label: item.label, value: item.value }))} /><div className="table-wrap"><table><caption className="sr-only">Growth actuals and RBI projections</caption><thead><tr><th>Period</th><th>Growth</th><th>Classification</th><th>Published</th><th>Verified</th><th>Source</th></tr></thead><tbody>{gdpOutlook.map((item, idx) => <tr key={idx}><td>{item.label}</td><td className="number">{Number.isFinite(item.value) ? `${item.value.toFixed(2)}%` : "Unavailable"}</td><td>{item.kind === "projection" ? "RBI projection" : "MoSPI actual"}</td><td>{item.provenance?.publishedAt || item.publicationDate || "Unavailable"}</td><td>{item.provenance?.verifiedAt || "Unavailable"}</td><td><a className="source-link" href={item.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">Official source ↗</a></td></tr>)}</tbody></table></div></article>
+              <aside className="panel outlook-note"><h3>How to read this</h3><p>Actuals are validated against official MoSPI records. Projections are published by RBI and are not Peak and Panic forecasts.</p><div className="legend"><span className="type-badge">Actual</span><span className="type-badge type-badge--projection">RBI projection</span></div></aside>
+            </div>
+          </div>
+        </section>
+
+        <section className="section" aria-labelledby="inflation-title">
+          <div className="wrap">
+            <div className="section-head"><h2 id="inflation-title">Inflation outlook</h2><p>Latest All-India Combined CPI actuals, derived quarterly averages and projections published by RBI.</p></div>
+            <div className="actual-grid">
+              <article className="panel actual-card"><span className="type-badge">Actual</span><h3>Latest CPI index</h3><p className="value">{Number.isFinite(cpiMonthly?.index) ? cpiMonthly.index.toFixed(2) : "Unavailable"}</p><p className="period">{cpiMonthly?.period || "Reporting period unavailable"} · {cpiMonthly?.baseYear || "Base unavailable"}</p><div className="meta"><a className="source-link" href={cpiMonthly?.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI source ↗</a><span>Published {cpiMonthly?.provenance?.publishedAt || "date unavailable"}</span><span>Verified {cpiMonthly?.provenance?.verifiedAt || "time unavailable"}</span></div></article>
+              <article className="panel actual-card"><span className="type-badge">Actual</span><h3>YoY inflation</h3><p className="value">{Number.isFinite(cpiMonthly?.yoy) ? `${cpiMonthly.yoy.toFixed(2)}%` : "Unavailable"}</p><p className="period">Official monthly MoSPI observation</p></article>
+            </div>
+            <div className="outlook-layout">
+              <article className="panel chart-panel"><div className="chart-top"><h3>CPI outlook</h3></div><LineChart label="Derived quarterly CPI averages followed by RBI projections" points={cpiOutlook.map((item) => ({ label: item.label, value: item.value }))} /><div className="table-wrap"><table><caption className="sr-only">Derived CPI averages and RBI projections</caption><thead><tr><th>Period</th><th>Inflation</th><th>Classification</th><th>Observations</th><th>Source</th></tr></thead><tbody>{cpiOutlook.map((item, idx) => <tr key={idx}><td>{item.label}</td><td className="number">{Number.isFinite(item.value) ? `${item.value.toFixed(2)}%` : "Unavailable"}</td><td>{item.kind === "projection" ? "RBI projection" : item.partial ? "Partial derived average" : "Derived average"}</td><td>{item.derivation?.observationCount ? `${item.derivation.observationCount} of ${item.derivation.expectedObservationCount || 3} months` : "Not applicable"}</td><td><a className="source-link" href={item.provenance?.sourceUrl || item.derivation?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">Official source ↗</a></td></tr>)}</tbody></table></div></article>
+              <aside className="panel outlook-note"><h3>Method</h3><p>Quarterly actuals are arithmetic averages derived from official monthly All-India Combined CPI YoY observations. RBI projections remain separately classified.</p><dl className="method-details"><div className="method-detail"><dt>Calculation</dt><dd>{cpi.methodology?.quarterlyAverage || "Arithmetic mean of compatible monthly observations"}</dd></div><div className="method-detail"><dt>Base year</dt><dd>{cpi.baseYear || "Unavailable"}</dd></div></dl><div className="legend"><span className="type-badge type-badge--derived">Derived average</span><span className="type-badge type-badge--projection">RBI projection</span></div></aside>
+            </div>
           </div>
         </section>
 

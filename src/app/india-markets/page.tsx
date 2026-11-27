@@ -18,5 +18,13 @@ export default function IndiaMarketsPage() {
       <article className="intel-card"><img src="/images/pp-sector-pulse-emerald.svg" width={360} height={176} alt="" /><div className="intel-copy"><h3>Sector Pulse</h3><p>Measure sector rotation, breadth and relative leadership across NSE industry groups.</p><span className="availability">Coming soon</span></div></article>
       <article className="intel-card"><img src="/images/pp-market-flows-emerald.svg" width={360} height={176} alt="" /><div className="intel-copy"><h3>Market Flows</h3><p>Track institutional participation across FII, DII and primary issuance trends.</p><span className="availability">Coming soon</span></div></article>
     </div></div></section>
+    <section className="research" aria-labelledby="india-research-title">
+      <img className="research__bg" src="/images/pp-research-banner-emerald.webp" width={1911} height={823} alt="" aria-hidden="true" />
+      <div className="research__copy">
+        <h2 id="india-research-title">India research, built for conviction.</h2>
+        <p>Fundamental analysis connecting market signals, business performance and valuation.</p>
+        <span className="btn-explore btn-explore--disabled" aria-disabled="true">Research reports coming soon</span>
+      </div>
+    </section>
   </main><Footer /></div>;
 }

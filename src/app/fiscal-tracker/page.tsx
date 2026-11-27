@@ -34,31 +34,31 @@ export default function FiscalTrackerPage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="section" style={{ borderBottom: "1px solid rgba(33,72,60,.38)" }}>
+        <section className="section fiscal-hero">
           <div className="wrap fiscal-hero-grid">
             <div>
               <span className="eyebrow">Fiscal &amp; Government Tracker</span>
-              <h1 style={{ fontSize: "clamp(40px, 5vw, 68px)", margin: "12px 0 20px" }}>
-                See how the Union Government’s finances are <span style={{ color: "var(--highlight)", fontStyle: "italic", fontFamily: "Instrument Serif" }}>tracking.</span>
+              <h1 className="fiscal-hero-title">
+                See how the Union Government’s finances are <span className="hero-accent">tracking.</span>
               </h1>
-              <p className="note" style={{ fontSize: "18px", maxWidth: "700px" }}>
-                Monthly cumulative receipts, expenditure and deficits for the Union Government of India based on Controller General of Accounts (CGA) data.
+              <p className="note fiscal-hero-copy">
+                Monthly cumulative receipts, expenditure and deficits for the Union Government of India. This is not a measure of all Indian governments combined.
               </p>
             </div>
 
             {/* Hero Visual Card */}
-<aside className="glass" style={{ padding: "24px" }}>
-  <h2 style={{ fontSize: "18px", margin: "0 0 4px" }}>Receipts and expenditure</h2>
-  <p className="note" style={{ fontSize: "13px", margin: 0 }}>
+<aside className="glass fiscal-hero-card">
+  <h2>Receipts and expenditure</h2>
+  <p className="note fiscal-hero-unit">
     Cumulative year-to-date · ₹ crore
   </p>
 
   {/* TOTAL EXPENDITURE */}
-  <div style={{ margin: "20px 0 14px" }}>
-    <span className="label" style={{ fontSize: "11px", letterSpacing: "0.06em", color: "var(--muted)" }}>
+  <div className="fiscal-hero-total">
+    <span className="label fiscal-hero-label">
       TOTAL EXPENDITURE
     </span>
-    <div style={{ fontSize: "28px", fontWeight: 700, color: "var(--white)", fontFamily: "Space Grotesk" }}>
+    <div className="fiscal-hero-total-value">
       {money(expenditure)}
     </div>
   </div>
@@ -67,43 +67,33 @@ export default function FiscalTrackerPage() {
   {reconciles ? <GlowingWaveProgress leftPercent={receiptsPct} rightPercent={deficitPct} /> : <div className="market-chart-empty">Fiscal data unavailable</div>}
 
   {/* Metrics Below Bar */}
-  <div className="fiscal-hero-metrics" style={{ display: "flex", justifyContent: "space-between", marginTop: "16px" }}>
+  <div className="fiscal-hero-metrics">
     <div>
-      <span className="label" style={{ fontSize: "11px", color: "var(--muted)" }}>
+      <span className="label fiscal-hero-label">
         NON-DEBT RECEIPTS
       </span>
-      <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--highlight)", fontFamily: "Space Grotesk" }}>
+      <div className="fiscal-hero-metric fiscal-hero-metric--receipts">
         {money(receipts)}
       </div>
     </div>
-    <div style={{ textAlign: "right" }}>
-      <span className="label" style={{ fontSize: "11px", color: "var(--muted)" }}>
+    <div className="fiscal-hero-deficit">
+      <span className="label fiscal-hero-label">
         FISCAL DEFICIT
       </span>
-      <div style={{ fontSize: "18px", fontWeight: 700, color: "#f59e0b", fontFamily: "Space Grotesk" }}>
+      <div className="fiscal-hero-metric fiscal-hero-metric--deficit">
         {money(fd)}
       </div>
     </div>
   </div>
 
-  <p className="meta" style={{ marginTop: "12px", fontSize: "12px", color: "var(--muted)" }}>
+  <p className="meta fiscal-hero-equation">
     Receipts + fiscal deficit = total expenditure
   </p>
 
   {/* Fiscal Deficit against full-year BE */}
-  <div
-    style={{
-      marginTop: "16px",
-      paddingTop: "12px",
-      borderTop: "1px solid rgba(110,231,183,.14)",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      fontSize: "13px",
-    }}
-  >
+  <div className="fiscal-hero-be">
     <span className="meta">Fiscal deficit against full-year BE</span>
-    <strong style={{ fontFamily: "Space Grotesk", fontSize: "18px" }}>
+    <strong>
       {budgetUse.toFixed(1)}%
     </strong>
   </div>
@@ -136,7 +126,7 @@ export default function FiscalTrackerPage() {
               </article>
               <article className="glass">
                 <span className="label">Next CGA release</span>
-                <div className="number" style={{ fontSize: "28px" }}>Unavailable</div>
+                <div className="number fiscal-release-unavailable">Unavailable</div>
                 <div className="meta">No validated future release date</div>
               </article>
             </div>
@@ -165,7 +155,15 @@ export default function FiscalTrackerPage() {
                 <span style={{ width: `${Math.min(budgetUse, 100)}%` }} />
               </div>
               <p className="note">{budgetUse.toFixed(1)}% of the full-year Budget Estimate utilized.</p>
+              <div className="table-wrap"><table><caption className="sr-only">Fiscal deficit actual and Budget Estimate</caption><thead><tr><th>Measure</th><th>Coverage</th><th>Value</th><th>Classification</th></tr></thead><tbody><tr><td>Fiscal deficit</td><td>{d.referencePeriod}</td><td>{money(fd)}</td><td>Unaudited provisional actual</td></tr><tr><td>Fiscal deficit</td><td>FY{d.fiscalYear}</td><td>{money(be)}</td><td>Budget Estimate</td></tr></tbody></table></div>
             </article>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="wrap">
+            <div className="section-head"><h2 className="section-title">Receipts versus expenditure</h2><p>The difference between total expenditure and total non-debt receipts is the fiscal deficit, not an accounting error.</p></div>
+            <div className="grid two"><article className="glass"><span className="label">Total non-debt receipts · YTD</span><div className="number actual">{money(receipts)}</div><p className="note">Revenue receipts plus non-debt capital receipts.</p></article><article className="glass"><span className="label">Total expenditure · YTD</span><div className="number actual">{money(expenditure)}</div><p className="note">Cumulative unaudited provisional expenditure.</p></article></div>
           </div>
         </section>
 
@@ -174,6 +172,7 @@ export default function FiscalTrackerPage() {
           <div className="wrap">
             <div className="section-head">
               <h2 className="section-title">Expenditure composition</h2>
+              <p>Revenue and capital expenditure serve different purposes; this comparison does not imply that one is inherently better.</p>
             </div>
             <div className="grid two">
               <article className="glass">
@@ -195,6 +194,7 @@ export default function FiscalTrackerPage() {
           <div className="wrap">
             <div className="section-head">
               <h2 className="section-title">Revenue position</h2>
+              <p>All values below are cumulative year-to-date unaudited provisional Union Government accounts.</p>
             </div>
             <div className="grid three">
               <article className="glass">
@@ -213,12 +213,19 @@ export default function FiscalTrackerPage() {
           </div>
         </section>
 
+        <section className="section">
+          <div className="wrap">
+            <div className="section-head"><h2 className="section-title">Annual Budget context</h2><p>Only validated official estimate classes are shown. Revised Estimates and deficit-to-GDP remain unavailable unless safely parsed from the Budget document.</p></div>
+            <article className="glass"><div className="table-wrap"><table><caption className="sr-only">Annual Budget context</caption><thead><tr><th>Indicator</th><th>Budget Estimate</th><th>Revised Estimate</th><th>Deficit to GDP</th></tr></thead><tbody><tr><td>Fiscal deficit</td><td>{money(be)}</td><td>{d.annual?.revisedEstimates ? "Available in source" : "Unavailable"}</td><td>{d.annual?.deficitToGdp ? String(d.annual.deficitToGdp) : "Unavailable"}</td></tr></tbody></table></div><div className="provenance"><a className="source-link" href={actuals.fiscalDeficit?.source?.sourceUrl || "https://cga.nic.in"} target="_blank" rel="noopener noreferrer">Controller General of Accounts ↗</a><div className="meta">Published {actuals.fiscalDeficit?.source?.publicationDate || "date unavailable"} · Verified {actuals.fiscalDeficit?.verifiedAt || "time unavailable"}</div></div></article>
+          </div>
+        </section>
+
         {/* Methodology */}
         <section className="section">
           <div className="wrap grid two">
             <article className="glass">
               <h2>How to read this</h2>
-              <div className="definition-list" style={{ marginTop: "16px" }}>
+              <div className="definition-list fiscal-method-list">
                 <div className="definition">
                   <strong>Unaudited provisional actual</strong>
                   <span>Official cumulative account recorded by CGA before final audit.</span>
@@ -227,6 +234,8 @@ export default function FiscalTrackerPage() {
                   <strong>Budget Estimate</strong>
                   <span>The full-year target proposed in the annual Union Budget.</span>
                 </div>
+                <div className="definition"><strong>Revised Estimate</strong><span>An official in-year revision, shown only when validated.</span></div>
+                <div className="definition"><strong>Percentage of BE</strong><span>YTD provisional actual divided by the compatible full-year Budget Estimate.</span></div>
                 <div className="definition">
                   <strong>Cumulative YTD</strong>
                   <span>Total from 1 April through the reported month.</span>
@@ -235,8 +244,8 @@ export default function FiscalTrackerPage() {
             </article>
             <article className="glass">
               <h2>Methodology and limitations</h2>
-              <p className="note" style={{ marginTop: "16px", lineHeight: 1.7 }}>
-                Union Government only. Monthly figures are cumulative and unaudited provisional accounts. Receipts and expenditure are seasonal, so percentage-of-BE is context rather than a linear target. This does not constitute investment advice.
+              <p className="note fiscal-method-copy">
+                Union Government only. Monthly figures are cumulative and unaudited provisional. Receipts and expenditure are seasonal, so percentage-of-BE is context rather than a linear target. No monthly deficit-to-GDP ratio is calculated. Borrowing and debt are omitted because they require separate definitions and sources. This is not investment advice.
               </p>
             </article>
           </div>

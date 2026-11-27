@@ -821,6 +821,9 @@ td {
 }
 
 .source-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--highlight);
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -1818,6 +1821,14 @@ a.intel-card:focus-visible {
 .outlook-note {
   padding: clamp(24px, 3vw, 36px);
 }
+.outlook-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(260px, 0.75fr);
+  align-items: start;
+  gap: clamp(18px, 2vw, 28px);
+  margin-top: clamp(18px, 2vw, 28px);
+}
+.outlook-layout > * { min-width: 0; }
 
 @keyframes border-beam-spin {
   100% {
@@ -1828,12 +1839,33 @@ a.intel-card:focus-visible {
 /* Final responsive constraints shared by every App Router page. */
 .page, main, section, article { min-width: 0; }
 .fiscal-hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr); gap: 40px; align-items: center; }
+.fiscal-hero { border-bottom: 1px solid rgba(33, 72, 60, 0.38); }
+.fiscal-hero-title { margin: 12px 0 20px; font-size: clamp(40px, 5vw, 68px); }
+.hero-accent { color: var(--highlight); font: italic 0.92em 'Instrument Serif', Georgia, serif; }
+.fiscal-hero-copy { max-width: 700px; font-size: 18px; }
+.fiscal-hero-card { padding: 24px; }
+.fiscal-hero-card h2 { margin: 0 0 4px; font-size: 18px; }
+.fiscal-hero-unit { margin: 0; font-size: 13px; }
+.fiscal-hero-total { margin: 20px 0 14px; }
+.fiscal-hero-label { color: var(--muted); font-size: 11px; letter-spacing: 0.06em; }
+.fiscal-hero-total-value { color: var(--white); font: 700 28px 'Space Grotesk', sans-serif; }
+.fiscal-hero-metrics { display: flex; justify-content: space-between; gap: 16px; margin-top: 16px; }
+.fiscal-hero-deficit { text-align: right; }
+.fiscal-hero-metric { font: 700 18px 'Space Grotesk', sans-serif; }
+.fiscal-hero-metric--receipts { color: var(--highlight); }
+.fiscal-hero-metric--deficit { color: #d8be78; }
+.fiscal-hero-equation { margin-top: 12px; color: var(--muted); font-size: 12px; }
+.fiscal-hero-be { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(110, 231, 183, 0.14); font-size: 13px; }
+.fiscal-hero-be strong { font: 700 18px 'Space Grotesk', sans-serif; }
+.fiscal-release-unavailable { font-size: 28px; }
+.fiscal-method-list, .fiscal-method-copy { margin-top: 16px; }
+.fiscal-method-copy { line-height: 1.7; }
 .fiscal-progress { position: relative; width: 100%; height: 54px; min-width: 0; overflow: hidden; border-radius: 16px; user-select: none; }
 .fiscal-progress__canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .fiscal-progress__labels { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; pointer-events: none; color: #fff; font-size: 18px; font-weight: 700; }
 .fiscal-progress__label { display: flex; align-items: center; justify-content: center; text-align: center; letter-spacing: .02em; text-shadow: 0 2px 4px rgba(0,0,0,.85); }
 @media (max-width: 900px) {
-  .intro-inner, .fiscal-hero-grid, .policy-grid, .stance-card, .reading-grid { grid-template-columns: minmax(0, 1fr); }
+  .intro-inner, .fiscal-hero-grid, .policy-grid, .stance-card, .reading-grid, .outlook-layout { grid-template-columns: minmax(0, 1fr); }
   .intro-art { width: min(100%, 520px); }
   .annual-grid, .comparison-grid, .outlook-grid, .quarter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stance-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }

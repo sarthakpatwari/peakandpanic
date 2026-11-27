@@ -2,6 +2,7 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
+const displayDate = (value?: string) => value && /^\d{4}-\d{2}-\d{2}/.test(value) ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : value || "Unavailable";
 
 export default function GrowthTrackerPage() {
   const rbi = rbiJson;
@@ -56,7 +57,7 @@ export default function GrowthTrackerPage() {
                     </div>
                     <div className="prov-field">
                       <span className="prov-label">Published</span>
-                      <span className="prov-value">{latestQuarter.provenance?.publishedAt || "Publication date unavailable"}</span>
+                      <span className="prov-value">{displayDate(latestQuarter.provenance?.publishedAt)}</span>
                     </div>
                   </div>
                 </article>
@@ -93,7 +94,7 @@ export default function GrowthTrackerPage() {
               <article className="glass release-block">
                 <div>
                   <p className="label">Next official release</p>
-                  <p className="release-date">{schedule.nextReleaseDate || "Schedule unavailable"}</p>
+                  <p className="release-date">{schedule.nextReleaseDate ? displayDate(schedule.nextReleaseDate) : "Schedule unavailable"}</p>
                   <p className="release-context">{schedule.indicator || "Quarterly GDP release"} · {schedule.reportingPeriod || "Upcoming quarter"}</p>
                 </div>
                 <div className="provenance" style={{ margin: 0, padding: 0, border: 0 }}>
@@ -127,6 +128,8 @@ export default function GrowthTrackerPage() {
                         <th>Real level</th>
                         <th>Comparable level</th>
                         <th>Revision</th>
+                        <th>Published</th>
+                        <th>Verified</th>
                         <th>Official source</th>
                       </tr>
                     </thead>
@@ -138,6 +141,8 @@ export default function GrowthTrackerPage() {
                           <td className="number">₹{q.realLevel?.toFixed(2)} tn</td>
                           <td className="number">₹{q.previousYearRealLevel?.toFixed(2)} tn</td>
                           <td>{q.revisionStatus}</td>
+                          <td>{q.provenance?.publishedAt || "Publication date unavailable"}</td>
+                          <td>{q.provenance?.verifiedAt || "Verification time unavailable"}</td>
                           <td>
                             <a href={q.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="source-link">
                               MoSPI ↗
@@ -151,7 +156,29 @@ export default function GrowthTrackerPage() {
               </article>
             </section>
 
-            {/* Section 3: Real versus nominal economy */}
+            <section className="section" aria-labelledby="annual-title">
+              <div className="section-heading">
+                <h2 id="annual-title">Annual growth view</h2>
+                <p>Annual real-GDP observations remain separate from quarterly releases and calculations.</p>
+                <p className="revision-note">One MoSPI release can publish multiple fiscal years at different revision stages. Provisional Estimates, First Revised Estimates and Final Estimates are official revision stages—not forecasts of future GDP.</p>
+              </div>
+              <div className="annual-grid">
+                {annual.map((item, idx) => <article className="glass annual-card" key={idx}>
+                  <span className="chip">{item.revisionStatus || "Revision not stated"}</span>
+                  <h3>{item.referencePeriod}</h3>
+                  <p className="figure">{Number.isFinite(item.realGrowth?.value) ? `${item.realGrowth.value.toFixed(2)}%` : "Unavailable"}</p>
+                  <p className="card-copy">Real GDP · {Number.isFinite(item.realLevel) ? `₹${item.realLevel.toFixed(2)} lakh crore` : "level unavailable"}</p>
+                  <div className="provenance"><span>Published {item.provenance?.publishedAt || "date unavailable"}</span><span>Verified {item.provenance?.verifiedAt || "time unavailable"}</span><a className="source-link" href={item.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI source ↗</a></div>
+                </article>)}
+              </div>
+              <div className="table-wrap annual-table-wrap">
+                <table><caption className="table-caption">Supplementary annual data table</caption><thead><tr><th>Fiscal year</th><th>Real growth</th><th>Real GDP</th><th>Revision</th><th>Published</th><th>Verified</th><th>Source</th></tr></thead>
+                  <tbody>{annual.map((item, idx) => <tr key={idx}><td>{item.referencePeriod}</td><td className="number">{Number.isFinite(item.realGrowth?.value) ? `${item.realGrowth.value.toFixed(2)}%` : "Unavailable"}</td><td className="number">{Number.isFinite(item.realLevel) ? `₹${item.realLevel.toFixed(2)} lakh crore` : "Unavailable"}</td><td>{item.revisionStatus || "Not stated by API"}</td><td>{item.provenance?.publishedAt || "Unavailable"}</td><td>{item.provenance?.verifiedAt || "Unavailable"}</td><td><a className="source-link" href={item.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer">MoSPI ↗</a></td></tr>)}</tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Section 4: Real versus nominal economy */}
             <section className="section" aria-labelledby="comparison-title">
               <div className="section-heading">
                 <h2 id="comparison-title">Real versus nominal economy</h2>
@@ -176,7 +203,7 @@ export default function GrowthTrackerPage() {
               </div>
             </section>
 
-            {/* Section 4: RBI growth outlook */}
+            {/* Section 5: RBI growth outlook */}
             {projections.length > 0 && (
               <section className="section" aria-labelledby="outlook-title">
                 <div className="section-heading">
@@ -190,13 +217,14 @@ export default function GrowthTrackerPage() {
                       <h3 style={{ marginTop: "10px" }}>{p.label}</h3>
                       <p className="figure">{p.value?.toFixed(2)}%</p>
                       <p className="card-copy">Forward-looking full-quarter real GDP growth projection.</p>
+                      <div className="provenance"><span>Published {p.provenance?.publishedAt || "date unavailable"}</span><span>Verified {p.provenance?.verifiedAt || "time unavailable"}</span><a className="source-link" href={p.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">RBI resolution ↗</a></div>
                     </article>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Section 5: Interpretation & Methodology */}
+            {/* Section 6: Interpretation & Methodology */}
             <section className="section reading-grid" aria-label="Interpretation and methodology">
               <article className="glass reading-card">
                 <h2>How to read this</h2>
@@ -222,7 +250,10 @@ export default function GrowthTrackerPage() {
                   <li>GDP measures domestic output; GVA measures value added before product taxes less subsidies.</li>
                   <li>Real GDP uses constant 2022-23 prices; nominal GDP uses current prices.</li>
                   <li>Quarterly YoY growth compares a quarter with the same quarter one year earlier.</li>
+                  <li>Annual growth compares complete fiscal-year levels; revision stages are official revisions, not forecasts.</li>
+                  <li>Growth rates retain the official source levels, calculation formula and unrounded result in the data contract.</li>
                   <li>RBI projections are forward-looking and remain separate from published actuals.</li>
+                  <li>Publication dates come from official releases. Operational verification time is shown separately.</li>
                   <li>One GDP release alone does not establish a market outlook or constitute investment advice.</li>
                 </ul>
               </article>

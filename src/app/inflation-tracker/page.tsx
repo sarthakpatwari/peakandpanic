@@ -2,6 +2,8 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
+const displayDate = (value?: string) => value && /^\d{4}-\d{2}-\d{2}/.test(value) ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : value || "Unavailable";
+const displayPeriod = (value?: string) => value && /^\d{4}-\d{2}$/.test(value) ? new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}-01T00:00:00Z`)) : value || "Unavailable";
 
 export default function InflationTrackerPage() {
   const rbi = rbiJson;
@@ -10,6 +12,7 @@ export default function InflationTrackerPage() {
   const schedule = rbi.releaseSchedules?.inflation || {};
   const sectors = cpi.sectors || {};
   const projections = (cpi.projection?.estimates || []) as any[];
+  const quarterly = (cpi.projection?.actuals || []) as any[];
 
   const latestMonthly = monthly[monthly.length - 1];
 
@@ -46,7 +49,7 @@ export default function InflationTrackerPage() {
                 <article className="glass headline-card">
                   <p className="label">Headline CPI inflation · YoY</p>
                   <p className="headline-value figure">{latestMonthly.yoy.toFixed(2)}%</p>
-                  <p className="period">{latestMonthly.period} · All-India Combined</p>
+                  <p className="period">{displayPeriod(latestMonthly.period)} · All-India Combined</p>
                   <p className="direction">
                     {prevMonthly
                       ? `${(latestMonthly.yoy - prevMonthly.yoy) >= 0 ? "Higher" : "Lower"} by ${Math.abs(latestMonthly.yoy - prevMonthly.yoy).toFixed(2)} percentage points from previous month.`
@@ -61,7 +64,7 @@ export default function InflationTrackerPage() {
                     </div>
                     <div className="prov-field">
                       <span className="prov-label">Published</span>
-                      <span className="prov-value">{latestMonthly.provenance?.publishedAt || "Publication date unavailable"}</span>
+                      <span className="prov-value">{displayDate(latestMonthly.provenance?.publishedAt)}</span>
                     </div>
                   </div>
                 </article>
@@ -90,7 +93,7 @@ export default function InflationTrackerPage() {
               <article className="glass release-block">
                 <div>
                   <p className="label">Next official release</p>
-                  <p className="release-date">{schedule.nextReleaseDate || "Schedule unavailable"}</p>
+                  <p className="release-date">{schedule.nextReleaseDate ? displayDate(schedule.nextReleaseDate) : "Not yet announced"}</p>
                   <p className="release-context">{schedule.indicator || "Release information unavailable"}</p>
                 </div>
                 <div className="provenance" style={{ margin: 0, padding: 0, border: 0 }}>
@@ -122,15 +125,19 @@ export default function InflationTrackerPage() {
                         <th>Period</th>
                         <th>YoY inflation</th>
                         <th>CPI index</th>
+                        <th>Published</th>
+                        <th>Verified</th>
                         <th>Official source</th>
                       </tr>
                     </thead>
                     <tbody>
                       {monthly.map((m, idx) => (
                         <tr key={idx}>
-                          <td>{m.period}</td>
+                          <td>{displayPeriod(m.period)}</td>
                           <td className="number" style={{ color: "var(--highlight)" }}>{m.yoy?.toFixed(2)}%</td>
                           <td className="number">{m.index?.toFixed(2)}</td>
+                          <td>{displayDate(m.provenance?.publishedAt)}</td>
+                          <td>{m.provenance?.verifiedAt || "Verification time unavailable"}</td>
                           <td>
                             <a href={m.provenance?.sourceUrl || "https://mospi.gov.in"} target="_blank" rel="noopener noreferrer" className="source-link">
                               MoSPI ↗
@@ -154,12 +161,12 @@ export default function InflationTrackerPage() {
                 <article className="glass comparison-card">
                   <p className="label">Rural CPI · {latestMonthly.period}</p>
                   <p className="figure">{Number.isFinite(sectors.rural?.yoy) ? `${sectors.rural.yoy.toFixed(2)}%` : "Unavailable"}</p>
-                  <p className="card-copy">Higher food weighting.</p>
+                  <p className="card-copy">Official rural CPI reading for the same measure and base year.</p>
                 </article>
                 <article className="glass comparison-card">
                   <p className="label">Urban CPI · {latestMonthly.period}</p>
                   <p className="figure">{Number.isFinite(sectors.urban?.yoy) ? `${sectors.urban.yoy.toFixed(2)}%` : "Unavailable"}</p>
-                  <p className="card-copy">Higher housing and services weighting.</p>
+                  <p className="card-copy">Official urban CPI reading for the same measure and base year.</p>
                 </article>
                 <article className="glass comparison-card">
                   <p className="label">All-India Combined · {latestMonthly.period}</p>
@@ -169,7 +176,39 @@ export default function InflationTrackerPage() {
               </div>
             </section>
 
-            {/* Section 4: RBI Inflation Outlook */}
+            <section className="section" aria-labelledby="quarter-title">
+              <div className="section-heading">
+                <h2 id="quarter-title">Quarterly inflation path</h2>
+                <p>Arithmetic averages derived from official monthly YoY observations—not direct quarterly MoSPI or RBI releases.</p>
+              </div>
+              <div className="quarter-grid">
+                {quarterly.map((quarter, idx) => {
+                  const count = quarter.derivation?.observationCount;
+                  const expected = quarter.derivation?.expectedObservationCount || 3;
+                  const partial = quarter.partial === true || count < expected;
+                  return <article className="glass outlook-card" key={idx}>
+                    <span className={`chip ${partial ? "partial" : ""}`}>{partial ? `Partial derived average · ${count} of ${expected} months` : "Derived average"}</span>
+                    <h3>{quarter.label}</h3>
+                    <p className="figure">{Number.isFinite(quarter.value) ? `${quarter.value.toFixed(2)}%` : "Unavailable"}</p>
+                    <p className="card-copy">{(quarter.derivation?.observations || []).map((observation: any) => observation.period).join(" · ") || "Constituent months unavailable"}</p>
+                  </article>;
+                })}
+              </div>
+              <div className="table-wrap">
+                <table>
+                  <caption className="sr-only">Quarterly derived inflation averages</caption>
+                  <thead><tr><th>Quarter</th><th>Average</th><th>Classification</th><th>Observations</th><th>Constituent months</th></tr></thead>
+                  <tbody>{quarterly.map((quarter, idx) => {
+                    const count = quarter.derivation?.observationCount;
+                    const expected = quarter.derivation?.expectedObservationCount || 3;
+                    const partial = quarter.partial === true || count < expected;
+                    return <tr key={idx}><td>{quarter.label}</td><td className="number">{Number.isFinite(quarter.value) ? `${quarter.value.toFixed(2)}%` : "Unavailable"}</td><td>{partial ? "Partial derived average" : "Derived average"}</td><td>{Number.isFinite(count) ? `${count} of ${expected}` : "Unavailable"}</td><td>{(quarter.derivation?.observations || []).map((observation: any) => observation.period).join(", ") || "Unavailable"}</td></tr>;
+                  })}</tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Section 5: RBI Inflation Outlook */}
             {projections.length > 0 && (
               <section className="section" aria-labelledby="outlook-title">
                 <div className="section-heading">
@@ -183,6 +222,7 @@ export default function InflationTrackerPage() {
                       <h3 style={{ marginTop: "10px" }}>{p.label}</h3>
                       <p className="figure">{p.value?.toFixed(2)}%</p>
                       <p className="card-copy">RBI’s projection for the full quarter; not an observed value.</p>
+                      <div className="provenance"><span>Published {p.provenance?.publishedAt || "date unavailable"}</span><span>Verified {p.provenance?.verifiedAt || "time unavailable"}</span><a className="source-link" href={p.provenance?.sourceUrl || "https://www.rbi.org.in"} target="_blank" rel="noopener noreferrer">RBI resolution ↗</a></div>
                     </article>
                   ))}
                 </div>
@@ -199,6 +239,14 @@ export default function InflationTrackerPage() {
                     <p>A directly published monthly MoSPI observation.</p>
                   </div>
                   <div className="classification-item">
+                    <span className="chip">Derived average</span>
+                    <p>An arithmetic mean using all three official monthly YoY observations in a fiscal quarter.</p>
+                  </div>
+                  <div className="classification-item">
+                    <span className="chip partial">Partial derived average</span>
+                    <p>A quarter-to-date mean with fewer than three published months; it remains alongside any RBI full-quarter projection.</p>
+                  </div>
+                  <div className="classification-item">
                     <span className="chip projection">RBI projection</span>
                     <p>A full-quarter forward estimate from an RBI MPC resolution, not an observed inflation reading.</p>
                   </div>
@@ -210,7 +258,10 @@ export default function InflationTrackerPage() {
                 <ul className="method-list" style={{ marginTop: "16px" }}>
                   <li>CPI uses the official 2024=100 base and All-India Combined CPI series.</li>
                   <li>YoY inflation compares the index with the same month one year earlier.</li>
+                  <li>Quarterly averages are arithmetic means of monthly YoY observations and show their observation count.</li>
                   <li>Rural and urban differences describe separate official series; they do not establish why inflation differs.</li>
+                  <li>Only a complete three-month derived average may supersede a matching projection; a partial average does not.</li>
+                  <li>Publication dates come from official releases. Operational verification time is shown separately.</li>
                   <li>CPI alone does not predict markets, interest rates or an individual household’s experience.</li>
                 </ul>
               </article>
