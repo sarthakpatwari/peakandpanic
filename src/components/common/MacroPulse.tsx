@@ -45,7 +45,7 @@ export default function MacroPulse({ variant, className = "" }: { variant: Macro
       focusable="false"
     >
       <g className="macro-pulse__static">
-        {paths[variant].map((path, index) => <path key={`static-${index}`} d={path} />)}
+        {paths[variant].map((path, index) => <path key={`static-${index}`} className={`macro-pulse__static-path macro-pulse__static-path--${index + 1}`} d={path} />)}
       </g>
       <g className="macro-pulse__moving">
         {paths[variant].map((path, index) => <path key={`moving-${index}`} className={`macro-pulse__path macro-pulse__path--${index + 1}`} d={path} />)}

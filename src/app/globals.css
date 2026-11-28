@@ -66,7 +66,12 @@
   .btn-explore:hover {
     transform: none;
   }
-  .macro-pulse__moving { display: none; }
+  .macro-pulse__moving { display: block; opacity: 0.1; }
+  .macro-pulse__moving path {
+    animation: none !important;
+    transform: none !important;
+    opacity: 0.82;
+  }
 }
 
 *, *::before, *::after {
@@ -126,35 +131,82 @@ h1, h2, h3 {
   letter-spacing: -0.03em;
 }
 
-/* Restrained decorative macro motion; never participates in layout. */
+/* Decorative macro motion; layered behind content and never participates in layout. */
 .motion-host { position: relative; isolation: isolate; overflow: clip; }
 .motion-host > .wrap,
 .motion-host > .macro-wrap,
 .motion-host > .section-heading,
 .motion-host > .chart-card { position: relative; z-index: 1; }
 .macro-pulse { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
-.macro-pulse path { fill: none; stroke: var(--highlight); stroke-width: 1.1; vector-effect: non-scaling-stroke; }
-.macro-pulse__static { opacity: 0.04; }
-.macro-pulse__moving { opacity: 0.08; }
-.macro-pulse__moving path { stroke-dasharray: 42 84; animation: macro-flow 18s linear infinite; }
-.macro-pulse__path--2 { animation-duration: 22s !important; animation-direction: reverse !important; }
-.macro-pulse__path--3 { animation-duration: 16s !important; }
-.macro-pulse__path--4 { animation-duration: 24s !important; animation-direction: reverse !important; }
-.macro-pulse__path--5 { animation-duration: 20s !important; }
-.macro-pulse--markets .macro-pulse__moving { opacity: 0.06; }
-.macro-pulse--markets .macro-pulse__moving path { animation-name: market-trail; }
-.macro-pulse--macros .macro-pulse__moving path { stroke-dasharray: 28 72; animation-name: macro-signal; }
-.macro-pulse--policy .macro-pulse__moving path { stroke-dasharray: 5 210; animation: policy-pulse 16s linear infinite; }
-.macro-pulse--policy .macro-pulse__moving path + path { display: none; }
-.macro-pulse--inflation .macro-pulse__moving path { transform-origin: center; animation-name: pressure-contour; }
-.macro-pulse--growth .macro-pulse__moving path { animation-name: growth-contour; }
-.trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 260px; opacity: 0.7; }
-@keyframes macro-flow { to { stroke-dashoffset: -252; transform: translate3d(18px, 0, 0); } }
-@keyframes market-trail { to { stroke-dashoffset: -252; transform: translate3d(24px, 0, 0); } }
-@keyframes macro-signal { to { stroke-dashoffset: -200; transform: translate3d(0, 10px, 0); } }
-@keyframes policy-pulse { to { stroke-dashoffset: -430; } }
-@keyframes pressure-contour { 50% { transform: scaleX(0.965); opacity: 0.65; } }
-@keyframes growth-contour { to { stroke-dashoffset: -252; transform: translate3d(0, -14px, 0); } }
+.macro-pulse path { fill: none; stroke: var(--highlight); vector-effect: non-scaling-stroke; }
+.macro-pulse__static { opacity: 0.085; }
+.macro-pulse__static path { stroke-width: 1; }
+.macro-pulse__static-path:nth-child(even) { opacity: 0.72; stroke-width: 0.85; }
+.macro-pulse__moving { opacity: 0.17; }
+.macro-pulse__moving path {
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 58 170;
+  animation: macro-flow 13s linear infinite;
+  will-change: transform, opacity, stroke-dashoffset;
+}
+.macro-pulse__path--2 { animation-duration: 15.5s !important; animation-delay: -4.25s !important; }
+.macro-pulse__path--3 { animation-duration: 11.5s !important; animation-delay: -7.1s !important; }
+.macro-pulse__path--4 { animation-duration: 14.25s !important; animation-delay: -9.2s !important; }
+.macro-pulse__path--5 { animation-duration: 12.75s !important; animation-delay: -2.8s !important; }
+
+/* Homepage: bright highlight segments travel across region-to-region routes. */
+.hero-wrap > .macro-pulse { z-index: 0; }
+.hero-wrap > .hero-copy,
+.hero-wrap > .hero-image { position: relative; z-index: 1; }
+.macro-pulse--global .macro-pulse__moving path { stroke-dasharray: 72 220; animation-name: global-route; }
+
+/* Markets: independent fine trails combine phase movement with gentle amplitude drift. */
+.macro-pulse--markets .macro-pulse__moving { opacity: 0.15; }
+.macro-pulse--markets .macro-pulse__moving path { stroke-width: 1.45; stroke-dasharray: 50 145; animation-name: market-trail; }
+
+/* Macros: four phase-shifted signals visibly descend toward the tracker grid. */
+.macro-pulse--macros .macro-pulse__moving path { stroke-dasharray: 34 105; animation-name: macro-signal; }
+
+/* Policy: a short highlight travels along the complete muted rate path. */
+.macro-pulse--policy .macro-pulse__moving path { stroke-dasharray: 24 255; animation: policy-pulse 12s linear infinite; }
+.macro-pulse--policy .macro-pulse__path--2 { animation-duration: 15s !important; }
+
+/* Inflation: contours compress and release around their own stable centre. */
+.macro-pulse--inflation .macro-pulse__moving path { stroke-dasharray: 82 190; transform-origin: center; animation-name: pressure-contour; }
+
+/* Growth: arcs rise 36px while expanding before returning seamlessly. */
+.macro-pulse--growth .macro-pulse__moving path { stroke-dasharray: 65 155; transform-origin: center bottom; animation-name: growth-contour; }
+.trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 260px; opacity: 0.82; }
+
+@keyframes macro-flow {
+  0%, 100% { stroke-dashoffset: 0; transform: translate3d(0, 0, 0); opacity: 0.78; }
+  50% { stroke-dashoffset: -150; transform: translate3d(48px, 0, 0); opacity: 1; }
+}
+@keyframes global-route {
+  0%, 100% { stroke-dashoffset: 0; transform: translate3d(-32px, 0, 0); opacity: 0.72; }
+  50% { stroke-dashoffset: -292; transform: translate3d(32px, -2px, 0); opacity: 1; }
+}
+@keyframes market-trail {
+  0%, 100% { stroke-dashoffset: 0; transform: translate3d(-30px, -3px, 0); opacity: 0.72; }
+  50% { stroke-dashoffset: -195; transform: translate3d(30px, 4px, 0); opacity: 1; }
+}
+@keyframes macro-signal {
+  0%, 100% { stroke-dashoffset: 0; transform: translate3d(0, -22px, 0); opacity: 0.74; }
+  50% { stroke-dashoffset: -139; transform: translate3d(0, 22px, 0); opacity: 1; }
+}
+@keyframes policy-pulse {
+  0%, 100% { stroke-dashoffset: 0; opacity: 0.7; }
+  50% { stroke-dashoffset: -558; opacity: 1; }
+}
+@keyframes pressure-contour {
+  0%, 100% { stroke-dashoffset: 0; transform: scale(1.04, 0.97); opacity: 0.76; }
+  50% { stroke-dashoffset: -272; transform: scale(0.96, 1.03); opacity: 1; }
+}
+@keyframes growth-contour {
+  0%, 100% { stroke-dashoffset: 0; transform: translate3d(0, 12px, 0) scale(0.96); opacity: 0.72; }
+  50% { stroke-dashoffset: -220; transform: translate3d(0, -24px, 0) scale(1.04); opacity: 1; }
+}
 .growth-chart-scroll { max-width: 100%; overflow: visible; }
 
 /* ================= Header ================= */
