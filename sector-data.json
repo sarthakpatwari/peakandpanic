@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": null,
+  "status": "source-integration-pending",
+  "sectors": [
+    {
+      "id": "banking-credit-liquidity",
+      "name": "Banking, credit & liquidity",
+      "description": "Credit creation, deposit funding and liquidity conditions across India’s banking system.",
+      "sources": ["RBI DBIE", "RBI publications"],
+      "indicators": [
+        { "name": "Bank credit growth", "frequency": "Fortnightly", "source": "RBI DBIE" },
+        { "name": "Deposit growth", "frequency": "Fortnightly", "source": "RBI DBIE" },
+        { "name": "Credit–deposit ratio", "frequency": "Fortnightly", "source": "RBI DBIE" },
+        { "name": "System liquidity", "frequency": "Daily", "source": "RBI" },
+        { "name": "M3 money-supply growth", "frequency": "Fortnightly", "source": "RBI DBIE" }
+      ]
+    },
+    {
+      "id": "automobiles",
+      "name": "Automobiles",
+      "description": "Demand and transition signals across vehicle categories, channels and powertrains.",
+      "sources": ["SIAM", "FADA", "Vahan", "MoRTH"],
+      "indicators": [
+        { "name": "Passenger-vehicle sales", "frequency": "Monthly", "source": "SIAM / FADA" },
+        { "name": "Two-wheeler sales", "frequency": "Monthly", "source": "SIAM / FADA" },
+        { "name": "Three-wheeler sales", "frequency": "Monthly", "source": "SIAM / FADA" },
+        { "name": "Commercial-vehicle sales", "frequency": "Monthly", "source": "SIAM / FADA" },
+        { "name": "Tractor sales", "frequency": "Monthly", "source": "Company filings / industry releases" },
+        { "name": "Electric-vehicle penetration", "frequency": "Monthly", "source": "Vahan / MoRTH" },
+        { "name": "Month-on-month sales growth", "frequency": "Monthly", "source": "Derived from validated sales" },
+        { "name": "Year-on-year sales growth", "frequency": "Monthly", "source": "Derived from validated sales" }
+      ]
+    },
+    {
+      "id": "travel-transportation",
+      "name": "Travel & transportation",
+      "description": "Passenger movement, freight and cargo activity across India’s transport network.",
+      "sources": ["DGCA", "Ministry of Railways", "Indian Ports Association", "PPAC"],
+      "indicators": [
+        { "name": "Domestic air passengers", "frequency": "Monthly", "source": "DGCA" },
+        { "name": "Railway passenger traffic", "frequency": "Monthly", "source": "Ministry of Railways" },
+        { "name": "Transport-fuel consumption", "frequency": "Monthly", "source": "PPAC" },
+        { "name": "Railway freight", "frequency": "Monthly", "source": "Ministry of Railways" },
+        { "name": "Port cargo", "frequency": "Monthly", "source": "Indian Ports Association" }
+      ]
+    },
+    {
+      "id": "infrastructure-capex",
+      "name": "Infrastructure & capex",
+      "description": "Public investment, industrial inputs and physical activity behind capacity creation.",
+      "sources": ["CGA", "MoSPI", "Office of Economic Adviser", "CEA", "Ministry of Steel"],
+      "indicators": [
+        { "name": "Union Government capex", "frequency": "Monthly", "source": "CGA" },
+        { "name": "Government capex growth", "frequency": "Monthly", "source": "Derived from CGA" },
+        { "name": "Infrastructure spending", "frequency": "Monthly / annual", "source": "CGA / Union Budget" },
+        { "name": "IIP capital goods", "frequency": "Monthly", "source": "MoSPI" },
+        { "name": "IIP infrastructure and construction goods", "frequency": "Monthly", "source": "MoSPI" },
+        { "name": "Eight core industries", "frequency": "Monthly", "source": "Office of Economic Adviser" },
+        { "name": "Cement production", "frequency": "Monthly", "source": "Office of Economic Adviser" },
+        { "name": "Steel production", "frequency": "Monthly", "source": "Ministry of Steel" },
+        { "name": "Steel consumption", "frequency": "Monthly", "source": "Ministry of Steel" },
+        { "name": "Electricity demand", "frequency": "Daily / monthly", "source": "CEA" },
+        { "name": "Railway freight", "frequency": "Monthly", "source": "Ministry of Railways" },
+        { "name": "Port cargo", "frequency": "Monthly", "source": "Indian Ports Association" }
+      ]
+    },
+    {
+      "id": "government-fiscal-context",
+      "name": "Government & fiscal context",
+      "description": "Fiscal flows that influence demand, investment, liquidity and sector activity.",
+      "sources": ["CGA", "GST authorities", "RBI", "NPCI"],
+      "relatedRoute": "/fiscal-tracker",
+      "indicators": [
+        { "name": "Fiscal deficit", "frequency": "Monthly", "source": "CGA" },
+        { "name": "Government capex", "frequency": "Monthly", "source": "CGA" },
+        { "name": "Tax collections", "frequency": "Monthly", "source": "CGA" },
+        { "name": "GST collections", "frequency": "Monthly", "source": "GST authorities" },
+        { "name": "Revenue expenditure", "frequency": "Monthly", "source": "CGA" },
+        { "name": "Government borrowing", "frequency": "Weekly / annual", "source": "RBI / Union Budget" },
+        { "name": "UPI payments", "frequency": "Monthly", "source": "NPCI" }
+      ]
+    },
+    {
+      "id": "it-technology",
+      "name": "IT & technology",
+      "description": "Export demand, operating performance and labour signals across technology services.",
+      "sources": ["RBI", "Ministry of Commerce", "Company filings"],
+      "indicators": [
+        { "name": "IT services exports", "frequency": "Quarterly / annual", "source": "RBI / Ministry of Commerce" },
+        { "name": "Revenue growth", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Deal wins", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Total contract value", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "EBIT margin", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Attrition", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Hiring", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "USD/INR", "frequency": "Daily", "source": "RBI" }
+      ]
+    },
+    {
+      "id": "energy",
+      "name": "Energy",
+      "description": "Fuel costs, refining activity, power demand and the transition to renewable capacity.",
+      "sources": ["PPAC", "MoPNG", "CEA", "MNRE"],
+      "indicators": [
+        { "name": "Brent crude", "frequency": "Daily", "source": "Validated market provider" },
+        { "name": "Indian crude basket", "frequency": "Daily", "source": "PPAC" },
+        { "name": "Natural gas price", "frequency": "Periodic", "source": "PPAC / MoPNG" },
+        { "name": "Petrol and diesel consumption", "frequency": "Monthly", "source": "PPAC" },
+        { "name": "Refinery throughput", "frequency": "Monthly", "source": "PPAC" },
+        { "name": "Gross refining margins", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Power demand", "frequency": "Daily / monthly", "source": "CEA" },
+        { "name": "Renewable-capacity additions", "frequency": "Monthly", "source": "MNRE" }
+      ]
+    },
+    {
+      "id": "metals-mining",
+      "name": "Metals & mining",
+      "description": "Production, consumption and global demand signals across industrial commodities.",
+      "sources": ["Ministry of Steel", "Ministry of Mines", "Ministry of Coal", "Official global releases"],
+      "indicators": [
+        { "name": "Steel production", "frequency": "Monthly", "source": "Ministry of Steel" },
+        { "name": "Aluminium production", "frequency": "Monthly", "source": "Ministry of Mines" },
+        { "name": "Copper production", "frequency": "Monthly", "source": "Ministry of Mines" },
+        { "name": "Iron-ore production", "frequency": "Monthly", "source": "Ministry of Mines" },
+        { "name": "Coal production", "frequency": "Monthly", "source": "Ministry of Coal" },
+        { "name": "Global commodity prices", "frequency": "Daily / monthly", "source": "Validated market and official datasets" },
+        { "name": "China industrial activity", "frequency": "Monthly", "source": "Official statistical release" },
+        { "name": "China steel production", "frequency": "Monthly", "source": "Official statistical release" },
+        { "name": "India steel consumption", "frequency": "Monthly", "source": "Ministry of Steel" },
+        { "name": "Metals exports and imports", "frequency": "Monthly", "source": "Ministry of Commerce" }
+      ]
+    },
+    {
+      "id": "real-estate",
+      "name": "Real estate",
+      "description": "Residential demand, financing conditions and commercial-property utilisation.",
+      "sources": ["State RERA portals", "RBI", "NHB", "Validated industry reports"],
+      "indicators": [
+        { "name": "Housing sales", "frequency": "Quarterly", "source": "Validated industry reports" },
+        { "name": "New launches", "frequency": "Quarterly", "source": "Validated industry reports" },
+        { "name": "Absorption", "frequency": "Quarterly", "source": "Validated industry reports" },
+        { "name": "Unsold inventory", "frequency": "Quarterly", "source": "Validated industry reports" },
+        { "name": "Property prices", "frequency": "Quarterly", "source": "RBI / NHB" },
+        { "name": "Mortgage growth", "frequency": "Monthly", "source": "RBI" },
+        { "name": "Home-loan rates", "frequency": "Monthly", "source": "RBI / lender disclosures" },
+        { "name": "Office leasing", "frequency": "Quarterly", "source": "Validated industry reports" },
+        { "name": "Office vacancy", "frequency": "Quarterly", "source": "Validated industry reports" }
+      ]
+    },
+    {
+      "id": "pharma-healthcare",
+      "name": "Pharma & healthcare",
+      "description": "Domestic demand, exports, regulatory activity and healthcare operating signals.",
+      "sources": ["Department of Pharmaceuticals", "Pharmexcil", "USFDA", "Company filings"],
+      "indicators": [
+        { "name": "Domestic pharma growth", "frequency": "Monthly", "source": "Validated industry release" },
+        { "name": "Pharma exports", "frequency": "Monthly", "source": "Pharmexcil / Ministry of Commerce" },
+        { "name": "US generics performance", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "USFDA approvals", "frequency": "Monthly", "source": "USFDA" },
+        { "name": "ANDA approvals", "frequency": "Monthly", "source": "USFDA" },
+        { "name": "Pricing", "frequency": "Quarterly", "source": "Company filings / regulator releases" },
+        { "name": "API cost", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Hospital occupancy", "frequency": "Quarterly", "source": "Company filings" }
+      ]
+    },
+    {
+      "id": "consumer-fmcg",
+      "name": "Consumer & FMCG",
+      "description": "Household demand, rural conditions, inflation and consumption confidence.",
+      "sources": ["MoSPI", "RBI", "IMD", "GST authorities", "Company filings"],
+      "indicators": [
+        { "name": "Rural demand", "frequency": "Monthly / quarterly", "source": "Triangulated official indicators" },
+        { "name": "Urban demand", "frequency": "Monthly / quarterly", "source": "Triangulated official indicators" },
+        { "name": "FMCG volume growth", "frequency": "Quarterly", "source": "Company filings" },
+        { "name": "Food inflation", "frequency": "Monthly", "source": "MoSPI" },
+        { "name": "Rural wages", "frequency": "Monthly", "source": "RBI / Labour Bureau" },
+        { "name": "Monsoon progress", "frequency": "Weekly / seasonal", "source": "IMD" },
+        { "name": "Tractor sales", "frequency": "Monthly", "source": "Company filings / industry releases" },
+        { "name": "GST collections", "frequency": "Monthly", "source": "GST authorities" },
+        { "name": "Consumer confidence", "frequency": "Bi-monthly", "source": "RBI" }
+      ]
+    }
+  ]
+}

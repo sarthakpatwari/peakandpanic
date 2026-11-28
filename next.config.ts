@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       { source: "/inflation-tracker.html", destination: "/inflation-tracker", permanent: true },
       { source: "/growth-tracker.html", destination: "/growth-tracker", permanent: true },
       { source: "/fiscal-tracker.html", destination: "/fiscal-tracker", permanent: true },
+      { source: "/sector-pulse.html", destination: "/sector-pulse", permanent: true },
     ];
   },
 };

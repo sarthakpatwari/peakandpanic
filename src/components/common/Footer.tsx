@@ -6,6 +6,7 @@ export default function Footer() {
     <footer className="footer" id="about">
       <Link href="/indian-macros">Indian Macros</Link>
       <Link href="/india-markets">India Markets</Link>
+      <Link href="/sector-pulse">Sector Pulse</Link>
       <Link href="/#offerings">Our Offerings</Link>
       <a
         href="https://www.instagram.com/peak_and_panic"
