@@ -27,7 +27,9 @@ test("every planned indicator identifies its frequency and source", () => {
   }
 });
 
-test("pending registry contains no fabricated update timestamp", () => {
-  assert.equal(data.status, "source-integration-pending");
-  assert.equal(data.updatedAt, null);
+test("registry reports only the connected banking sector as live", () => {
+  assert.equal(data.status, "partially-live");
+  assert.ok(data.updatedAt);
+  assert.equal(data.liveSectors["banking-credit-liquidity"].status, "live");
+  assert.equal(Object.keys(data.liveSectors).length, 1);
 });

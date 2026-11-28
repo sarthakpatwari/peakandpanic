@@ -7,6 +7,10 @@ import fiscalJson from "../../../fiscal-data.json";
 function money(n: number) {
   return Number.isFinite(n) ? "₹" + new Intl.NumberFormat("en-IN").format(n) + " crore" : "Unavailable";
 }
+function FinancialMoney({ value, tone }: { value: number; tone?: "actual" | "estimate" }) {
+  if (!Number.isFinite(value)) return <div className="financial-status">Unavailable</div>;
+  return <div className={`financial-value${tone ? ` ${tone}` : ""}`} aria-label={`${money(value)}`}><span className="financial-value__number" aria-hidden="true">₹{new Intl.NumberFormat("en-IN").format(value)}</span><span className="financial-value__unit" aria-hidden="true">crore</span></div>;
+}
 
 export default function FiscalTrackerPage() {
   const d = fiscalJson;
@@ -113,22 +117,22 @@ export default function FiscalTrackerPage() {
             <div className="grid snapshot">
               <article className="glass">
                 <span className="label">Fiscal deficit · YTD</span>
-                <div className="number actual">{money(fd)}</div>
+                <FinancialMoney value={fd} tone="actual" />
                 <div className="meta">{d.referencePeriod || "Reporting period unavailable"}</div>
               </article>
               <article className="glass">
                 <span className="label">Full-year Budget Estimate</span>
-                <div className="number estimate">{money(be)}</div>
+                <FinancialMoney value={be} tone="estimate" />
                 <div className="meta">Budget Estimate (BE)</div>
               </article>
               <article className="glass">
                 <span className="label">Budget Estimate used</span>
-                <div className="number">{budgetUse.toFixed(1)}%</div>
+                <div className="financial-value financial-value--percentage"><span className="financial-value__number">{budgetUse.toFixed(1)}%</span></div>
                 <div className="meta">YTD actual ÷ full-year BE</div>
               </article>
               <article className="glass">
                 <span className="label">Next CGA release</span>
-                <div className="number fiscal-release-unavailable">Unavailable</div>
+                <div className="financial-status">Unavailable</div>
                 <div className="meta">No validated future release date</div>
               </article>
             </div>

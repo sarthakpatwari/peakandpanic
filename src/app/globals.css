@@ -68,6 +68,220 @@
   }
 }
 
+/* Product-scale typography and financial-value containment. */
+.page main > section,
+.page main > section > .wrap,
+.grid > *,
+.snapshot > *,
+.sector-metric-grid > * {
+  min-width: 0;
+}
+
+.sector-hero__copy h1 {
+  font-size: clamp(42px, 4vw, 60px);
+}
+
+.snapshot {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.snapshot .glass {
+  min-height: 224px;
+}
+
+.financial-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  min-width: 0;
+  margin: var(--space-3) 0 var(--space-2);
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+}
+
+.financial-value.actual { color: var(--highlight); }
+.financial-value.estimate { color: #f6c76b; }
+
+.financial-value__number {
+  max-width: 100%;
+  font-size: clamp(38px, 4.2cqw, 58px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.financial-value__unit {
+  font-size: clamp(16px, 1.5cqw, 20px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.financial-value--percentage .financial-value__number {
+  font-size: clamp(42px, 4.6cqw, 62px);
+}
+
+.financial-status {
+  margin: var(--space-4) 0 var(--space-3);
+  color: #d7e4df;
+  font-size: clamp(24px, 2.4cqw, 34px);
+  font-weight: 600;
+  line-height: 1.12;
+}
+
+.snapshot .glass { container-type: inline-size; }
+
+@media (min-width: 1600px) {
+  .snapshot { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .snapshot .glass { min-height: 244px; }
+}
+
+/* Live Banking, Credit & Liquidity sector. */
+.sector-banking {
+  background: rgba(4, 18, 15, 0.24);
+}
+
+.sector-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.sector-metric-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(20px, 2vw, 26px);
+  border: 1px solid rgba(110, 231, 183, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(7, 28, 23, 0.82), rgba(3, 12, 10, 0.76));
+}
+
+.sector-metric-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sector-metric-heading h3 {
+  font-size: clamp(17px, 1.4vw, 21px);
+  line-height: 1.25;
+}
+
+.sector-metric-heading span {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border: 1px solid rgba(110, 231, 183, 0.22);
+  border-radius: 999px;
+  color: var(--highlight);
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.sector-metric-value {
+  margin: 22px 0 6px;
+  color: var(--highlight);
+  font-size: clamp(30px, 3vw, 44px);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.sector-metric-period,
+.sector-trend-unavailable,
+.sector-metric-source {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sector-mini-trend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 20px;
+}
+
+.sector-mini-trend svg {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 84px;
+  border-bottom: 1px solid rgba(110, 231, 183, 0.14);
+}
+
+.sector-mini-trend polyline {
+  fill: none;
+  stroke: var(--highlight);
+  stroke-width: 1.6;
+}
+
+.sector-mini-trend span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.sector-mini-trend span:last-child { text-align: right; }
+.sector-trend-unavailable { min-height: 88px; margin-top: 22px; }
+
+.sector-metric-source {
+  display: grid;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.sector-metric-source .source-link { width: fit-content; }
+
+.sector-history-table {
+  margin-top: 24px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.sector-history-table caption {
+  padding: 14px;
+  color: var(--muted);
+  text-align: left;
+  font-size: 13px;
+}
+
+.sector-banking-method {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.sector-banking-method p,
+.sector-data-unavailable {
+  padding: 18px 20px;
+  border-left: 2px solid rgba(110, 231, 183, 0.45);
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.sector-banking-method strong { color: var(--white); }
+
+@media (max-width: 1000px) {
+  .sector-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .snapshot { grid-template-columns: minmax(0, 1fr); }
+  .snapshot .glass { min-height: 0; }
+  .financial-value__number { font-size: clamp(36px, 12vw, 48px); }
+  .sector-metric-grid,
+  .sector-banking-method { grid-template-columns: minmax(0, 1fr); }
+  .sector-metric-card { padding: 20px; }
+  .sector-metric-value { font-size: clamp(30px, 10vw, 40px); }
+  .sector-history-table table { min-width: 680px; }
+}
+
 /* ================= Sector Pulse ================= */
 .sector-pulse-page {
   background:

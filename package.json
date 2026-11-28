@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test scripts/quote-provider.test.js scripts/update-rbi.test.js scripts/update-fiscal.test.js scripts/sector-data.test.js"
+    "test": "node --test scripts/quote-provider.test.js scripts/update-rbi.test.js scripts/update-fiscal.test.js scripts/sector-data.test.js scripts/update-sector.test.js"
   },
   "dependencies": {
     "next": "16.4.6",
