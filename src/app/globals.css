@@ -66,6 +66,7 @@
   .btn-explore:hover {
     transform: none;
   }
+  .macro-pulse__moving { display: none; }
 }
 
 *, *::before, *::after {
@@ -124,6 +125,37 @@ h1, h2, h3 {
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
+
+/* Restrained decorative macro motion; never participates in layout. */
+.motion-host { position: relative; isolation: isolate; overflow: clip; }
+.motion-host > .wrap,
+.motion-host > .macro-wrap,
+.motion-host > .section-heading,
+.motion-host > .chart-card { position: relative; z-index: 1; }
+.macro-pulse { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+.macro-pulse path { fill: none; stroke: var(--highlight); stroke-width: 1.1; vector-effect: non-scaling-stroke; }
+.macro-pulse__static { opacity: 0.04; }
+.macro-pulse__moving { opacity: 0.08; }
+.macro-pulse__moving path { stroke-dasharray: 42 84; animation: macro-flow 18s linear infinite; }
+.macro-pulse__path--2 { animation-duration: 22s !important; animation-direction: reverse !important; }
+.macro-pulse__path--3 { animation-duration: 16s !important; }
+.macro-pulse__path--4 { animation-duration: 24s !important; animation-direction: reverse !important; }
+.macro-pulse__path--5 { animation-duration: 20s !important; }
+.macro-pulse--markets .macro-pulse__moving { opacity: 0.06; }
+.macro-pulse--markets .macro-pulse__moving path { animation-name: market-trail; }
+.macro-pulse--macros .macro-pulse__moving path { stroke-dasharray: 28 72; animation-name: macro-signal; }
+.macro-pulse--policy .macro-pulse__moving path { stroke-dasharray: 5 210; animation: policy-pulse 16s linear infinite; }
+.macro-pulse--policy .macro-pulse__moving path + path { display: none; }
+.macro-pulse--inflation .macro-pulse__moving path { transform-origin: center; animation-name: pressure-contour; }
+.macro-pulse--growth .macro-pulse__moving path { animation-name: growth-contour; }
+.trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 260px; opacity: 0.7; }
+@keyframes macro-flow { to { stroke-dashoffset: -252; transform: translate3d(18px, 0, 0); } }
+@keyframes market-trail { to { stroke-dashoffset: -252; transform: translate3d(24px, 0, 0); } }
+@keyframes macro-signal { to { stroke-dashoffset: -200; transform: translate3d(0, 10px, 0); } }
+@keyframes policy-pulse { to { stroke-dashoffset: -430; } }
+@keyframes pressure-contour { 50% { transform: scaleX(0.965); opacity: 0.65; } }
+@keyframes growth-contour { to { stroke-dashoffset: -252; transform: translate3d(0, -14px, 0); } }
+.growth-chart-scroll { max-width: 100%; overflow: visible; }
 
 /* ================= Header ================= */
 .nav {
@@ -2009,6 +2041,8 @@ a.intel-card:focus-visible {
   .pair { align-items: flex-start; flex-direction: column; }
   .fiscal-hero-metrics { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
   .fiscal-hero-metrics > div { min-width: 0; text-align: left !important; }
+  .growth-chart-scroll { overflow-x: auto; overscroll-behavior-inline: contain; }
+  .growth-chart-scroll .chart-shell { min-width: 720px; }
 }
 
 @media (max-width: 700px) {

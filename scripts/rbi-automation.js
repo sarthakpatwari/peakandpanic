@@ -342,9 +342,13 @@ function findGdpRelease(releases, quarter, year) {
   const quarterPattern = new RegExp('\\b'+quarter+'\\b|'+ordinal, 'i');
   const found = releases.filter(item => /\bGDP\b|Gross Domestic Product/i.test(item.title) && item.title.includes(year) && quarterPattern.test(item.title))
     .sort((a,b) => a.publishedAt.localeCompare(b.publishedAt)).pop();
-  if (!found) throw new Error('No matching official MoSPI GDP release metadata for '+quarter+' '+year);
-  return found;
+  if (found) return found;
+  const seriesRelease=releases.filter(item=>/^Press Note on new series of GDP estimates with base year 2022-23$/i.test(item.title))
+    .sort((a,b)=>a.publishedAt.localeCompare(b.publishedAt)).pop();
+  if(seriesRelease&&quarterEndDate(year,quarter)<=seriesRelease.publishedAt)return seriesRelease;
+  throw new Error('No matching official MoSPI GDP release metadata for '+quarter+' '+year);
 }
+function quarterEndDate(year,quarter){const start=Number(String(year).slice(0,4)),month={Q1:6,Q2:9,Q3:12,Q4:3}[quarter],calendarYear=quarter==='Q4'?start+1:start;return isoDate(calendarYear,month,quarter==='Q1'||quarter==='Q2'?30:31);}
 function findAnnualGdpRelease(releases, year) {
   const found = releases.filter(item => /\bGDP\b|Gross Domestic Product/i.test(item.title) && item.title.includes(year) && /annual|provisional estimates/i.test(item.title))
     .sort((a,b) => a.publishedAt.localeCompare(b.publishedAt)).pop();
@@ -476,9 +480,9 @@ function parseGdp(quarterPayload, annualPayload, releases, fetchedAt) {
     const prior=[...q].reverse().find(item=>item.quarter===row.quarter&&item.year<row.year);
     if(!prior)return null;
     let pointRelease;
-    try{pointRelease=findGdpRelease(releases,row.quarter,row.year);}catch(_){return null;}
+    pointRelease=findGdpRelease(releases,row.quarter,row.year);
     const realGrowth=makeGrowth(row.value,prior.value),nominalGrowth=makeGrowth(row.nominalValue,prior.nominalValue);
-    if(realGrowth.value < -20 || realGrowth.value > 30 || nominalGrowth.value < -20 || nominalGrowth.value > 40)return null;
+    if(realGrowth.value < -20 || realGrowth.value > 30 || nominalGrowth.value < -20 || nominalGrowth.value > 40)throw new Error('GDP quarterly growth is implausible for '+row.quarter+' '+row.year);
     return {
       label:row.quarter+' FY'+row.year.slice(-2),referencePeriod:row.quarter+' FY'+row.year,
       indicatorName:'Gross Domestic Product',indicatorCode:5,kind:'actual',provenanceStatus:'verified',
@@ -642,7 +646,9 @@ function revisionRank(value){const text=String(value||'').toLowerCase();if(text.
 function rejectGrowthRevisionRegression(oldSection,newSection){
   ['quarterlyHistory','annualHistory'].forEach(key=>{
     const oldMap=new Map(((oldSection&&oldSection[key])||[]).map(point=>[point.referencePeriod,point]));
-    ((newSection&&newSection[key])||[]).forEach(point=>{const previous=oldMap.get(point.referencePeriod);if(previous&&revisionRank(point.revisionStatus)<revisionRank(previous.revisionStatus))throw new Error('GDP revision regression for '+point.referencePeriod);});
+    const nextPoints=((newSection&&newSection[key])||[]),nextPeriods=new Set(nextPoints.map(point=>point.referencePeriod));
+    nextPoints.forEach(point=>{const previous=oldMap.get(point.referencePeriod);if(previous&&revisionRank(point.revisionStatus)<revisionRank(previous.revisionStatus))throw new Error('GDP revision regression for '+point.referencePeriod);});
+    if(oldMap.size<8)for(const period of oldMap.keys())if(!nextPeriods.has(period))throw new Error('GDP older-period regression for '+period);
   });
 }
 function dedupeHistory(history){
@@ -779,14 +785,15 @@ async function fetchPolicyData(homeHtml,pages,fetchedAt,notifications){
 }
 async function fetchSources(nowIso) {
   const fetchedAt=nowIso;
-  const [home,policyPages,notifications,releasesText,cpiText,cpiRuralText,cpiUrbanText,gdpQText,gdpAText,releaseSchedules]=await Promise.all([
+  const [home,policyPages,notifications,releasesText,gdpReleasesText,cpiText,cpiRuralText,cpiUrbanText,gdpQText,gdpAText,releaseSchedules]=await Promise.all([
     request(URLS.rbiHome,{accept:'text/html'}),fetchPolicyArchivePages(fetchedAt),fetchRepoNotifications(fetchedAt),
     request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}),
+    request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'GDP',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}),
     request(URLS.cpi,{accept:'application/json'}),request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'}),request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),fetchReleaseSchedules(fetchedAt)
   ]);
   const policyData=await fetchPolicyData(home,policyPages,fetchedAt,notifications);
   const releases=parseReleaseList(JSON.parse(releasesText));
-  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt,{rural:JSON.parse(cpiRuralText),urban:JSON.parse(cpiUrbanText)}),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),releases,fetchedAt),releaseSchedules};
+  return {fetchedAt,currentRate:policyData.currentRate,resolution:policyData.resolution,repoHistory:policyData.repoHistory,schedule:parseSchedule(policyPages[policyPages.length-1].html,URLS.rbiPolicy,fetchedAt),cpi:parseCpi(JSON.parse(cpiText),releases,fetchedAt,{rural:JSON.parse(cpiRuralText),urban:JSON.parse(cpiUrbanText)}),gdp:parseGdp(JSON.parse(gdpQText),JSON.parse(gdpAText),parseReleaseList(JSON.parse(gdpReleasesText)),fetchedAt),releaseSchedules};
 }
 
 async function fetchSourceOutcomes(nowIso) {
@@ -794,13 +801,14 @@ async function fetchSourceOutcomes(nowIso) {
   const homePromise=request(URLS.rbiHome,{accept:'text/html'}),policyPagesPromise=fetchPolicyArchivePages(fetchedAt);
   const notificationsPromise=fetchRepoNotifications(fetchedAt);
   const releasesPromise=request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}).then(text=>parseReleaseList(JSON.parse(text)));
+  const gdpReleasesPromise=request(URLS.mospiReleases,{accept:'application/json',body:JSON.stringify({page_no:1,page_size:100,search_term:'GDP',sort_field:'published_year',sort_order:'DESC',from_date:'',to_date:'',lang:'en'})}).then(text=>parseReleaseList(JSON.parse(text)));
   const releaseSchedulesPromise=fetchReleaseSchedules(fetchedAt);
   const tasks={
     policy:(async()=>{const [home,pages,notificationResult]=await Promise.all([homePromise,policyPagesPromise,notificationsPromise.then(value=>({ok:true,value}),error=>({ok:false,error}))]);return fetchPolicyData(home,pages,fetchedAt,notificationResult.ok?notificationResult.value:[]);})(),
     notifications:notificationsPromise,
     schedule:(async()=>{const pages=await policyPagesPromise;return parseSchedule(pages[pages.length-1].html,URLS.rbiPolicy,fetchedAt);})(),
     cpi:(async()=>{const [text,releases,sectorResults]=await Promise.all([request(URLS.cpi,{accept:'application/json'}),releasesPromise,Promise.allSettled([request(URLS.cpiRural,{accept:'application/json'}),request(URLS.cpiUrban,{accept:'application/json'})])]);const optional={};if(sectorResults[0].status==='fulfilled')optional.rural=JSON.parse(sectorResults[0].value);if(sectorResults[1].status==='fulfilled')optional.urban=JSON.parse(sectorResults[1].value);return parseCpi(JSON.parse(text),releases,fetchedAt,optional);})(),
-    gdp:(async()=>{const [q,a,releases]=await Promise.all([request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),releasesPromise]);return parseGdp(JSON.parse(q),JSON.parse(a),releases,fetchedAt);})(),
+    gdp:(async()=>{const [q,a,releases]=await Promise.all([request(URLS.gdpQuarterly,{accept:'application/json'}),request(URLS.gdpAnnual,{accept:'application/json'}),gdpReleasesPromise]);return parseGdp(JSON.parse(q),JSON.parse(a),releases,fetchedAt);})(),
     inflationSchedule:releaseSchedulesPromise.then(value=>value.inflation),
     growthSchedule:releaseSchedulesPromise.then(value=>value.growth)
   };

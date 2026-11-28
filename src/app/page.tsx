@@ -4,6 +4,7 @@ import ParticleCanvas from "@/components/home/ParticleCanvas";
 import HeroMarkets from "@/components/home/HeroMarkets";
 import Offerings from "@/components/home/Offerings";
 import ResearchBanner from "@/components/home/ResearchBanner";
+import MacroPulse from "@/components/common/MacroPulse";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ demo?: string | string[] }> }) {
   const params = await searchParams;
@@ -12,8 +13,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     <div className="page">
       <Header />
       <main>
-        <div className="hero-wrap">
+        <div className="hero-wrap motion-host">
           <ParticleCanvas />
+          <MacroPulse variant="global" />
           <section className="hero-copy">
             <h1>
               The world moves markets.

@@ -4,11 +4,12 @@ import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
 import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
 import { displayDate, displayTimestamp } from "@/lib/display-date";
+import MacroPulse from "@/components/common/MacroPulse";
 
 export default function GrowthTrackerPage() {
   const rbi = rbiJson;
   const gdp = rbi.gdp || {};
-  const quarterly = (gdp.quarterlyHistory || []) as any[];
+  const quarterly = ((gdp.quarterlyHistory || []) as any[]).slice(-8);
   const annual = (gdp.annualHistory || []) as any[];
   const projections = ((gdp.projection?.estimates || []) as any[]).filter(Boolean);
   const schedule = rbi.releaseSchedules?.growth || {};
@@ -23,7 +24,8 @@ export default function GrowthTrackerPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="hero tracker-hero" aria-labelledby="page-title">
+        <section className="hero tracker-hero motion-host" aria-labelledby="page-title">
+          <MacroPulse variant="growth" />
           <div className="wrap">
             <div className="hero-copy">
               <span className="eyebrow">Growth Tracker</span>
@@ -110,13 +112,14 @@ export default function GrowthTrackerPage() {
             </section>
 
             {/* Section 2: Quarterly real-GDP trend */}
-            <section className="section" aria-labelledby="quarterly-title">
+            <section className="section motion-host trend-motion-host" aria-labelledby="quarterly-title">
+              <MacroPulse variant="growth" />
               <div className="section-heading">
                 <h2 id="quarterly-title">Quarterly real-GDP trend</h2>
                 <p>Verified year-on-year growth calculated from comparable constant-price quarters. The line is not smoothed or interpolated.</p>
               </div>
               <article className="glass chart-card">
-                <LineChart label="Quarterly real GDP year-on-year growth trend" points={quarterly.map((item) => ({ label: item.referencePeriod, value: item.realGrowth?.value }))} />
+                <div className="growth-chart-scroll"><LineChart label="Quarterly real GDP year-on-year growth trend" points={quarterly.map((item) => ({ label: item.referencePeriod, value: item.realGrowth?.value, detail: item.revisionStatus }))} /></div>
                 <div className="legend">
                   <span><i />MoSPI actual · constant prices</span>
                 </div>

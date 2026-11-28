@@ -3,6 +3,7 @@ import Footer from "@/components/common/Footer";
 import Link from "next/link";
 import macroJson from "../../../macro-data.json";
 import { displayDate } from "@/lib/display-date";
+import MacroPulse from "@/components/common/MacroPulse";
 
 interface MacroItem { value?: string; lines?: string[]; source?: string; updatedAt?: string; status?: string }
 interface MacroData { items?: Record<string, MacroItem> }
@@ -17,7 +18,7 @@ const valid = (item?: MacroItem) => Boolean(item && typeof item.value === "strin
 export default function IndianMacrosPage() {
   const data = macroJson as MacroData;
   return <div className="page"><Header /><main>
-    <section className="intro macro-intro" aria-labelledby="page-title"><div className="macro-wrap"><div className="intro-copy"><p className="eyebrow">Indian Macros</p><h1 id="page-title">The forces shaping India’s economy.</h1><p>Track monetary policy, inflation, growth and fiscal conditions through the latest published indicators shaping India’s economic outlook.</p></div></div></section>
+    <section className="intro macro-intro motion-host" aria-labelledby="page-title"><MacroPulse variant="macros" /><div className="macro-wrap"><div className="intro-copy"><p className="eyebrow">Indian Macros</p><h1 id="page-title">The forces shaping India’s economy.</h1><p>Track monetary policy, inflation, growth and fiscal conditions through the latest published indicators shaping India’s economic outlook.</p></div></div></section>
     <section className="trackers macro-trackers" aria-labelledby="trackers-title"><div className="macro-wrap"><div className="section-heading"><h2 id="trackers-title">Macro trackers</h2><p>A focused view of the indicators that matter most to Indian investors.</p></div><div className="tracker-grid">
       {definitions.map((definition) => {
         const item = data?.items?.[definition.key]; const available = valid(item);
