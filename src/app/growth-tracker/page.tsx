@@ -4,7 +4,6 @@ import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
 import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
 import { displayDate, displayTimestamp } from "@/lib/display-date";
-import MacroPulse from "@/components/common/MacroPulse";
 
 export default function GrowthTrackerPage() {
   const rbi = rbiJson;
@@ -24,8 +23,7 @@ export default function GrowthTrackerPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="hero tracker-hero motion-host" aria-labelledby="page-title">
-          <MacroPulse variant="growth" />
+        <section className="hero tracker-hero" aria-labelledby="page-title">
           <div className="wrap">
             <div className="hero-copy">
               <span className="eyebrow">Growth Tracker</span>
@@ -112,8 +110,7 @@ export default function GrowthTrackerPage() {
             </section>
 
             {/* Section 2: Quarterly real-GDP trend */}
-            <section className="section motion-host trend-motion-host" aria-labelledby="quarterly-title">
-              <MacroPulse variant="growth" />
+            <section className="section" aria-labelledby="quarterly-title">
               <div className="section-heading">
                 <h2 id="quarterly-title">Quarterly real-GDP trend</h2>
                 <p>Verified year-on-year growth calculated from comparable constant-price quarters. The line is not smoothed or interpolated.</p>

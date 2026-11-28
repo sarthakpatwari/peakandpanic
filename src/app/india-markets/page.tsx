@@ -2,11 +2,10 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import IndiaMarketGrid from "@/components/markets/IndiaMarketGrid";
 import Link from "next/link";
-import MacroPulse from "@/components/common/MacroPulse";
 
 export default function IndiaMarketsPage() {
   return <div className="page"><Header /><main>
-    <section className="intro motion-host" aria-labelledby="page-title"><MacroPulse variant="markets" /><div className="wrap"><div className="intro-inner">
+    <section className="intro" aria-labelledby="page-title"><div className="wrap"><div className="intro-inner">
       <div className="intro-copy"><p className="eyebrow">India Markets</p><h1 id="page-title">India markets, beyond the headline.</h1><p>Major indices, volatility and the forces shaping India’s market direction.</p></div>
       <figure className="intro-art"><img src="/images/pp-indian-markets-emerald.webp" width={1536} height={1024} alt="Emerald illustration of India with an abstract market line and chart bars" /><figcaption className="art-label">Illustrative artwork</figcaption></figure>
     </div></div></section>

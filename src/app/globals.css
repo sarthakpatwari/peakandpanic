@@ -66,15 +66,6 @@
   .btn-explore:hover {
     transform: none;
   }
-  .macro-pulse__active,
-  .macro-pulse__highlight-glow,
-  .macro-pulse__highlight {
-    display: none;
-  }
-  .macro-pulse path {
-    animation: none !important;
-    transform: none !important;
-  }
 }
 
 *, *::before, *::after {
@@ -134,87 +125,6 @@ h1, h2, h3 {
   letter-spacing: -0.03em;
 }
 
-/* Page-specific macro motion: decorative, masked away from copy and outside layout. */
-.motion-host { position: relative; isolation: isolate; overflow: clip; }
-.motion-host > .wrap,
-.motion-host > .macro-wrap,
-.motion-host > .section-heading,
-.motion-host > .chart-card { position: relative; z-index: 1; }
-.macro-pulse { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
-.macro-pulse path { fill: none; stroke: var(--highlight); vector-effect: non-scaling-stroke; }
-.macro-pulse__structure { opacity: 0.08; }
-.macro-pulse__structure path { stroke-width: 0.8; animation: structure-drift 22s ease-in-out infinite; }
-.macro-pulse__structure-path:nth-child(even) { animation-delay: -11s; animation-duration: 19s; }
-.macro-pulse__active { opacity: 0.18; }
-.macro-pulse__active path {
-  stroke-width: 1.4;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: pulse-active-drift 15.5s ease-in-out infinite;
-  will-change: transform;
-}
-.macro-pulse__active-path--2 { animation-duration: 16.5s !important; animation-delay: -8s !important; }
-.macro-pulse__active-path--3 { animation-duration: 14s !important; animation-delay: -10s !important; }
-.macro-pulse__active-path--4 { animation-duration: 17s !important; animation-delay: -5s !important; }
-.macro-pulse__active-path--5 { animation-duration: 13.5s !important; animation-delay: -9s !important; }
-.macro-pulse__highlight,
-.macro-pulse__highlight-glow { opacity: 1; }
-.macro-pulse__highlight path,
-.macro-pulse__highlight-glow path {
-  stroke-linecap: round;
-  stroke-dasharray: 54 260;
-  animation: pulse-highlight 10s linear infinite;
-  will-change: stroke-dashoffset, opacity;
-}
-.macro-pulse__highlight path { stroke-width: 1.9; opacity: 0.68; }
-.macro-pulse__highlight-glow path { stroke-width: 5; opacity: 0.16; }
-.macro-pulse__highlight-path--2,
-.macro-pulse__highlight-glow-path--2 { animation-duration: 11.5s !important; animation-delay: -6.2s !important; }
-.macro-pulse__highlight-path--3,
-.macro-pulse__highlight-glow-path--3 { animation-duration: 8.75s !important; animation-delay: -3.8s !important; }
-
-/* Copy-safe fades leave the strongest artwork in each hero's negative space. */
-.macro-pulse--global { mask-image: radial-gradient(ellipse 68% 78% at 73% 61%, #000 22%, rgba(0,0,0,.82) 57%, rgba(0,0,0,.08) 100%); }
-.macro-pulse--markets { mask-image: linear-gradient(90deg, transparent 8%, rgba(0,0,0,.08) 31%, rgba(0,0,0,.88) 58%, #000 100%); }
-.macro-pulse--macros { mask-image: radial-gradient(ellipse 64% 92% at 76% 70%, #000 18%, rgba(0,0,0,.82) 61%, rgba(0,0,0,.04) 100%); }
-.macro-pulse--policy { mask-image: linear-gradient(90deg, transparent 8%, rgba(0,0,0,.05) 38%, rgba(0,0,0,.9) 61%, #000 100%); }
-.macro-pulse--inflation { mask-image: linear-gradient(90deg, transparent 18%, rgba(0,0,0,.04) 41%, rgba(0,0,0,.88) 61%, #000 100%); }
-.macro-pulse--growth { mask-image: linear-gradient(90deg, transparent 22%, rgba(0,0,0,.04) 44%, rgba(0,0,0,.9) 61%, #000 100%); }
-
-/* Layered waves sit above the base and beneath every page's foreground content. */
-.hero-wrap > .macro-pulse { z-index: 0; }
-.hero-wrap > .hero-copy,
-.hero-wrap > .hero-image { position: relative; z-index: 1; }
-.macro-pulse__active path { animation-name: wave-field-drift; }
-.macro-pulse__highlight path,
-.macro-pulse__highlight-glow path { stroke-dasharray: 58 292; animation-name: wave-highlight; }
-.trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 250px; opacity: 1; }
-.trend-motion-host .macro-pulse__structure { opacity: 0.08; }
-.trend-motion-host .macro-pulse__active,
-.trend-motion-host .macro-pulse__highlight,
-.trend-motion-host .macro-pulse__highlight-glow { display: none; }
-
-@keyframes structure-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(10px,-2px,0); } }
-@keyframes pulse-active-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(22px,-3px,0); } }
-@keyframes pulse-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -350; } }
-@keyframes wave-field-drift { 0%, 100% { transform: translate3d(-12px,5px,0); } 50% { transform: translate3d(22px,-7px,0); } }
-@keyframes wave-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -350; } }
-
-@media (max-width: 600px) {
-  .macro-pulse { width: 160%; left: -60%; }
-  .macro-pulse--global { width: 148%; left: -48%; mask-image: radial-gradient(ellipse 58% 74% at 80% 76%, #000 20%, rgba(0,0,0,.72) 58%, transparent 100%); }
-  .macro-pulse--markets,
-  .macro-pulse--inflation,
-  .macro-pulse--growth { width: 150%; left: -50%; }
-  .macro-pulse--macros,
-  .macro-pulse--policy { width: 155%; left: -55%; }
-  .macro-pulse__structure-path:nth-child(n + 5),
-  .macro-pulse__active-path:nth-child(n + 4),
-  .macro-pulse__highlight-path:nth-child(n + 2),
-  .macro-pulse__highlight-glow-path:nth-child(n + 2) { display: none; }
-  .macro-pulse__highlight path { opacity: 0.56; }
-  .macro-pulse__highlight-glow path { opacity: 0.12; }
-}
 .growth-chart-scroll { max-width: 100%; overflow: visible; }
 
 /* ================= Header ================= */
@@ -2129,4 +2039,333 @@ a.intel-card:focus-visible {
   .m-group .m-node { flex: 0 0 208px; }
   .m-node--primary { width: 220px; }
   .m-benchmarks { flex-basis: 244px; }
+}
+
+/* Restrained site-wide type, spacing and alignment correction. */
+.wrap,
+.macro-wrap {
+  width: min(calc(100% - (var(--gutter) * 2)), 1240px);
+  margin-inline: auto;
+}
+
+.hero-copy h1,
+.intro h1,
+.hero h1,
+.fiscal-hero-title {
+  max-width: 22ch;
+  font-size: clamp(42px, 4vw, 64px);
+  line-height: 1.06;
+}
+
+.hero-copy p,
+.intro .intro-copy > p:last-child,
+.intro .intro__copy > p:last-child,
+.hero > .wrap .hero-copy > p:last-child,
+.fiscal-hero-copy {
+  max-width: 70ch;
+  font-size: clamp(16px, 1.25vw, 18px);
+  line-height: 1.58;
+}
+
+.hero-copy {
+  padding: clamp(56px, 5vw, 80px) var(--gutter) clamp(32px, 3.5vw, 52px);
+}
+
+.intro,
+.hero,
+.tracker-hero,
+.intro.macro-intro {
+  min-height: 0;
+  padding-block: clamp(72px, 6vw, 92px);
+}
+
+.intro h1,
+.hero h1 {
+  margin-top: 10px;
+}
+
+.intro .intro-copy > p:last-child,
+.intro .intro__copy > p:last-child,
+.hero > .wrap .hero-copy > p:last-child {
+  margin-top: clamp(20px, 2vw, 24px);
+}
+
+.eyebrow,
+.label {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+}
+
+.section,
+.intelligence {
+  padding-block: clamp(72px, 6vw, 96px);
+}
+
+.rbi-page > .section {
+  padding-block: clamp(64px, 5vw, 80px);
+}
+
+.section-head,
+.section-heading {
+  gap: 12px;
+  margin-bottom: clamp(28px, 3vw, 36px);
+}
+
+.section-head .section-title,
+.section-heading .section-title,
+.section-head h2,
+.section-heading h2,
+.research h2 {
+  max-width: 30ch;
+  font-size: clamp(34px, 3.1vw, 42px);
+  line-height: 1.12;
+}
+
+.section-head > p,
+.section-heading > p,
+.commentary-copy,
+.outlook-note p,
+.reading-card p,
+.method-card li,
+.revision-note,
+.fiscal-method-copy {
+  max-width: 72ch;
+  font-size: clamp(16px, 1.15vw, 18px);
+  line-height: 1.58;
+}
+
+.glass,
+.panel,
+.market-card,
+.intel-card,
+.tracker-card {
+  padding: clamp(24px, 2vw, 32px);
+}
+
+.glass h3,
+.panel h3,
+.tracker-card h3,
+.intel-card h3 {
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.2;
+}
+
+.number,
+.figure,
+.repo-value,
+.macro-value {
+  font-size: clamp(42px, 4.6vw, 64px);
+  line-height: 1.06;
+}
+
+.meta,
+.note,
+.card-meta,
+.market-time {
+  font-size: max(13px, .875rem);
+  line-height: 1.48;
+}
+
+.grid,
+.policy-grid,
+.actual-grid,
+.comparison-grid,
+.outlook-grid,
+.quarter-grid,
+.reading-grid {
+  gap: clamp(18px, 2vw, 24px);
+}
+
+.policy-grid,
+.outlook-layout,
+.reading-grid,
+.grid.two {
+  align-items: start;
+}
+
+.section-title {
+  margin-top: clamp(72px, 6vw, 96px);
+  font-size: clamp(34px, 3.1vw, 42px);
+  line-height: 1.12;
+}
+
+.offer {
+  gap: clamp(24px, 4vw, 52px);
+  margin-top: clamp(28px, 3vw, 40px);
+  padding: clamp(24px, 2.5vw, 32px);
+}
+
+.offer h3 {
+  font-size: clamp(28px, 2.8vw, 40px);
+  line-height: 1.12;
+}
+
+.offer p,
+.research p {
+  max-width: 70ch;
+  font-size: clamp(16px, 1.25vw, 18px);
+}
+
+.research {
+  min-height: 0;
+  margin-top: clamp(40px, 4vw, 56px);
+  padding-block: clamp(64px, 6vw, 88px);
+}
+
+.trackers.macro-trackers {
+  padding-block: clamp(56px, 5vw, 80px) clamp(72px, 6vw, 96px);
+}
+
+.macro-trackers .tracker-card,
+.tracker-card {
+  min-height: 0;
+}
+
+.macro-value {
+  margin-block: 20px 12px;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.intro-inner {
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, .92fr);
+  gap: clamp(32px, 4vw, 56px);
+}
+
+.intro-art {
+  width: min(100%, 520px);
+  margin-right: 0;
+}
+
+.market-shell {
+  padding-block: clamp(48px, 4vw, 64px);
+}
+
+.market-card--equal {
+  min-height: clamp(320px, 25vw, 360px);
+}
+
+.market-card--unavailable {
+  min-height: 230px;
+}
+
+.market-card--unavailable .chart {
+  height: 56px;
+}
+
+.intelligence {
+  padding-top: clamp(56px, 5vw, 72px);
+}
+
+.fiscal-hero-grid {
+  gap: clamp(28px, 4vw, 48px);
+}
+
+.fiscal-hero-title {
+  margin-block: 10px 22px;
+}
+
+.fiscal-hero-total-value,
+.fiscal-hero-metric,
+.snapshot .number {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+@media (max-width: 900px) {
+  .hero-copy h1,
+  .intro h1,
+  .hero h1,
+  .fiscal-hero-title {
+    font-size: clamp(44px, 6vw, 48px);
+  }
+}
+
+@media (max-width: 700px) {
+  .wrap,
+  .macro-wrap {
+    width: min(calc(100% - 40px), 1240px);
+  }
+
+  .hero-copy {
+    padding: 52px 20px 32px;
+  }
+
+  .intro,
+  .hero,
+  .tracker-hero,
+  .intro.macro-intro,
+  .fiscal-hero {
+    padding-block: clamp(52px, 15vw, 68px);
+  }
+
+  .hero-copy h1,
+  .intro h1,
+  .hero h1,
+  .fiscal-hero-title {
+    max-width: 100%;
+    font-size: clamp(36px, 10.5vw, 42px);
+    line-height: 1.08;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .section,
+  .intelligence,
+  .rbi-page > .section {
+    padding-block: clamp(48px, 14vw, 64px);
+  }
+
+  .section-head .section-title,
+  .section-heading .section-title,
+  .section-head h2,
+  .section-heading h2,
+  .research h2 {
+    font-size: clamp(28px, 8.5vw, 34px);
+  }
+
+  .glass,
+  .panel,
+  .market-card,
+  .intel-card,
+  .tracker-card {
+    padding: clamp(20px, 5.5vw, 24px);
+  }
+
+  .number,
+  .figure,
+  .repo-value,
+  .macro-value {
+    font-size: clamp(40px, 13vw, 54px);
+  }
+
+  .section-title {
+    margin-top: clamp(48px, 14vw, 64px);
+  }
+
+  .offer {
+    margin: 24px 20px 0;
+    padding: 20px;
+  }
+
+  .offerings-caption,
+  .section-title {
+    margin-inline: 20px;
+  }
+
+  .research {
+    margin-top: 36px;
+    padding: 52px 20px;
+  }
+
+  .macro-trackers .tracker-grid,
+  .tracker-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .market-card--equal,
+  .market-card--unavailable {
+    min-height: 0;
+  }
 }

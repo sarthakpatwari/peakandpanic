@@ -4,7 +4,6 @@ import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
 import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
 import { displayDate, displayTimestamp } from "@/lib/display-date";
-import MacroPulse from "@/components/common/MacroPulse";
 const displayPeriod = (value?: string) => value && /^\d{4}-\d{2}$/.test(value) ? new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}-01T00:00:00Z`)) : value || "Unavailable";
 
 export default function InflationTrackerPage() {
@@ -27,8 +26,7 @@ export default function InflationTrackerPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="hero tracker-hero motion-host" aria-labelledby="page-title">
-          <MacroPulse variant="inflation" />
+        <section className="hero tracker-hero" aria-labelledby="page-title">
           <div className="wrap">
             <div className="hero-copy">
               <span className="eyebrow">Inflation Tracker</span>

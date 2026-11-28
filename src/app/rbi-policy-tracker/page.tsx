@@ -4,7 +4,6 @@ import rbiJson from "../../../rbi-data.json";
 import LineChart from "@/components/common/LineChart";
 import ExternalLinkIcon from "@/components/common/ExternalLinkIcon";
 import { displayDate, displayTimestamp } from "@/lib/display-date";
-import MacroPulse from "@/components/common/MacroPulse";
 
 const STANCE_NAMES: Record<string, string> = {
   hawkish: "Hawkish",
@@ -38,8 +37,7 @@ export default function RbiPolicyTrackerPage() {
       <Header />
       <main className="rbi-page">
         {/* Intro */}
-        <section className="intro tracker-hero motion-host" aria-labelledby="page-title">
-          <MacroPulse variant="policy" />
+        <section className="intro tracker-hero" aria-labelledby="page-title">
           <div className="wrap">
             <div className="intro__copy">
               <span className="eyebrow">RBI Policy Tracker</span>
