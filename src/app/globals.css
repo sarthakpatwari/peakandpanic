@@ -142,10 +142,10 @@ h1, h2, h3 {
 .motion-host > .chart-card { position: relative; z-index: 1; }
 .macro-pulse { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .macro-pulse path { fill: none; stroke: var(--highlight); vector-effect: non-scaling-stroke; }
-.macro-pulse__structure { opacity: 0.07; }
+.macro-pulse__structure { opacity: 0.08; }
 .macro-pulse__structure path { stroke-width: 0.8; animation: structure-drift 22s ease-in-out infinite; }
 .macro-pulse__structure-path:nth-child(even) { animation-delay: -11s; animation-duration: 19s; }
-.macro-pulse__active { opacity: 0.17; }
+.macro-pulse__active { opacity: 0.18; }
 .macro-pulse__active path {
   stroke-width: 1.4;
   transform-box: fill-box;
@@ -166,8 +166,8 @@ h1, h2, h3 {
   animation: pulse-highlight 10s linear infinite;
   will-change: stroke-dashoffset, opacity;
 }
-.macro-pulse__highlight path { stroke-width: 1.85; opacity: 0.64; }
-.macro-pulse__highlight-glow path { stroke-width: 5; opacity: 0.15; }
+.macro-pulse__highlight path { stroke-width: 1.9; opacity: 0.68; }
+.macro-pulse__highlight-glow path { stroke-width: 5; opacity: 0.16; }
 .macro-pulse__highlight-path--2,
 .macro-pulse__highlight-glow-path--2 { animation-duration: 11.5s !important; animation-delay: -6.2s !important; }
 .macro-pulse__highlight-path--3,
@@ -181,38 +181,13 @@ h1, h2, h3 {
 .macro-pulse--inflation { mask-image: linear-gradient(90deg, transparent 18%, rgba(0,0,0,.04) 41%, rgba(0,0,0,.88) 61%, #000 100%); }
 .macro-pulse--growth { mask-image: linear-gradient(90deg, transparent 22%, rgba(0,0,0,.04) 44%, rgba(0,0,0,.9) 61%, #000 100%); }
 
-/* Homepage: geographic connections sit above the base and beneath map and copy. */
+/* Layered waves sit above the base and beneath every page's foreground content. */
 .hero-wrap > .macro-pulse { z-index: 0; }
 .hero-wrap > .hero-copy,
 .hero-wrap > .hero-image { position: relative; z-index: 1; }
-.macro-pulse--global .macro-pulse__active path { animation-name: global-route-drift; }
-.macro-pulse--global .macro-pulse__highlight path,
-.macro-pulse--global .macro-pulse__highlight-glow path { stroke-dasharray: 48 285; }
-
-/* Markets: five disciplined trails with controlled, shallow amplitude. */
-.macro-pulse--markets .macro-pulse__active path { animation-name: market-trail-drift; }
-.macro-pulse--markets .macro-pulse__highlight path,
-.macro-pulse--markets .macro-pulse__highlight-glow path { stroke-dasharray: 42 235; animation-name: market-highlight; }
-
-/* Macros: four separate origins converge toward the tracker-card area. */
-.macro-pulse--macros .macro-pulse__active path { animation-name: macro-converge-drift; }
-.macro-pulse--macros .macro-pulse__highlight path,
-.macro-pulse--macros .macro-pulse__highlight-glow path { stroke-dasharray: 30 155; animation-name: macro-highlight; }
-
-/* Policy: short pulses travel stepped transmission paths; the complete line stays muted. */
-.macro-pulse--policy .macro-pulse__active path { animation-name: policy-response-drift; }
-.macro-pulse--policy .macro-pulse__highlight path,
-.macro-pulse--policy .macro-pulse__highlight-glow path { stroke-dasharray: 32 310; animation-name: policy-highlight; }
-
-/* Inflation: dense right-side bands compress and release without becoming waves. */
-.macro-pulse--inflation .macro-pulse__active path { animation-name: inflation-pressure; }
-.macro-pulse--inflation .macro-pulse__highlight path,
-.macro-pulse--inflation .macro-pulse__highlight-glow path { stroke-dasharray: 38 260; animation-name: inflation-highlight; }
-
-/* Growth: seven long contours rise toward the upper-right. */
-.macro-pulse--growth .macro-pulse__active path { transform-origin: right bottom; animation-name: growth-rise; }
-.macro-pulse--growth .macro-pulse__highlight path,
-.macro-pulse--growth .macro-pulse__highlight-glow path { stroke-dasharray: 54 270; animation-name: growth-highlight; }
+.macro-pulse__active path { animation-name: wave-field-drift; }
+.macro-pulse__highlight path,
+.macro-pulse__highlight-glow path { stroke-dasharray: 58 292; animation-name: wave-highlight; }
 .trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 250px; opacity: 1; }
 .trend-motion-host .macro-pulse__structure { opacity: 0.08; }
 .trend-motion-host .macro-pulse__active,
@@ -221,18 +196,9 @@ h1, h2, h3 {
 
 @keyframes structure-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(10px,-2px,0); } }
 @keyframes pulse-active-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(22px,-3px,0); } }
-@keyframes pulse-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -333; } }
-@keyframes global-route-drift { 0%, 100% { transform: translate3d(-18px,2px,0); } 50% { transform: translate3d(28px,-5px,0); } }
-@keyframes market-trail-drift { 0%, 100% { transform: translate3d(-20px,-2px,0); } 50% { transform: translate3d(30px,3px,0); } }
-@keyframes market-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -277; } }
-@keyframes macro-converge-drift { 0%, 100% { transform: translate3d(0,-12px,0); } 50% { transform: translate3d(5px,18px,0); } }
-@keyframes macro-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -185; } }
-@keyframes policy-response-drift { 0%, 100% { transform: translate3d(-8px,0,0); } 50% { transform: translate3d(16px,-2px,0); } }
-@keyframes policy-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -342; } }
-@keyframes inflation-pressure { 0%, 100% { transform: scale(1.02,0.985); } 50% { transform: scale(0.97,1.025); } }
-@keyframes inflation-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -298; } }
-@keyframes growth-rise { 0%, 100% { transform: translate3d(0,12px,0) scale(.97); } 50% { transform: translate3d(0,-24px,0) scale(1.035); } }
-@keyframes growth-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -324; } }
+@keyframes pulse-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -350; } }
+@keyframes wave-field-drift { 0%, 100% { transform: translate3d(-12px,5px,0); } 50% { transform: translate3d(22px,-7px,0); } }
+@keyframes wave-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -350; } }
 
 @media (max-width: 600px) {
   .macro-pulse { width: 160%; left: -60%; }

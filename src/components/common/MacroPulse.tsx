@@ -1,123 +1,43 @@
 type MacroPulseVariant = "global" | "markets" | "macros" | "policy" | "inflation" | "growth";
 
-type PulseGeometry = { structure: string[]; active: string[]; highlights: string[] };
+type PulseGeometry = { waves: string[]; highlights: number[] };
+
+const broadWaves = [
+  "M280 218 C390 176 478 222 574 181 S744 91 852 118 S973 166 1060 124",
+  "M272 194 C378 153 468 201 566 160 S741 69 850 96 S972 143 1064 102",
+  "M294 170 C401 128 490 177 586 136 S752 47 860 74 S976 120 1060 81",
+  "M306 146 C409 105 498 153 594 112 S765 25 870 52 S978 99 1062 59",
+  "M326 122 C426 82 511 129 606 89 S774 5 878 31 S982 77 1065 38",
+  "M346 98 C444 60 526 106 620 67 S785 -12 890 12 S990 55 1068 19",
+  "M370 230 C478 189 560 232 654 194 S820 111 922 135 S1014 167 1080 139",
+];
+
+const marketWaves = [
+  "M300 205 C420 180 508 215 614 190 S795 154 900 169 S1000 194 1080 178",
+  "M286 174 C408 149 502 184 610 159 S790 123 899 138 S1004 163 1082 147",
+  "M312 143 C430 118 520 153 626 128 S804 92 910 107 S1008 132 1084 116",
+  "M296 112 C414 87 510 122 618 97 S798 61 906 76 S1006 101 1085 85",
+  "M326 81 C442 56 532 91 638 66 S816 30 922 45 S1016 70 1088 54",
+  "M348 50 C462 25 550 60 656 35 S830 1 934 15 S1022 40 1090 24",
+];
+
+const pressureWaves = [
+  "M330 214 C442 180 525 219 625 185 S792 120 894 142 S1006 178 1082 150",
+  "M318 186 C431 152 518 191 618 157 S790 94 892 115 S1008 151 1084 123",
+  "M340 158 C450 125 536 163 636 130 S800 68 902 89 S1012 124 1086 96",
+  "M326 130 C438 97 526 135 626 102 S796 42 898 62 S1010 97 1088 69",
+  "M350 102 C458 70 544 107 644 74 S808 15 910 35 S1018 70 1090 42",
+  "M338 74 C448 42 534 79 634 46 S804 -12 906 8 S1016 43 1092 15",
+  "M364 226 C472 195 558 231 658 199 S824 142 924 161 S1024 192 1094 166",
+];
 
 const geometry: Record<MacroPulseVariant, PulseGeometry> = {
-  global: {
-    structure: [
-      "M330 184 C425 106 520 102 610 152 C688 196 777 182 866 102",
-      "M420 214 C505 142 590 137 674 173 C757 208 840 183 936 105",
-      "M508 74 C590 111 665 105 733 65 C803 24 876 37 956 98",
-      "M286 130 C373 162 442 148 510 94 C579 39 654 37 735 85",
-    ],
-    active: [
-      "M330 184 C425 106 520 102 610 152 C688 196 777 182 866 102",
-      "M420 214 C505 142 590 137 674 173 C757 208 840 183 936 105",
-      "M508 74 C590 111 665 105 733 65 C803 24 876 37 956 98",
-    ],
-    highlights: [
-      "M330 184 C425 106 520 102 610 152 C688 196 777 182 866 102",
-      "M420 214 C505 142 590 137 674 173 C757 208 840 183 936 105",
-      "M508 74 C590 111 665 105 733 65 C803 24 876 37 956 98",
-    ],
-  },
-  markets: {
-    structure: [
-      "M410 62 C525 52 620 72 730 62 S906 48 1040 60",
-      "M360 94 C492 82 610 108 731 96 S910 80 1050 94",
-      "M395 127 C520 116 627 139 748 128 S920 112 1048 126",
-      "M345 161 C490 148 620 176 760 162 S920 148 1060 159",
-      "M420 198 C548 185 656 209 784 197 S936 184 1052 195",
-    ],
-    active: [
-      "M360 94 C492 82 610 108 731 96 S910 80 1050 94",
-      "M395 127 C520 116 627 139 748 128 S920 112 1048 126",
-      "M345 161 C490 148 620 176 760 162 S920 148 1060 159",
-      "M420 198 C548 185 656 209 784 197 S936 184 1052 195",
-    ],
-    highlights: [
-      "M360 94 C492 82 610 108 731 96 S910 80 1050 94",
-      "M395 127 C520 116 627 139 748 128 S920 112 1048 126",
-      "M420 198 C548 185 656 209 784 197 S936 184 1052 195",
-    ],
-  },
-  macros: {
-    structure: [
-      "M492 25 C535 69 596 112 756 207",
-      "M642 10 C658 72 689 126 756 207",
-      "M804 18 C794 83 777 141 756 207",
-      "M960 34 C895 88 835 144 756 207",
-    ],
-    active: [
-      "M492 25 C535 69 596 112 756 207",
-      "M642 10 C658 72 689 126 756 207",
-      "M804 18 C794 83 777 141 756 207",
-      "M960 34 C895 88 835 144 756 207",
-    ],
-    highlights: [
-      "M492 25 C535 69 596 112 756 207",
-      "M642 10 C658 72 689 126 756 207",
-      "M960 34 C895 88 835 144 756 207",
-    ],
-  },
-  policy: {
-    structure: [
-      "M430 192 H540 V164 H648 V128 H762 V144 H860 V91 H978",
-      "M455 214 H566 V187 H674 V151 H790 V168 H890 V115 H995",
-      "M515 109 H622 V91 H714 V63 H822 V76 H932 V43",
-    ],
-    active: [
-      "M430 192 H540 V164 H648 V128 H762 V144 H860 V91 H978",
-      "M515 109 H622 V91 H714 V63 H822 V76 H932 V43",
-    ],
-    highlights: [
-      "M430 192 H540 V164 H648 V128 H762 V144 H860 V91 H978",
-      "M515 109 H622 V91 H714 V63 H822 V76 H932 V43",
-    ],
-  },
-  inflation: {
-    structure: [
-      "M462 47 C580 38 679 50 770 46 C851 42 925 47 1018 42",
-      "M438 76 C565 66 674 81 772 75 C858 70 934 76 1025 70",
-      "M468 105 C584 95 688 112 781 104 C865 97 941 104 1028 98",
-      "M435 134 C566 123 682 142 788 133 C875 125 950 132 1034 126",
-      "M475 163 C590 153 698 171 796 162 C882 154 957 160 1036 156",
-      "M448 193 C578 181 698 202 806 191 C894 182 968 190 1040 185",
-    ],
-    active: [
-      "M438 76 C565 66 674 81 772 75 C858 70 934 76 1025 70",
-      "M468 105 C584 95 688 112 781 104 C865 97 941 104 1028 98",
-      "M435 134 C566 123 682 142 788 133 C875 125 950 132 1034 126",
-      "M475 163 C590 153 698 171 796 162 C882 154 957 160 1036 156",
-    ],
-    highlights: [
-      "M468 105 C584 95 688 112 781 104 C865 97 941 104 1028 98",
-      "M475 163 C590 153 698 171 796 162 C882 154 957 160 1036 156",
-    ],
-  },
-  growth: {
-    structure: [
-      "M438 224 C542 211 617 186 686 151 C757 114 840 92 1008 86",
-      "M418 205 C518 192 600 165 674 128 C749 91 838 70 1007 66",
-      "M452 186 C548 170 624 143 696 107 C768 72 850 50 1014 46",
-      "M430 166 C525 150 608 120 681 86 C758 51 846 31 1009 28",
-      "M488 226 C590 213 669 189 741 157 C811 126 889 108 1024 104",
-      "M474 145 C561 129 642 101 715 70 C786 40 866 22 1009 18",
-      "M514 205 C607 191 687 167 758 136 C831 105 902 88 1030 84",
-    ],
-    active: [
-      "M438 224 C542 211 617 186 686 151 C757 114 840 92 1008 86",
-      "M418 205 C518 192 600 165 674 128 C749 91 838 70 1007 66",
-      "M452 186 C548 170 624 143 696 107 C768 72 850 50 1014 46",
-      "M430 166 C525 150 608 120 681 86 C758 51 846 31 1009 28",
-      "M488 226 C590 213 669 189 741 157 C811 126 889 108 1024 104",
-    ],
-    highlights: [
-      "M438 224 C542 211 617 186 686 151 C757 114 840 92 1008 86",
-      "M452 186 C548 170 624 143 696 107 C768 72 850 50 1014 46",
-      "M488 226 C590 213 669 189 741 157 C811 126 889 108 1024 104",
-    ],
-  },
+  global: { waves: broadWaves, highlights: [1, 3, 5] },
+  markets: { waves: marketWaves, highlights: [0, 2, 4] },
+  macros: { waves: broadWaves, highlights: [0, 2, 4] },
+  policy: { waves: marketWaves, highlights: [1, 3] },
+  inflation: { waves: pressureWaves, highlights: [1, 3] },
+  growth: { waves: broadWaves, highlights: [0, 2, 4] },
 };
 
 function renderPaths(paths: string[], className: string) {
@@ -127,13 +47,15 @@ function renderPaths(paths: string[], className: string) {
 }
 
 export default function MacroPulse({ variant, className = "" }: { variant: MacroPulseVariant; className?: string }) {
-  const paths = geometry[variant];
+  const field = geometry[variant];
+  const highlights = field.highlights.map((index) => field.waves[index]);
+
   return (
     <svg className={`macro-pulse macro-pulse--${variant} ${className}`.trim()} viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <g className="macro-pulse__structure">{renderPaths(paths.structure, "macro-pulse__structure-path")}</g>
-      <g className="macro-pulse__active">{renderPaths(paths.active, "macro-pulse__active-path")}</g>
-      <g className="macro-pulse__highlight-glow">{renderPaths(paths.highlights, "macro-pulse__highlight-glow-path")}</g>
-      <g className="macro-pulse__highlight">{renderPaths(paths.highlights, "macro-pulse__highlight-path")}</g>
+      <g className="macro-pulse__structure">{renderPaths(field.waves, "macro-pulse__structure-path")}</g>
+      <g className="macro-pulse__active">{renderPaths(field.waves, "macro-pulse__active-path")}</g>
+      <g className="macro-pulse__highlight-glow">{renderPaths(highlights, "macro-pulse__highlight-glow-path")}</g>
+      <g className="macro-pulse__highlight">{renderPaths(highlights, "macro-pulse__highlight-path")}</g>
     </svg>
   );
 }
