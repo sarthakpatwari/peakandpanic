@@ -66,11 +66,14 @@
   .btn-explore:hover {
     transform: none;
   }
-  .macro-pulse__moving { display: block; opacity: 0.1; }
-  .macro-pulse__moving path {
+  .macro-pulse__active,
+  .macro-pulse__highlight-glow,
+  .macro-pulse__highlight {
+    display: none;
+  }
+  .macro-pulse path {
     animation: none !important;
     transform: none !important;
-    opacity: 0.82;
   }
 }
 
@@ -131,7 +134,7 @@ h1, h2, h3 {
   letter-spacing: -0.03em;
 }
 
-/* Decorative macro motion; layered behind content and never participates in layout. */
+/* Page-specific macro motion: decorative, masked away from copy and outside layout. */
 .motion-host { position: relative; isolation: isolate; overflow: clip; }
 .motion-host > .wrap,
 .motion-host > .macro-wrap,
@@ -139,73 +142,112 @@ h1, h2, h3 {
 .motion-host > .chart-card { position: relative; z-index: 1; }
 .macro-pulse { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .macro-pulse path { fill: none; stroke: var(--highlight); vector-effect: non-scaling-stroke; }
-.macro-pulse__static { opacity: 0.085; }
-.macro-pulse__static path { stroke-width: 1; }
-.macro-pulse__static-path:nth-child(even) { opacity: 0.72; stroke-width: 0.85; }
-.macro-pulse__moving { opacity: 0.17; }
-.macro-pulse__moving path {
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-dasharray: 58 170;
-  animation: macro-flow 13s linear infinite;
-  will-change: transform, opacity, stroke-dashoffset;
+.macro-pulse__structure { opacity: 0.07; }
+.macro-pulse__structure path { stroke-width: 0.8; animation: structure-drift 22s ease-in-out infinite; }
+.macro-pulse__structure-path:nth-child(even) { animation-delay: -11s; animation-duration: 19s; }
+.macro-pulse__active { opacity: 0.17; }
+.macro-pulse__active path {
+  stroke-width: 1.4;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse-active-drift 15.5s ease-in-out infinite;
+  will-change: transform;
 }
-.macro-pulse__path--2 { animation-duration: 15.5s !important; animation-delay: -4.25s !important; }
-.macro-pulse__path--3 { animation-duration: 11.5s !important; animation-delay: -7.1s !important; }
-.macro-pulse__path--4 { animation-duration: 14.25s !important; animation-delay: -9.2s !important; }
-.macro-pulse__path--5 { animation-duration: 12.75s !important; animation-delay: -2.8s !important; }
+.macro-pulse__active-path--2 { animation-duration: 16.5s !important; animation-delay: -8s !important; }
+.macro-pulse__active-path--3 { animation-duration: 14s !important; animation-delay: -10s !important; }
+.macro-pulse__active-path--4 { animation-duration: 17s !important; animation-delay: -5s !important; }
+.macro-pulse__active-path--5 { animation-duration: 13.5s !important; animation-delay: -9s !important; }
+.macro-pulse__highlight,
+.macro-pulse__highlight-glow { opacity: 1; }
+.macro-pulse__highlight path,
+.macro-pulse__highlight-glow path {
+  stroke-linecap: round;
+  stroke-dasharray: 54 260;
+  animation: pulse-highlight 10s linear infinite;
+  will-change: stroke-dashoffset, opacity;
+}
+.macro-pulse__highlight path { stroke-width: 1.85; opacity: 0.64; }
+.macro-pulse__highlight-glow path { stroke-width: 5; opacity: 0.15; }
+.macro-pulse__highlight-path--2,
+.macro-pulse__highlight-glow-path--2 { animation-duration: 11.5s !important; animation-delay: -6.2s !important; }
+.macro-pulse__highlight-path--3,
+.macro-pulse__highlight-glow-path--3 { animation-duration: 8.75s !important; animation-delay: -3.8s !important; }
 
-/* Homepage: bright highlight segments travel across region-to-region routes. */
+/* Copy-safe fades leave the strongest artwork in each hero's negative space. */
+.macro-pulse--global { mask-image: radial-gradient(ellipse 68% 78% at 73% 61%, #000 22%, rgba(0,0,0,.82) 57%, rgba(0,0,0,.08) 100%); }
+.macro-pulse--markets { mask-image: linear-gradient(90deg, transparent 8%, rgba(0,0,0,.08) 31%, rgba(0,0,0,.88) 58%, #000 100%); }
+.macro-pulse--macros { mask-image: radial-gradient(ellipse 64% 92% at 76% 70%, #000 18%, rgba(0,0,0,.82) 61%, rgba(0,0,0,.04) 100%); }
+.macro-pulse--policy { mask-image: linear-gradient(90deg, transparent 8%, rgba(0,0,0,.05) 38%, rgba(0,0,0,.9) 61%, #000 100%); }
+.macro-pulse--inflation { mask-image: linear-gradient(90deg, transparent 18%, rgba(0,0,0,.04) 41%, rgba(0,0,0,.88) 61%, #000 100%); }
+.macro-pulse--growth { mask-image: linear-gradient(90deg, transparent 22%, rgba(0,0,0,.04) 44%, rgba(0,0,0,.9) 61%, #000 100%); }
+
+/* Homepage: geographic connections sit above the base and beneath map and copy. */
 .hero-wrap > .macro-pulse { z-index: 0; }
 .hero-wrap > .hero-copy,
 .hero-wrap > .hero-image { position: relative; z-index: 1; }
-.macro-pulse--global .macro-pulse__moving path { stroke-dasharray: 72 220; animation-name: global-route; }
+.macro-pulse--global .macro-pulse__active path { animation-name: global-route-drift; }
+.macro-pulse--global .macro-pulse__highlight path,
+.macro-pulse--global .macro-pulse__highlight-glow path { stroke-dasharray: 48 285; }
 
-/* Markets: independent fine trails combine phase movement with gentle amplitude drift. */
-.macro-pulse--markets .macro-pulse__moving { opacity: 0.15; }
-.macro-pulse--markets .macro-pulse__moving path { stroke-width: 1.45; stroke-dasharray: 50 145; animation-name: market-trail; }
+/* Markets: five disciplined trails with controlled, shallow amplitude. */
+.macro-pulse--markets .macro-pulse__active path { animation-name: market-trail-drift; }
+.macro-pulse--markets .macro-pulse__highlight path,
+.macro-pulse--markets .macro-pulse__highlight-glow path { stroke-dasharray: 42 235; animation-name: market-highlight; }
 
-/* Macros: four phase-shifted signals visibly descend toward the tracker grid. */
-.macro-pulse--macros .macro-pulse__moving path { stroke-dasharray: 34 105; animation-name: macro-signal; }
+/* Macros: four separate origins converge toward the tracker-card area. */
+.macro-pulse--macros .macro-pulse__active path { animation-name: macro-converge-drift; }
+.macro-pulse--macros .macro-pulse__highlight path,
+.macro-pulse--macros .macro-pulse__highlight-glow path { stroke-dasharray: 30 155; animation-name: macro-highlight; }
 
-/* Policy: a short highlight travels along the complete muted rate path. */
-.macro-pulse--policy .macro-pulse__moving path { stroke-dasharray: 24 255; animation: policy-pulse 12s linear infinite; }
-.macro-pulse--policy .macro-pulse__path--2 { animation-duration: 15s !important; }
+/* Policy: short pulses travel stepped transmission paths; the complete line stays muted. */
+.macro-pulse--policy .macro-pulse__active path { animation-name: policy-response-drift; }
+.macro-pulse--policy .macro-pulse__highlight path,
+.macro-pulse--policy .macro-pulse__highlight-glow path { stroke-dasharray: 32 310; animation-name: policy-highlight; }
 
-/* Inflation: contours compress and release around their own stable centre. */
-.macro-pulse--inflation .macro-pulse__moving path { stroke-dasharray: 82 190; transform-origin: center; animation-name: pressure-contour; }
+/* Inflation: dense right-side bands compress and release without becoming waves. */
+.macro-pulse--inflation .macro-pulse__active path { animation-name: inflation-pressure; }
+.macro-pulse--inflation .macro-pulse__highlight path,
+.macro-pulse--inflation .macro-pulse__highlight-glow path { stroke-dasharray: 38 260; animation-name: inflation-highlight; }
 
-/* Growth: arcs rise 36px while expanding before returning seamlessly. */
-.macro-pulse--growth .macro-pulse__moving path { stroke-dasharray: 65 155; transform-origin: center bottom; animation-name: growth-contour; }
-.trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 260px; opacity: 0.82; }
+/* Growth: seven long contours rise toward the upper-right. */
+.macro-pulse--growth .macro-pulse__active path { transform-origin: right bottom; animation-name: growth-rise; }
+.macro-pulse--growth .macro-pulse__highlight path,
+.macro-pulse--growth .macro-pulse__highlight-glow path { stroke-dasharray: 54 270; animation-name: growth-highlight; }
+.trend-motion-host > .macro-pulse { inset: 0 0 auto; height: 250px; opacity: 1; }
+.trend-motion-host .macro-pulse__structure { opacity: 0.08; }
+.trend-motion-host .macro-pulse__active,
+.trend-motion-host .macro-pulse__highlight,
+.trend-motion-host .macro-pulse__highlight-glow { display: none; }
 
-@keyframes macro-flow {
-  0%, 100% { stroke-dashoffset: 0; transform: translate3d(0, 0, 0); opacity: 0.78; }
-  50% { stroke-dashoffset: -150; transform: translate3d(48px, 0, 0); opacity: 1; }
-}
-@keyframes global-route {
-  0%, 100% { stroke-dashoffset: 0; transform: translate3d(-32px, 0, 0); opacity: 0.72; }
-  50% { stroke-dashoffset: -292; transform: translate3d(32px, -2px, 0); opacity: 1; }
-}
-@keyframes market-trail {
-  0%, 100% { stroke-dashoffset: 0; transform: translate3d(-30px, -3px, 0); opacity: 0.72; }
-  50% { stroke-dashoffset: -195; transform: translate3d(30px, 4px, 0); opacity: 1; }
-}
-@keyframes macro-signal {
-  0%, 100% { stroke-dashoffset: 0; transform: translate3d(0, -22px, 0); opacity: 0.74; }
-  50% { stroke-dashoffset: -139; transform: translate3d(0, 22px, 0); opacity: 1; }
-}
-@keyframes policy-pulse {
-  0%, 100% { stroke-dashoffset: 0; opacity: 0.7; }
-  50% { stroke-dashoffset: -558; opacity: 1; }
-}
-@keyframes pressure-contour {
-  0%, 100% { stroke-dashoffset: 0; transform: scale(1.04, 0.97); opacity: 0.76; }
-  50% { stroke-dashoffset: -272; transform: scale(0.96, 1.03); opacity: 1; }
-}
-@keyframes growth-contour {
-  0%, 100% { stroke-dashoffset: 0; transform: translate3d(0, 12px, 0) scale(0.96); opacity: 0.72; }
-  50% { stroke-dashoffset: -220; transform: translate3d(0, -24px, 0) scale(1.04); opacity: 1; }
+@keyframes structure-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(10px,-2px,0); } }
+@keyframes pulse-active-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(22px,-3px,0); } }
+@keyframes pulse-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -333; } }
+@keyframes global-route-drift { 0%, 100% { transform: translate3d(-18px,2px,0); } 50% { transform: translate3d(28px,-5px,0); } }
+@keyframes market-trail-drift { 0%, 100% { transform: translate3d(-20px,-2px,0); } 50% { transform: translate3d(30px,3px,0); } }
+@keyframes market-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -277; } }
+@keyframes macro-converge-drift { 0%, 100% { transform: translate3d(0,-12px,0); } 50% { transform: translate3d(5px,18px,0); } }
+@keyframes macro-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -185; } }
+@keyframes policy-response-drift { 0%, 100% { transform: translate3d(-8px,0,0); } 50% { transform: translate3d(16px,-2px,0); } }
+@keyframes policy-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -342; } }
+@keyframes inflation-pressure { 0%, 100% { transform: scale(1.02,0.985); } 50% { transform: scale(0.97,1.025); } }
+@keyframes inflation-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -298; } }
+@keyframes growth-rise { 0%, 100% { transform: translate3d(0,12px,0) scale(.97); } 50% { transform: translate3d(0,-24px,0) scale(1.035); } }
+@keyframes growth-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -324; } }
+
+@media (max-width: 600px) {
+  .macro-pulse { width: 160%; left: -60%; }
+  .macro-pulse--global { width: 148%; left: -48%; mask-image: radial-gradient(ellipse 58% 74% at 80% 76%, #000 20%, rgba(0,0,0,.72) 58%, transparent 100%); }
+  .macro-pulse--markets,
+  .macro-pulse--inflation,
+  .macro-pulse--growth { width: 150%; left: -50%; }
+  .macro-pulse--macros,
+  .macro-pulse--policy { width: 155%; left: -55%; }
+  .macro-pulse__structure-path:nth-child(n + 5),
+  .macro-pulse__active-path:nth-child(n + 4),
+  .macro-pulse__highlight-path:nth-child(n + 2),
+  .macro-pulse__highlight-glow-path:nth-child(n + 2) { display: none; }
+  .macro-pulse__highlight path { opacity: 0.56; }
+  .macro-pulse__highlight-glow path { opacity: 0.12; }
 }
 .growth-chart-scroll { max-width: 100%; overflow: visible; }
 
